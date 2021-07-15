@@ -23,6 +23,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../../../shared/components'
 
 const address = 'apps.settings.views.forms.cuisines.'
@@ -93,6 +94,8 @@ const CuisineForm = () => {
 
    return (
       <Flex width="calc(100% - 32px)" maxWidth="1280px" margin="0 auto">
+         <Banner id="settings-app-master-lists-cuisine-top" />
+
          <Flex
             as="header"
             container
@@ -120,6 +123,7 @@ const CuisineForm = () => {
                <AddTypesTunnel closeTunnel={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="settings-app-master-lists-cuisine-bottom" />
       </Flex>
    )
 }

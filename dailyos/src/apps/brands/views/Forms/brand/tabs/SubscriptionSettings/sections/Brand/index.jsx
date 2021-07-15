@@ -23,6 +23,7 @@ import {
    AssetUploader,
    Tooltip,
    InlineLoader,
+   Banner,
 } from '../../../../../../../../../shared/components'
 import { toast } from 'react-toastify'
 import { logger } from '../../../../../../../../../shared/utils'
@@ -278,6 +279,7 @@ export const Brand = ({ update }) => {
          <Tunnels tunnels={tunnels}>
             <Tunnel layer={1} size="md">
                <TunnelHeader title="Add Image" close={() => closeTunnel(1)} />
+               <Banner id="brands-app-brands-brand-details-subscription-settings-assets-uploader-tunnel-top" />
                <Flex padding="16px">
                   <AssetUploader
                      onAssetUpload={data =>
@@ -294,6 +296,7 @@ export const Brand = ({ update }) => {
                      }
                   />
                </Flex>
+               <Banner id="brands-app-brands-brand-details-subscription-settings-assets-uploader-tunnel-bottom" />{' '}
             </Tunnel>
          </Tunnels>
       </div>

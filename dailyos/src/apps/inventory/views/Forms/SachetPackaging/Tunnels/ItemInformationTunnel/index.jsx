@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Flex, Form, Spacer, Text, TunnelHeader } from '@dailykit/ui'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { GENERAL_ERROR_MESSAGE } from '../../../../../constants/errorMessages'
 import { useTabs } from '../../../../../../../shared/providers'
@@ -146,6 +146,7 @@ export default function ItemInformationTunnel({ close, state, next }) {
             }
          />
          <Spacer size="16px" />
+         <Banner id="inventory-app-packaging-form-item-information-tunnel-top" />
          <TunnelWrapper>
             <StyledInputGroup>
                <Form.Group>
@@ -386,6 +387,7 @@ export default function ItemInformationTunnel({ close, state, next }) {
                </Form.Group>
             </StyledInputGroup>
          </TunnelWrapper>
+         <Banner id="inventory-app-packaging-form-item-information-tunnel-bottom" />
       </>
    )
 }

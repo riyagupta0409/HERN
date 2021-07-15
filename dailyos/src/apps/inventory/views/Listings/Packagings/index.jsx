@@ -12,6 +12,7 @@ import {
 } from '@dailykit/ui'
 import React from 'react'
 import { toast } from 'react-toastify'
+import { Banner } from '../../../../../shared/components'
 import { Tooltip } from '../../../../../shared/components/Tooltip'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
 import { logger } from '../../../../../shared/utils'
@@ -144,6 +145,7 @@ export default function Packagings() {
             </Tunnel>
          </Tunnels>
          <StyledWrapper>
+            <Banner id="inventory-app-packagings-listing-top" />
             <StyledFlex container justifyContent="space-between">
                <HeaderFlex container alignItems="center">
                   <Text as="h2" textAlign="left">
@@ -175,6 +177,7 @@ export default function Packagings() {
                data={packagings}
                options={tableOptions}
             />
+            <Banner id="inventory-app-packagings-listing-bottom" />
          </StyledWrapper>
       </>
    )

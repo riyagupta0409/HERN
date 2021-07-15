@@ -22,6 +22,7 @@ import {
    AssetUploader,
    Tooltip,
    InlineLoader,
+   Banner,
 } from '../../../../../../../../../shared/components'
 import { toast } from 'react-toastify'
 import { logger } from '../../../../../../../../../shared/utils'
@@ -127,6 +128,7 @@ export const DeliveryPage = ({ update }) => {
          <Tunnels tunnels={tunnels}>
             <Tunnel layer={1} size="md">
                <TunnelHeader title="Add Image" close={() => closeTunnel(1)} />
+               <Banner id="brands-app-brands-brand-details-subscription-settings-delivery-page-bg-tunnel-top" />
                <Flex padding="16px">
                   <AssetUploader
                      onAssetUpload={data =>
@@ -137,6 +139,7 @@ export const DeliveryPage = ({ update }) => {
                      }
                   />
                </Flex>
+               <Banner id="brands-app-brands-brand-details-subscription-settings-delivery-page-bg-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
       </div>

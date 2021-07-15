@@ -26,7 +26,7 @@ import {
    UPDATE_NAVIGATION_MENU,
 } from '../../../graphql'
 import { logger, randomSuffix } from '../../../../../shared/utils'
-import { Tooltip, InlineLoader } from '../../../../../shared/components'
+import { Tooltip, InlineLoader, Banner } from '../../../../../shared/components'
 import { DeleteIcon } from '../../../../../shared/assets/icons'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
 
@@ -241,6 +241,7 @@ const NavigationMenuListing = () => {
    }
    return (
       <StyledWrapper>
+         <Banner id="content-app-navigation-menu-listing-top" />
          <Flex
             container
             height="80px"
@@ -281,6 +282,7 @@ const NavigationMenuListing = () => {
                <NavigationMenuTunnel close={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="content-app-navigation-menu-listing-bottom" />
       </StyledWrapper>
    )
 }

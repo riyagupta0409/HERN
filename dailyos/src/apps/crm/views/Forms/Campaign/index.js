@@ -32,6 +32,7 @@ import {
    Tooltip,
    InlineLoader,
    InsightDashboard,
+   Banner,
 } from '../../../../../shared/components'
 import { CloseIcon, TickIcon } from '../../../../../shared/assets/icons'
 import CampaignContext from '../../../context/Campaign/CampaignForm'
@@ -178,6 +179,8 @@ const CampaignForm = () => {
             updateCheckbox: updateCheckbox,
          }}
       >
+         <Banner id="crm-app-campaigns-campaign-details-top" />
+
          <StyledWrapper>
             <InputWrapper>
                <Flex
@@ -257,17 +260,6 @@ const CampaignForm = () => {
                                  <ConditionComp />
                                  <RewardComp />
                               </div>
-                              <StyledInsight>
-                                 <InsightDashboard
-                                    appTitle="CRM App"
-                                    moduleTitle="Campaign Page"
-                                    variables={{
-                                       campaignId: campaignId,
-                                       today: today,
-                                       fromDate: fromDate,
-                                    }}
-                                 />
-                              </StyledInsight>
                            </Flex>
                         </StyledComp>
                      </HorizontalTabPanel>
@@ -278,13 +270,19 @@ const CampaignForm = () => {
                         <InsightDashboard
                            appTitle="CRM App"
                            moduleTitle="Campaign Page"
-                           variables={{ campaignId: campaignId }}
+                           variables={{
+                              campaignId: campaignId,
+                              today: today,
+                              fromDate: fromDate,
+                           }}
+                           showInTunnel={false}
                         />
                      </HorizontalTabPanel>
                   </HorizontalTabPanels>
                </HorizontalTabs>
             </StyledDiv>
          </StyledWrapper>
+         <Banner id="crm-app-campaigns-campaign-details-bottom" />
       </CampaignContext.Provider>
    )
 }

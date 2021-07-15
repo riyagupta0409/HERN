@@ -16,7 +16,12 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { ErrorState, Tooltip, Gallery } from '../../../../../shared/components'
+import {
+   ErrorState,
+   Tooltip,
+   Gallery,
+   Banner,
+} from '../../../../../shared/components'
 import { logger } from '../../../../../shared/utils'
 import EditIcon from '../../../assets/icons/Edit'
 import { AddressCard } from '../../../components'
@@ -136,6 +141,7 @@ export default function SupplierForm() {
          </Tunnels>
 
          <StyledWrapper>
+            <Banner id="inventory-apps-single-supplier-top" />
             <ResponsiveFlex>
                <Form.Group>
                   <Form.Label htmlFor="supplierName" title="Supplier Name">
@@ -290,6 +296,7 @@ export default function SupplierForm() {
                   onBlur={handleUpdateSupplier}
                />
             </Form.Group>
+            <Banner id="inventory-apps-single-supplier-bottom" />
          </StyledWrapper>
       </>
    )

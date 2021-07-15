@@ -3,6 +3,7 @@ import { Loader } from '@dailykit/ui'
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
+import { Banner } from '../../../../../shared/components'
 import { FlexContainer } from '../../../views/Forms/styled'
 import { Badge, CartButton, Packagings } from '../../components'
 import FiltersProvider from '../../context/filters'
@@ -23,6 +24,7 @@ export default function PackagingHubProducts() {
 
    return (
       <>
+         <Banner id="inventory-app-packaging-hub-products-top" />
          <CartButton />
          <Wrapper>
             <Header>
@@ -36,6 +38,7 @@ export default function PackagingHubProducts() {
                </FiltersProvider>
             </FlexContainer>
          </Wrapper>
+         <Banner id="inventory-app-packaging-hub-products-bottom" />
       </>
    )
 }

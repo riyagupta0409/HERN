@@ -11,21 +11,26 @@ import {
    useSingleList,
 } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
+import {
+   Banner,
+   InlineLoader,
+   Tooltip,
+} from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { IngredientContext } from '../../../../../context/ingredient'
 import { FETCH_PACKAGINGS } from '../../../../../graphql'
 import { TunnelBody } from '../styled'
 
 const EditPackagingTunnel = ({ closeTunnel }) => {
-   const { ingredientState, ingredientDispatch } = React.useContext(
-      IngredientContext
-   )
+   const { ingredientState, ingredientDispatch } =
+      React.useContext(IngredientContext)
 
    // Subscription
-   const { data: { packagings = [] } = {}, loading, error } = useSubscription(
-      FETCH_PACKAGINGS
-   )
+   const {
+      data: { packagings = [] } = {},
+      loading,
+      error,
+   } = useSubscription(FETCH_PACKAGINGS)
 
    if (error) {
       toast.error('Something went wrong!')
@@ -44,7 +49,7 @@ const EditPackagingTunnel = ({ closeTunnel }) => {
                packaging: current,
             },
          })
-         closeTunnel(4)
+         closeTunnel(5)
       }
    }, [current])
 
@@ -52,10 +57,11 @@ const EditPackagingTunnel = ({ closeTunnel }) => {
       <>
          <TunnelHeader
             title="Select Packaging"
-            close={() => closeTunnel(4)}
+            close={() => closeTunnel(5)}
             tooltip={<Tooltip identifier="packaging_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-ingredients-edit-packaging-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -94,6 +100,7 @@ const EditPackagingTunnel = ({ closeTunnel }) => {
                   )}
                </>
             )}
+            <Banner id="products-app-ingredients-edit-packaging-tunnel-bottom" />
          </TunnelBody>
       </>
    )

@@ -13,6 +13,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
@@ -95,6 +96,7 @@ export default function SuppliersTunnel({ close, state }) {
             }
          />
          <TunnelWrapper>
+            <Banner id="inventory-app-packaging-form-select-supplier-tunnel-top" />
             {list.length ? (
                <List>
                   <ListSearch
@@ -127,6 +129,7 @@ export default function SuppliersTunnel({ close, state }) {
             ) : (
                <Filler message={NO_SUPPLIERS} />
             )}
+            <Banner id="inventory-app-packaging-form-select-supplier-tunnel-bottom" />
          </TunnelWrapper>
       </>
    )

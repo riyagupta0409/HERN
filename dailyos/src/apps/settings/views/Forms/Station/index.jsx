@@ -23,7 +23,7 @@ import { logger } from '../../../../../shared/utils'
 import { KotPrinters } from './sections/KotPrinters'
 import { LabelPrinters } from './sections/LabelPrinters'
 import { useTabs } from '../../../../../shared/providers'
-import { InlineLoader, Tooltip } from '../../../../../shared/components'
+import { InlineLoader, Tooltip, Banner } from '../../../../../shared/components'
 
 const StationForm = () => {
    const params = useParams()
@@ -43,17 +43,18 @@ const StationForm = () => {
          logger(error)
       },
    })
-   const { loading, error, data: { station = {} } = {} } = useSubscription(
-      STATIONS.STATION,
-      {
-         variables: { id: params.id },
-         onSubscriptionData: ({ subscriptionData: { data = {} } = {} }) => {
-            const { station } = data
-            setTitle(title => ({ ...title, value: station.name }))
-            setTabTitle(station.name)
-         },
-      }
-   )
+   const {
+      loading,
+      error,
+      data: { station = {} } = {},
+   } = useSubscription(STATIONS.STATION, {
+      variables: { id: params.id },
+      onSubscriptionData: ({ subscriptionData: { data = {} } = {} }) => {
+         const { station } = data
+         setTitle(title => ({ ...title, value: station.name }))
+         setTabTitle(station.name)
+      },
+   })
 
    if (!loading && error) {
       toast.error('Failed to station details!')
@@ -94,6 +95,7 @@ const StationForm = () => {
    if (loading) return <InlineLoader />
    return (
       <Flex>
+         <Banner id="settings-app-stations-station-details-top" />
          <Flex
             container
             as="header"
@@ -169,6 +171,7 @@ const StationForm = () => {
                </TabContent>
             </HorizontalTabs>
          )}
+         <Banner id="settings-app-stations-station-details-bottom" />
       </Flex>
    )
 }

@@ -21,6 +21,7 @@ import {
    Flex,
    Tooltip,
    InlineLoader,
+   Banner,
 } from '../../../../../../../../../shared/components'
 import { toast } from 'react-toastify'
 import { logger } from '../../../../../../../../../shared/utils'
@@ -110,12 +111,14 @@ export const BrandLogo = ({ update }) => {
                   title="Add Brand Logo"
                   close={() => closeTunnel(1)}
                />
+               <Banner id="brands-app-brands-brand-details-brand-logo-tunnel-top" />
                <Flex padding="16px">
                   <AssetUploader
                      onAssetUpload={data => updateSetting(data)}
                      onImageSelect={data => updateSetting(data)}
                   />
                </Flex>
+               <Banner id="brands-app-brands-brand-details-brand-logo-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
       </div>

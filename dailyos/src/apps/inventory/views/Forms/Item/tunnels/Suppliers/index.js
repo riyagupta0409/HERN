@@ -16,6 +16,7 @@ import {
    ErrorState,
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils/errorLog'
 import { TunnelContainer } from '../../../../../components'
@@ -100,6 +101,7 @@ export default function SupplierTunnel({ close, formState }) {
                <Tooltip identifier="supplier_item_form_select_supplier-tunnel" />
             }
          />
+         <Banner id="inventory-app-items-supplier-item-tunnel-top" />
          <TunnelContainer>
             {list.length ? (
                <List>
@@ -150,6 +152,7 @@ export default function SupplierTunnel({ close, formState }) {
                <Filler message={NO_SUPPLIERS} />
             )}
          </TunnelContainer>
+         <Banner id="inventory-app-items-supplier-item-tunnel-bottom" />
       </>
    )
 }

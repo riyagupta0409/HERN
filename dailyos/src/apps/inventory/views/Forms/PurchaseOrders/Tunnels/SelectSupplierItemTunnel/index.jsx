@@ -13,6 +13,7 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
@@ -86,6 +87,7 @@ export default function AddressTunnel({ close, state }) {
             }
          />
          <TunnelWrapper>
+            <Banner id="inventory-app-purchase-orders-item-select-supplier-item-tunnel-top" />
             {list.length ? (
                <List>
                   <ListSearch
@@ -112,6 +114,7 @@ export default function AddressTunnel({ close, state }) {
             ) : (
                <Filler message={NO_SUPPLIER_ITEMS} />
             )}
+            <Banner id="inventory-app-purchase-orders-item-select-supplier-item-tunnel-bottom" />
          </TunnelWrapper>
       </>
    )

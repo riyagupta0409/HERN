@@ -14,7 +14,11 @@ import { TunnelBody } from './styled'
 import { INSERT_SUBSCRIPTION_FOLD, GET_FILES } from '../../../../graphql'
 import FoldContext from '../../../../context/Fold'
 
-import { Tooltip, InlineLoader } from '../../../../../../shared/components'
+import {
+   Tooltip,
+   InlineLoader,
+   Banner,
+} from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 
 export default function LinkFoldTunnel({ close }) {
@@ -181,6 +185,7 @@ export default function LinkFoldTunnel({ close }) {
                <Tooltip identifier="subscriptionFold_linking_tunnelHeader" />
             }
          />
+         <Banner id="content-app-subscription-subscription-fold-tunnel-top" />
          <TunnelBody>
             <Form.Group>
                <Flex container alignItems="flex-end">
@@ -217,6 +222,7 @@ export default function LinkFoldTunnel({ close }) {
                />
             </Form.Group>
          </TunnelBody>
+         <Banner id="content-app-subscription-subscription-fold-tunnel-bottom" />
       </>
    )
 }

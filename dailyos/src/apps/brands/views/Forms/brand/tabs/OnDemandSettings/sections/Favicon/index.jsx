@@ -21,6 +21,7 @@ import {
    AssetUploader,
    Tooltip,
    InlineLoader,
+   Banner,
 } from '../../../../../../../../../shared/components'
 import { toast } from 'react-toastify'
 import { logger } from '../../../../../../../../../shared/utils'
@@ -107,12 +108,14 @@ export const Favicon = ({ update }) => {
          <Tunnels tunnels={tunnels}>
             <Tunnel layer={1} size="md">
                <TunnelHeader title="Add Favicon" close={() => closeTunnel(1)} />
+               <Banner id="brands-app-brands-brand-details-fav-icon-tunnel-top" />
                <Flex padding="16px">
                   <AssetUploader
                      onAssetUpload={data => updateSetting(data)}
                      onImageSelect={data => updateSetting(data)}
                   />
                </Flex>
+               <Banner id="brands-app-brands-brand-details-fav-icon-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
       </div>

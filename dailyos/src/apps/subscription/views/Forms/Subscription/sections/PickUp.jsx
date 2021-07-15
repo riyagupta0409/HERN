@@ -19,7 +19,11 @@ import {
    TunnelHeader,
 } from '@dailykit/ui'
 
-import { InlineLoader, Tooltip } from '../../../../../../shared/components'
+import {
+   Banner,
+   InlineLoader,
+   Tooltip,
+} from '../../../../../../shared/components'
 import { PICKUP_OPTIONS, INSERT_PICKUP_OPTION } from '../../../../graphql'
 import {
    parseAddress,
@@ -39,6 +43,7 @@ const PickUpTunnel = ({ tunnel, onSave }) => {
                   close={() => tunnel.close(1)}
                   right={{ action: () => openTunnel(1), title: 'Add Option' }}
                />
+               <Banner id="subscription-app-create-subscription-form-select-pickup-tunnel-top" />
                <Flex
                   padding="16px"
                   overflowY="auto"
@@ -46,6 +51,7 @@ const PickUpTunnel = ({ tunnel, onSave }) => {
                >
                   <PickupOptions onSave={onSave} close={tunnel.close} />
                </Flex>
+               <Banner id="subscription-app-create-subscription-form-select-pickup-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
          <Tunnels tunnels={tunnels}>
@@ -63,9 +69,8 @@ const PickUpTunnel = ({ tunnel, onSave }) => {
 export default PickUpTunnel
 
 const PickupOptions = ({ onSave, close }) => {
-   const { loading, data: { pickup_options: options = [] } = {} } = useQuery(
-      PICKUP_OPTIONS
-   )
+   const { loading, data: { pickup_options: options = [] } = {} } =
+      useQuery(PICKUP_OPTIONS)
 
    if (loading) return <InlineLoader />
    return (
@@ -136,6 +141,8 @@ const CreateOption = ({ close, onSave }) => {
                title: 'Save',
             }}
          />
+         <Banner id="subscription-app-create-subscription-form-add-pickup-options-tunnel-top" />
+
          <Flex padding="16px" overflowY="auto" height="calc(100% - 105px)">
             <Text as="h4">Pick Up Time</Text>
             <Spacer size="14px" />
@@ -178,6 +185,7 @@ const CreateOption = ({ close, onSave }) => {
                onSelect={address => onChange('address', address)}
             />
          </Flex>
+         <Banner id="subscription-app-create-subscription-form-add-pickup-options-tunnel-bottom" />
       </>
    )
 }

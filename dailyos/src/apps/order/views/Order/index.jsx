@@ -46,6 +46,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../shared/components'
 
 const isPickup = value => ['ONDEMAND_PICKUP', 'PREORDER_PICKUP'].includes(value)
@@ -84,17 +85,18 @@ const Order = () => {
       }
    )
 
-   const { loading, error, data: { order = {} } = {} } = useSubscription(
-      QUERIES.ORDER.DETAILS,
-      {
-         variables: {
-            id: params.id,
-         },
-         onSubscriptionData: ({ subscriptionData: { data = {} } = {} }) => {
-            setIsThirdParty(Boolean(data?.order?.thirdPartyOrderId))
-         },
-      }
-   )
+   const {
+      loading,
+      error,
+      data: { order = {} } = {},
+   } = useSubscription(QUERIES.ORDER.DETAILS, {
+      variables: {
+         id: params.id,
+      },
+      onSubscriptionData: ({ subscriptionData: { data = {} } = {} }) => {
+         setIsThirdParty(Boolean(data?.order?.thirdPartyOrderId))
+      },
+   })
 
    const {
       loading: productsLoading,
@@ -250,7 +252,7 @@ const Order = () => {
    const printKOT = async () => {
       try {
          const url = `${
-            new URL(get_env('REACT_APP_DATA_HUB_URI')).origin
+            new URL(window._env_.REACT_APP_DATA_HUB_URI).origin
          }/datahub/v1/query`
          await axios.post(
             url,
@@ -356,6 +358,7 @@ const Order = () => {
       )
    return (
       <Flex>
+         <Banner id="order-app-single-order-top" />
          <Spacer size="16px" />
          <ResponsiveFlex
             container
@@ -657,6 +660,7 @@ const Order = () => {
             address={order.cart?.address}
             closeTunnel={closeAddressTunnel}
          />
+         <Banner id="order-app-single-order-bottom" />
       </Flex>
    )
 }
@@ -765,6 +769,7 @@ const EditDeliveryTunnel = ({
                   isLoading: loading,
                }}
             />
+            <Banner id="order-app-single-order-edit-delivery-tunnel-top" />
             <Flex padding="16px" overflowY="auto" height="calc(100vh - 195px)">
                <Form.Group>
                   <Form.Label htmlFor="date" title="date">
@@ -802,6 +807,7 @@ const EditDeliveryTunnel = ({
                   />
                </Form.Group>
             </Flex>
+            <Banner id="order-app-single-order-edit-delivery-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )
@@ -859,6 +865,7 @@ const EditAddressTunnel = ({ cartId, tunnels, closeTunnel, address = {} }) => {
                   isLoading: loading,
                }}
             />
+            <Banner id="order-app-single-order-edit-address-tunnel-top" />
             <Flex padding="16px" overflowY="auto" height="calc(100vh - 195px)">
                <Form.Group>
                   <Form.Label htmlFor="line1" title="line1">
@@ -938,6 +945,7 @@ const EditAddressTunnel = ({ cartId, tunnels, closeTunnel, address = {} }) => {
                   />
                </Form.Group>
             </Flex>
+            <Banner id="order-app-single-order-edit-address-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

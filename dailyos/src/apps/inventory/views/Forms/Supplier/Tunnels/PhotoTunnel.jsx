@@ -4,6 +4,7 @@ import React from 'react'
 import { toast } from 'react-toastify'
 import {
    AssetUploader,
+   Banner,
    InlineLoader,
    Tooltip,
 } from '../../../../../../shared/components'
@@ -48,12 +49,14 @@ export default function PhotoTunnel({ close, formState }) {
                <Tooltip identifier="suppliers_form_view_add_personOfContact_photo_tunnel_header" />
             }
          />
+         <Banner id="inventory-apps-suppliers-person-of-contact-photo-tunnel-top" />
          <Flex padding="0 14px">
             <AssetUploader
                onAssetUpload={url => addImage(url)}
                onImageSelect={image => addImage(image)}
             />
          </Flex>
+         <Banner id="inventory-apps-suppliers-person-of-contact-photo-tunnel-bottom" />
       </>
    )
 }

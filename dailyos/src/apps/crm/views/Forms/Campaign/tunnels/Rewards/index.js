@@ -5,7 +5,11 @@ import { toast } from 'react-toastify'
 import { TunnelBody, SolidTile } from './styled'
 import { CREATE_REWARD, CAMPAIGN_DATA } from '../../../../../graphql'
 import { logger } from '../../../../../../../shared/utils'
-import { Tooltip, InlineLoader } from '../../../../../../../shared/components'
+import {
+   Tooltip,
+   InlineLoader,
+   Banner,
+} from '../../../../../../../shared/components'
 import CampaignContext from '../../../../../context/Campaign/CampaignForm'
 
 export default function RewardTypeTunnel({
@@ -82,6 +86,7 @@ export default function RewardTypeTunnel({
                      tooltip={<Tooltip identifier="campaign_reward_type" />}
                   />
                </Flex>
+               <Banner id="crm-app-campaigns-campaign-details-reward-type-tunnel-top" />
                <TunnelBody>
                   {types.map(type => {
                      return (
@@ -97,6 +102,7 @@ export default function RewardTypeTunnel({
                      )
                   })}
                </TunnelBody>
+               <Banner id="crm-app-campaigns-campaign-details-reward-type-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
       </>

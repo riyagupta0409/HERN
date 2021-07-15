@@ -7,6 +7,7 @@ import { DashboardTile, Text, Loader } from '@dailykit/ui'
 import { StyledHome, StyledCardList } from './styled'
 import { STATIONS, ROLES, USERS } from '../../graphql'
 import { useTabs } from '../../../../shared/providers'
+import { Banner } from '../../../../shared/components'
 
 const address = 'apps.settings.views.home.'
 
@@ -35,6 +36,7 @@ const Home = () => {
    if (rolesError) return <div>{rolesError.message}</div>
    return (
       <StyledHome>
+         <Banner id="settings-app-home-top" />
          <Text as="h1">{t(address.concat('settings app'))}</Text>
          <StyledCardList>
             <DashboardTile
@@ -68,6 +70,7 @@ const Home = () => {
                onClick={() => addTab('Master Lists', '/settings/master-lists')}
             />
          </StyledCardList>
+         <Banner id="settings-app-home-bottom" />
       </StyledHome>
    )
 }

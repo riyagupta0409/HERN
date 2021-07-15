@@ -30,6 +30,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../../shared/components'
 import {
    PRODUCT_CATEGORIES,
@@ -469,6 +470,7 @@ const SaveTunnel = ({
                }}
                tooltip={<Tooltip identifier="listing_menu_tunnel_heading" />}
             />
+            <Banner id="subscription-app-menu-occurrence-products-tunnel-top" />
             <Main>
                <Spacer size="24px" />
                <Form.Group>
@@ -522,6 +524,7 @@ const SaveTunnel = ({
                   placeholder="search for a product category"
                />
             </Main>
+            <Banner id="subscription-app-menu-occurrence-products-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

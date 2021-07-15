@@ -19,7 +19,7 @@ import { BRANDS } from '../../../graphql'
 import { Wrapper, Label } from './styled'
 import { logger } from '../../../../../shared/utils'
 import { useTabs } from '../../../../../shared/providers'
-import { InlineLoader, Tooltip } from '../../../../../shared/components'
+import { Banner, InlineLoader, Tooltip } from '../../../../../shared/components'
 import {
    OnDemandSettings,
    OnDemandCollections,
@@ -108,6 +108,7 @@ export const Brand = () => {
    }
    return (
       <Wrapper>
+         <Banner id="brands-app-brands-brand-details-top" />
          <Flex
             container
             padding="0 16px"
@@ -195,6 +196,7 @@ export const Brand = () => {
                </HorizontalTabPanel>
             </HorizontalTabPanels>
          </HorizontalTabs>
+         <Banner id="brands-app-brands-brand-details-bottom" />
       </Wrapper>
    )
 }

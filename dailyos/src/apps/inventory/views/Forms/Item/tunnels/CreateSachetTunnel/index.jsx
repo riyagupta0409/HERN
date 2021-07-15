@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useMutation } from '@apollo/react-hooks'
 import { Flex, Form, TunnelHeader } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { SACHET_ITEMS_CREATE_ERROR } from '../../../../../constants/errorMessages'
 import { CREATE_SACHET_ITEM } from '../../../../../graphql'
@@ -70,6 +70,7 @@ const CreateSachetTunnel = ({ close, open, procId, unit }) => {
                action: handleNext,
             }}
          />
+         <Banner id="inventory-app-items-supplier-item-create-sachet-tunnel-top" />
          <Flex padding="16px">
             <Form.Group>
                <Form.Label htmlFor="quantity" title="sachetQuantity">
@@ -105,6 +106,7 @@ const CreateSachetTunnel = ({ close, open, procId, unit }) => {
                )}
             </Form.Group>
          </Flex>
+         <Banner id="inventory-app-items-supplier-item-create-sachet-tunnel-bottom" />
       </>
    )
 }

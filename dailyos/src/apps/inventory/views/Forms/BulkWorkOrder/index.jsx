@@ -35,6 +35,7 @@ import SelectSupplierItemTunnel from './Tunnels/SelectSupplierItemTunnel'
 import SelectUserTunnel from './Tunnels/SelectUserTunnel'
 
 import { merge } from 'lodash'
+import { Banner } from '../../../../../shared/components'
 
 const address = 'apps.inventory.views.forms.bulkworkorder.'
 
@@ -194,6 +195,7 @@ export default function BulkWorkOrderForm() {
          </Tunnels>
 
          <StyledWrapper>
+            <Banner id="inventory-app-work-orders-bulk-top" />
             <Flex
                container
                alignItems="center"
@@ -336,6 +338,7 @@ export default function BulkWorkOrderForm() {
                   bulkWorkOrder={state}
                />
             ) : null}
+            <Banner id="inventory-app-work-orders-bulk-bottom" />
          </StyledWrapper>
       </>
    )

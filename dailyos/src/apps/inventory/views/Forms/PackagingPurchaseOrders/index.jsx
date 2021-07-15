@@ -15,7 +15,7 @@ import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
-import { ErrorState, Tooltip } from '../../../../../shared/components'
+import { Banner, ErrorState, Tooltip } from '../../../../../shared/components'
 import { logger } from '../../../../../shared/utils/errorLog'
 import { ItemCard, Separator, StatusSwitch } from '../../../components'
 import { GENERAL_ERROR_MESSAGE } from '../../../constants/errorMessages'
@@ -100,6 +100,7 @@ export default function PackagingPurchaseOrderForm() {
    return (
       <>
          <StyledWrapper>
+            <Banner id="inventory-app-purchase-orders-packaging-top" />
             <Flex
                container
                alignItems="center"
@@ -125,6 +126,7 @@ export default function PackagingPurchaseOrderForm() {
                orderQuantity={orderQuantity}
                setOrderQuantity={setOrderQuantity}
             />
+            <Banner id="inventory-app-purchase-orders-packaging-bottom" />
          </StyledWrapper>
       </>
    )

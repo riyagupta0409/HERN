@@ -58,26 +58,27 @@ const Content = ({ panel }) => {
          },
       }
    )
-   const { loading, data: { addresses = [] } = {}, refetch } = useQuery(
-      QUERIES.CUSTOMER.ADDRESS.LIST,
-      {
-         skip: !customer?.id,
-         variables: {
-            where: {
-               keycloakId: { _eq: customer.keycloakId },
-               clientId: {
-                  _in: [
-                     get_env('REACT_APP_KEYCLOAK_REALM'),
-                     `${get_env('REACT_APP_KEYCLOAK_REALM')}-subscription`,
-                  ],
-               },
+   const {
+      loading,
+      data: { addresses = [] } = {},
+      refetch,
+   } = useQuery(QUERIES.CUSTOMER.ADDRESS.LIST, {
+      skip: !customer?.id,
+      variables: {
+         where: {
+            keycloakId: { _eq: customer.keycloakId },
+            clientId: {
+               _in: [
+                  get_env('REACT_APP_KEYCLOAK_REALM'),
+                  `${get_env('REACT_APP_KEYCLOAK_REALM')}-subscription`,
+               ],
             },
          },
-         onError: () => {
-            toast.error('Failed to load addresses, please try again.')
-         },
-      }
-   )
+      },
+      onError: () => {
+         toast.error('Failed to load addresses, please try again.')
+      },
+   })
    return (
       <>
          <TunnelHeader

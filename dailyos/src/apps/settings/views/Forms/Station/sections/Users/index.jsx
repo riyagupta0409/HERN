@@ -39,6 +39,7 @@ import {
    InlineLoader,
    ErrorBoundary,
    ErrorState,
+   Banner,
 } from '../../../../../../../shared/components'
 
 export const Users = ({ station }) => {
@@ -250,6 +251,7 @@ const AddUserTunnel = ({ isOpen, station, setIsOpen }) => {
                   <Tooltip identifier="station_section_user_tunnel_add" />
                }
             />
+            <Banner id="settings-app-stations-station-details-add-user-tunnel-top" />
             <Flex padding="0 16px" overflowY="auto" height="calc(100% - 104px)">
                {isLoading && <InlineLoader />}
                {!isLoading && error && <ErrorState />}
@@ -302,6 +304,7 @@ const AddUserTunnel = ({ isOpen, station, setIsOpen }) => {
                   />
                )}
             </Flex>
+            <Banner id="settings-app-stations-station-details-add-user-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

@@ -14,6 +14,7 @@ import {
    ErrorState,
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../shared/components'
 
 const UsersListing = () => {
@@ -111,6 +112,8 @@ const UsersListing = () => {
 
    return (
       <Flex margin="0 auto" width="calc(100% - 32px)" maxWidth="1280px">
+         <Banner id="settings-app-users-listing-top" />
+
          <Flex
             container
             as="header"
@@ -151,6 +154,7 @@ const UsersListing = () => {
                )}
             </>
          )}
+         <Banner id="settings-app-users-listing-bottom" />
       </Flex>
    )
 }

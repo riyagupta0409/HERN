@@ -30,6 +30,7 @@ import {
    ErrorState,
    InlineLoader,
    ErrorBoundary,
+   Banner,
 } from '../../../../../../shared/components'
 
 const DeliveryDay = ({ id }) => {
@@ -38,14 +39,15 @@ const DeliveryDay = ({ id }) => {
    const [areasTotal, setAreasTotal] = React.useState(0)
    const [customersTotal, setCustomersTotal] = React.useState(0)
    const [occurencesTotal, setOccurencesTotal] = React.useState(0)
-   const { error, loading, data: { subscription = {} } = {} } = useSubscription(
-      SUBSCRIPTION,
-      {
-         variables: {
-            id,
-         },
-      }
-   )
+   const {
+      error,
+      loading,
+      data: { subscription = {} } = {},
+   } = useSubscription(SUBSCRIPTION, {
+      variables: {
+         id,
+      },
+   })
 
    if (loading) return <InlineLoader />
    if (error) {
@@ -101,6 +103,7 @@ const DeliveryDay = ({ id }) => {
                </HorizontalTabPanel>
             </HorizontalTabPanels>
          </HorizontalTabs>
+         <Banner id="subscription-app-subscription-details-servings-subscription-listing-bottom" />
          <ErrorBoundary rootRoute="/subscription/subscriptions">
             <Tunnels tunnels={tunnels}>
                <Tunnel layer="1">
@@ -156,6 +159,7 @@ const EditSubscriptionTunnel = ({ id, closeTunnel }) => {
                <Tooltip identifier="form_subscription_tunnel_subscription_field_date" />
             }
          />
+         <Banner id="subscription-app-create-subscription-edit-subscription-tunnel-top" />
          <Flex padding="16px">
             <Form.Group>
                <Form.Label htmlFor="endDate" title="endDate">
@@ -172,6 +176,7 @@ const EditSubscriptionTunnel = ({ id, closeTunnel }) => {
                />
             </Form.Group>
          </Flex>
+         <Banner id="subscription-app-create-subscription-edit-subscription-tunnel-bottom" />
       </>
    )
 }

@@ -29,6 +29,7 @@ export const Aside = () => {
    const { customer, fulfillmentInfo, cart } = useManual()
    const [tunnels, openTunnel, closeTunnel] = useTunnel(2)
    const [updateBrandCustomer] = useMutation(MUTATIONS.BRAND.CUSTOMER.UPDATE, {
+      refetchQueries: ['customers'],
       onError: error => logger(error),
    })
 

@@ -11,6 +11,7 @@ import {
    PACKAGING_PURCHASE_ORDERS_CREATE_TUNNEL,
 } from '../../../constants/infoMessages'
 import { useTabs } from '../../../../../shared/providers'
+import { Banner } from '../../../../../shared/components'
 import {
    CREATE_ITEM_PURCHASE_ORDER,
    CREATE_PURCHASE_ORDER,
@@ -67,6 +68,7 @@ export default function SelectPurchaseOrderTypeTunnel({ close }) {
                close(1)
             }}
          />
+         <Banner id="inventory-app-purchase-orders-select-packaging-type-tunnel-top" />
          <TunnelContainer>
             <SolidTile onClick={createPackagingPurchaseOrder}>
                <Text as="h1">Packaging</Text>
@@ -81,6 +83,7 @@ export default function SelectPurchaseOrderTypeTunnel({ close }) {
                   Purchase orders associated with inventory supplier items.
                </Text>
             </SolidTile>
+            <Banner id="inventory-app-purchase-orders-select-packaging-type-tunnel-bottom" />
          </TunnelContainer>
       </>
    )

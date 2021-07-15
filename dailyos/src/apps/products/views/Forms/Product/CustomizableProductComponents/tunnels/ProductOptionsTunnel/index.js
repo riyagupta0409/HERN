@@ -5,6 +5,7 @@ import { toast } from 'react-toastify'
 import {
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../../../shared/components'
 import {
    isIncludedInOptions,
@@ -170,6 +171,7 @@ const ProductOptionsTunnel = ({
             }}
          />
          <TunnelBody>
+            <Banner id="products-app-customizable-product-product-options-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -278,6 +280,7 @@ const ProductOptionsTunnel = ({
                   ))}
                </>
             )}
+            <Banner id="products-app-customizable-product-product-options-tunnel-bottom" />
          </TunnelBody>
       </>
    )

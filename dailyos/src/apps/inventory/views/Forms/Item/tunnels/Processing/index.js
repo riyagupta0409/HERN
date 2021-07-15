@@ -15,6 +15,7 @@ import {
    ErrorState,
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils/errorLog'
 import { TunnelContainer } from '../../../../../components'
@@ -75,6 +76,7 @@ export default function ProcessingTunnel({
                <Tooltip identifier="supplier_item_form_select_processing_tunnel" />
             }
          />
+         <Banner id="inventory-app-items-supplier-item-processing-tunnel-top" />
          <TunnelContainer>
             {list.length ? (
                <List>
@@ -108,6 +110,7 @@ export default function ProcessingTunnel({
             ) : (
                <Filler message={NO_PROCESSING} />
             )}
+            <Banner id="inventory-app-items-supplier-item-processing-tunnel-bottom" />
          </TunnelContainer>
       </>
    )

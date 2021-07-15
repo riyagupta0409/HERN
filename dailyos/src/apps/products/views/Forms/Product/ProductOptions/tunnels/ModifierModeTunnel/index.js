@@ -1,6 +1,6 @@
 import React from 'react'
 import { OptionTile, Spacer, TunnelHeader } from '@dailykit/ui'
-import { Tooltip } from '../../../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../../../shared/components'
 import { ModifiersContext } from '../../../../../../context/product/modifiers'
 import { TunnelBody } from '../../../tunnels/styled'
 import { useMutation } from '@apollo/react-hooks'
@@ -34,6 +34,7 @@ const ModifierModeTunnel = ({ open, close }) => {
             tooltip={<Tooltip identifier="modifier_mode_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-single-product-modifier-mode-tunnel-top" />
             <OptionTile
                title="Choose Existing Template"
                onClick={() => open(6)}
@@ -51,6 +52,7 @@ const ModifierModeTunnel = ({ open, close }) => {
                   })
                }
             />
+            <Banner id="products-app-single-product-modifier-mode-tunnel-bottom" />
          </TunnelBody>
       </>
    )

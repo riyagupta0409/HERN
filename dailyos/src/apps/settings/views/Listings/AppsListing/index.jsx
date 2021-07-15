@@ -17,7 +17,7 @@ import {
 
 import { APPS } from '../../../graphql'
 import { useTabs } from '../../../../../shared/providers'
-import { InlineLoader } from '../../../../../shared/components'
+import { Banner, InlineLoader } from '../../../../../shared/components'
 
 const address = 'apps.settings.views.listings.appslisting.'
 
@@ -34,6 +34,7 @@ const AppsListing = () => {
 
    return (
       <Flex margin="0 auto" width="calc(100% - 32px)" maxWidth="1280px">
+         <Banner id="settings-app-apps-listing-top" />
          <div>
             <Flex
                container
@@ -86,6 +87,7 @@ const AppsListing = () => {
                </TableBody>
             </Table>
          </div>
+         <Banner id="settings-app-apps-listing-bottom" />
       </Flex>
    )
 }

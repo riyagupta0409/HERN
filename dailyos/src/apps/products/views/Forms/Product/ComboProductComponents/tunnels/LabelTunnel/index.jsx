@@ -17,7 +17,7 @@ import { TunnelBody } from '../../../tunnels/styled'
 import { logger } from '../../../../../../../../shared/utils'
 import validator from '../../../validators'
 import { DeleteIcon } from '../../../../../../../../shared/assets/icons'
-import { Tooltip } from '../../../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../../../shared/components'
 
 const address =
    'apps.menu.views.forms.product.comboproduct.tunnels.itemstunnel.'
@@ -87,6 +87,7 @@ const LabelTunnel = ({ productId, closeTunnel }) => {
             tooltip={<Tooltip identifier="combo_product_items_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-combo-product-items-tunnel-top" />
             <Text as="h3">
                {t(address.concat('label your items to add recipes for'))}
             </Text>
@@ -160,6 +161,7 @@ const LabelTunnel = ({ productId, closeTunnel }) => {
                   ])
                }
             />
+            <Banner id="products-app-combo-product-items-tunnel-bottom" />
          </TunnelBody>
       </>
    )

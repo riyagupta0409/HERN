@@ -1,6 +1,6 @@
 import React from 'react'
 
-export const ChevronLeft = ({ size = 16, color = '#000000' }) => (
+const ChevronLeft = ({ size = 16, color = '#000000' }) => (
    <svg
       xmlns="http://www.w3.org/2000/svg"
       width={size}
@@ -15,3 +15,4 @@ export const ChevronLeft = ({ size = 16, color = '#000000' }) => (
       <path d="M15 18l-6-6 6-6" />
    </svg>
 )
+export default ChevronLeft

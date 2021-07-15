@@ -13,15 +13,23 @@ import {
    Tunnel,
    Tunnels,
    useTunnel,
+   Form,
    Checkbox,
-   DropdownButton,
+   TunnelHeader,
+   Context,
+   ContextualMenu,
+   typeOf,
 } from '@dailykit/ui'
+import { jsPDF } from 'jspdf'
+import 'jspdf-autotable'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
+   InsightDashboard,
 } from '../../../../../shared/components'
 import { useTabs } from '../../../../../shared/providers'
 import { logger, randomSuffix } from '../../../../../shared/utils'
@@ -48,11 +56,38 @@ const RecipesListing = () => {
    const [tunnels, openTunnel, closeTunnel, visible] = useTunnel(2)
    // Queries and Mutations
 
+   // const [recipes, setRecipes] = React.useState([])
+
    let {
       loading,
       data: { simpleRecipes: recipes = [] } = {},
       error,
    } = useSubscription(S_RECIPES)
+
+   // if (recipes.length > 0) {
+   //    const updatedRecipes = recipes.map(recipe => {
+   //       recipe.simpleRecipeYieldsLength = recipe.simpleRecipeYields.length
+   //       return recipe
+   //    })
+   //    recipes = [...updatedRecipes]
+   // }
+
+   // let recipes = []
+
+   // const { loading, error } = useSubscription(S_RECIPES, {
+   //    onSubscriptionData: data => {
+   //       const { simpleRecipes } = data.subscriptionData.data
+   //       const updatedRecipes = simpleRecipes.map(recipe => {
+   //          recipe.simpleRecipeYieldsLength = recipe.simpleRecipeYields.length
+   //          return recipe
+   //       })
+
+   //       console.log('up', updatedRecipes)
+   //       recipes = updatedRecipes
+   //    },
+   // })
+
+   console.log('re', recipes)
 
    const [createRecipe] = useMutation(CREATE_SIMPLE_RECIPE, {
       onCompleted: input => {
@@ -114,6 +149,7 @@ const RecipesListing = () => {
    }
    return (
       <ResponsiveFlex maxWidth="1280px" margin="0 auto">
+         <Banner id="products-app-recipe-listing-top" />
          <Tunnels tunnels={tunnels}>
             <Tunnel layer={1} size="full">
                <BulkActionsTunnel
@@ -157,6 +193,7 @@ const RecipesListing = () => {
                setSelectedRows={setSelectedRows}
             />
          )}
+         <Banner id="products-app-recipe-listing-bottom" />
       </ResponsiveFlex>
    )
 }
@@ -458,6 +495,11 @@ class DataTable extends React.Component {
                data-custom-attr="test-custom-attribute"
                className="custom-css-class"
             />
+            <InsightDashboard
+               appTitle="Products App"
+               moduleTitle="Recipe Listing"
+               showInTunnel={false}
+            />
          </>
       )
    }
@@ -558,6 +600,144 @@ const ActionBar = ({
    }
 
    return (
+      <IconButton type="ghost" onClick={() => onDelete(recipe)}>
+         <DeleteIcon color="#FF5A52" />
+      </IconButton>
+      // <ContextualMenu>
+      //    <Context
+      //       title="This is context 1"
+      //       handleClick={() => console.log('Context1')}
+      //    >
+      //       <p>This is things could be done</p>
+      //       <TextButton type="solid" size="sm">
+      //          Update
+      //       </TextButton>
+      //    </Context>
+      //    <Context
+      //       title="This is context 2"
+      //       handleClick={() => console.log('Context2')}
+      //    />
+      // </ContextualMenu>
+   )
+}
+
+function PublishStatus({ cell }) {
+   const data = cell.getData()
+   return (
+      <Flex
+         container
+         width="100%"
+         justifyContent="space-between"
+         alignItems="center"
+      >
+         <IconButton type="ghost">
+            {data.isPublished ? <PublishIcon /> : <UnPublishIcon />}
+         </IconButton>
+      </Flex>
+   )
+}
+
+function Selection() {
+   const [checked, setChecked] = React.useState(true)
+
+   const handleMultipleRowSelection = () => {
+      setChecked(!checked)
+      console.log('handleMultipleRowSelection')
+   }
+   return (
+      <Checkbox
+         id="label"
+         checked={checked}
+         onChange={handleMultipleRowSelection}
+      ></Checkbox>
+   )
+}
+
+function RecipeName({ cell, addTab }) {
+   const data = cell.getData()
+   return (
+      <>
+         <Flex
+            container
+            width="100%"
+            justifyContent="space-between"
+            alignItems="center"
+         >
+            <Flex
+               container
+               width="100%"
+               justifyContent="flex-end"
+               alignItems="center"
+            >
+               <p
+                  style={{
+                     width: '200px',
+                     whiteSpace: 'nowrap',
+                     overflow: 'hidden',
+                     textOverflow: 'ellipsis',
+                  }}
+                  // onClick={(e, cell) => {
+                  //    const { name, id } = data
+                  //    addTab(name, `/products/recipes/${id}`)
+                  //    console.log('hi')
+                  // }}
+
+                  // onClick(e, cell) => {
+                  //    const { name, id } = cell._cell.row.data
+                  //    this.props.addTab(name, `/products/recipes/${id}`)
+                  // }
+               >
+                  {cell._cell.value}
+               </p>
+            </Flex>
+
+            <Flex
+               container
+               width="100%"
+               justifyContent="space-between"
+               alignItems="center"
+            >
+               <IconButton type="ghost">
+                  {data.isPublished ? <PublishIcon /> : <UnPublishIcon />}
+               </IconButton>
+               {/* <ContextualMenu>
+                  <Context
+                     title="This is context 1"
+                     handleClick={() => console.log('Context1')}
+                  >
+                     <p>This is things could be done</p>
+                     <TextButton type="solid" size="sm">
+                        Update
+                     </TextButton>
+                  </Context>
+                  <Context
+                     title="This is context 2"
+                     handleClick={() => console.log('Context2')}
+                  />
+               </ContextualMenu> */}
+            </Flex>
+         </Flex>
+      </>
+   )
+}
+
+const ActionBar = ({
+   selectedRows,
+   openTunnel,
+   handleGroupBy,
+   clearHeaderFilter,
+}) => {
+   const [groupByOptions] = React.useState([
+      { id: 1, title: 'isPublished' },
+      { id: 2, title: 'cuisine' },
+      { id: 3, title: 'author' },
+   ])
+   const selectedOption = option => {
+      const newOptions = option.map(x => x.title)
+      handleGroupBy(newOptions)
+   }
+   const searchedOption = option => console.log(option)
+   return (
       <>
          <Flex
             container
@@ -595,7 +775,7 @@ const ActionBar = ({
             <Flex
                container
                as="header"
-               width="75%"
+               width="70%"
                alignItems="center"
                justifyContent="space-around"
             >
@@ -641,10 +821,10 @@ const ActionBar = ({
                   <Dropdown
                      type="multi"
                      variant="revamp"
-                     defaultIds={defaultIDs()}
                      disabled={true}
                      options={groupByOptions}
-                     selectedOption={selectedOption}
+                     searchedOption={searchedOption}
+                     defaultIds={defaultIDs()}
                      typeName="cuisine"
                   />
                </Flex>

@@ -14,7 +14,11 @@ import {
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { ErrorState, Tooltip } from '../../../../../../../shared/components'
+import {
+   Banner,
+   ErrorState,
+   Tooltip,
+} from '../../../../../../../shared/components'
 import { InlineLoader } from '../../../../../../../shared/components/InlineLoader'
 import { logger } from '../../../../../../../shared/utils'
 import { ERROR_ADDING_ALLERGENS } from '../../../../../constants/errorMessages'
@@ -85,6 +89,7 @@ export default function AllergensTunnel({ close, bulkItemId }) {
          />
 
          <TunnelBody>
+            <Banner id="inventory-app-items-supplier-item-add-allergens-tunnel-top" />
             {list.length ? (
                <List>
                   <ListSearch
@@ -128,6 +133,7 @@ export default function AllergensTunnel({ close, bulkItemId }) {
             ) : (
                <Filler message={NO_ALLERGENS} />
             )}
+            <Banner id="inventory-app-items-supplier-item-add-allergens-tunnel-bottom" />
          </TunnelBody>
       </>
    )

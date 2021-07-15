@@ -13,6 +13,7 @@ import {
    CREATE_SACHET_WORK_ORDER,
 } from '../../../graphql'
 import { SolidTile } from '../styled'
+import { Banner } from '../../../../../shared/components'
 
 const address = 'apps.inventory.views.listings.workorders.'
 
@@ -59,6 +60,8 @@ export default function WorkOrderTypeTunnel({ close }) {
                close(1)
             }}
          />
+         <Banner id="inventory-app-work-orders-work-order-type-tunnel-top" />
+
          <TunnelContainer>
             <SolidTile onClick={createBulkWorkOrder}>
                <Text as="h1">{t(address.concat('bulk work order'))}</Text>
@@ -80,6 +83,7 @@ export default function WorkOrderTypeTunnel({ close }) {
                </Text>
             </SolidTile>
          </TunnelContainer>
+         <Banner id="inventory-app-work-orders-work-order-type-tunnel-bottom" />
       </>
    )
 }

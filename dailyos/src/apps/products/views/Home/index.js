@@ -7,6 +7,7 @@ import { useTabs } from '../../../../shared/providers'
 import { StyledHome, StyledCardList } from './styled'
 
 import { RECIPES_COUNT, PRODUCTS, INGREDIENTS_COUNT } from '../../graphql'
+import { Banner } from '../../../../shared/components'
 
 const address = 'apps.products.views.home.'
 
@@ -20,6 +21,7 @@ const Home = () => {
 
    return (
       <StyledHome>
+         <Banner id="products-app-home-top" />
          <h1>{t(address.concat('products app'))}</h1>
          <StyledCardList>
             <DashboardTile
@@ -45,6 +47,7 @@ const Home = () => {
                onClick={() => addTab('Ingredients', '/products/ingredients')}
             />
          </StyledCardList>
+         <Banner id="products-app-home-bottom" />
       </StyledHome>
    )
 }

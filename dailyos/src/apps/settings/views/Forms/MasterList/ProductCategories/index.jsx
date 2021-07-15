@@ -23,6 +23,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../../../shared/components'
 
 const address = 'apps.settings.views.forms.accompanimenttypes.'
@@ -100,6 +101,7 @@ const ProductCategoriesForm = () => {
    }
    return (
       <Flex width="calc(100% - 32px)" maxWidth="1280px" margin="0 auto">
+         <Banner id="settings-app-master-lists-product-categories-top" />
          <Flex
             as="header"
             container
@@ -128,6 +130,7 @@ const ProductCategoriesForm = () => {
                <Add closeTunnel={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="settings-app-master-lists-product-categories-bottom" />
       </Flex>
    )
 }

@@ -2,6 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Form, Spacer, TunnelHeader } from '@dailykit/ui'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
+import { Banner } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { GENERAL_ERROR_MESSAGE } from '../../../../../constants/errorMessages'
 import { UPDATE_PACKAGING_SPECS } from '../../../../../graphql'
@@ -43,6 +44,7 @@ export default function PackagingTypeTunnel({ close, state }) {
             right={{ title: 'Save', action: handleNext, isLoading: loading }}
          />
          <Spacer size="16px" />
+         <Banner id="inventory-app-packaging-form-packaging-material-tunnel-top" />
          <TunnelWrapper>
             <Form.Group>
                <Form.Label
@@ -59,7 +61,8 @@ export default function PackagingTypeTunnel({ close, state }) {
                value={packagingType}
                onChange={e => setPackagingType(e.target.value)}
             />
-         </TunnelWrapper>
+         </TunnelWrapper>{' '}
+         <Banner id="inventory-app-packaging-form-packaging-material-tunnel-bottom" />
       </>
    )
 }

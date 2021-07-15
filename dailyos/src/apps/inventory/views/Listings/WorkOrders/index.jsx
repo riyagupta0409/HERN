@@ -10,6 +10,7 @@ import {
 } from '@dailykit/ui'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Banner } from '../../../../../shared/components'
 import { Tooltip } from '../../../../../shared/components/Tooltip'
 import { AddIcon } from '../../../assets/icons'
 import { StyledWrapper } from '../styled'
@@ -33,6 +34,8 @@ export default function WorkOrders() {
             </Tunnel>
          </Tunnels>
          <StyledWrapper>
+            <Banner id="inventory-app-work-orders-listing-top" />
+
             <Flex
                container
                alignItems="center"
@@ -67,6 +70,7 @@ export default function WorkOrders() {
             <Spacer size="16px" />
 
             {view === 'Bulk' ? <BulkWorkOrders /> : <SachetWorkOrders />}
+            <Banner id="inventory-app-work-orders-listing-bottom" />
          </StyledWrapper>
       </>
    )

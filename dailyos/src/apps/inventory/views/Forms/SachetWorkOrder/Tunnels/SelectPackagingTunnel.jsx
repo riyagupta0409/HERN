@@ -16,6 +16,7 @@ import {
    ErrorState,
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { GENERAL_ERROR_MESSAGE } from '../../../../constants/errorMessages'
@@ -85,6 +86,7 @@ export default function SelectPackagingTunnel({ close, state }) {
             }
          />
          <TunnelWrapper>
+            <Banner id="inventory-app-work-orders-sachet-select-packaging-tunnel-top" />
             {list.length ? (
                <List>
                   <ListSearch
@@ -113,6 +115,7 @@ export default function SelectPackagingTunnel({ close, state }) {
             ) : (
                <Filler message={NO_PACKAGINGS} />
             )}
+            <Banner id="inventory-app-work-orders-sachet-select-packaging-tunnel-bottom" />
          </TunnelWrapper>
       </>
    )

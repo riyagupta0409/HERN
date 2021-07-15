@@ -16,6 +16,7 @@ import {
    ErrorState,
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { GENERAL_ERROR_MESSAGE } from '../../../../constants/errorMessages'
@@ -86,6 +87,7 @@ export default function SelectOutputSachetItemTunnel({ close, state }) {
             }
          />
          <TunnelWrapper>
+            <Banner id="inventory-app-work-orders-sachet-output-sachet-item-tunnel-top" />
             {list.length ? (
                <List>
                   <ListSearch
@@ -120,6 +122,7 @@ export default function SelectOutputSachetItemTunnel({ close, state }) {
             ) : (
                <Filler message={NO_SACHETS} />
             )}
+            <Banner id="inventory-app-work-orders-sachet-output-sachet-item-tunnel-bottom" />
          </TunnelWrapper>
       </>
    )

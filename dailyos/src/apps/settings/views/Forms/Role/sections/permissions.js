@@ -17,6 +17,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../../../shared/components'
 
 export const PermissionsTunnel = ({ closeTunnel, app, setApp }) => {
@@ -89,6 +90,8 @@ export const PermissionsTunnel = ({ closeTunnel, app, setApp }) => {
                <Tooltip identifier="form_role_tunnel_permissions_heading" />
             }
          />
+         <Banner id="settings-app-roles-role-details-permission-tunnel-top" />
+
          <Flex
             overflowY="auto"
             padding="0 24px 24px 24px"
@@ -115,6 +118,7 @@ export const PermissionsTunnel = ({ closeTunnel, app, setApp }) => {
             </PermissionSection>
             <Spacer size="24px" />
          </Flex>
+         <Banner id="settings-app-roles-role-details-permission-tunnel-bottom" />
       </>
    )
 }

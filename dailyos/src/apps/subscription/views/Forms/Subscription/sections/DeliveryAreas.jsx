@@ -27,6 +27,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../../../shared/components'
 import {
    ZIPCODE,
@@ -375,6 +376,7 @@ const AreasTunnel = ({
                <Tooltip identifier="form_subscription_tunnel_zipcode_heading" />
             }
          />
+         <Banner id="subscription-app-create-subscription-form-add-zipcode-tunnel-top" />
          <Flex padding="16px">
             <Form.Group>
                <Form.Label htmlFor="zipcodes" title="zipcodes">
@@ -510,6 +512,7 @@ const AreasTunnel = ({
                }}
             />
          </Flex>
+         <Banner id="subscription-app-create-subscription-form-add-zipcode-tunnel-bottom" />
       </>
    )
 }

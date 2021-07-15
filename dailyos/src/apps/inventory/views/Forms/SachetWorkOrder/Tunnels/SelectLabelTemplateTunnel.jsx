@@ -13,7 +13,7 @@ import {
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { GENERAL_ERROR_MESSAGE } from '../../../../constants/errorMessages'
 import { UPDATE_SACHET_WORK_ORDER } from '../../../../graphql'
@@ -80,6 +80,7 @@ export default function SelectLabelTemplateTunnel({ close, state }) {
             }
          />
          <TunnelWrapper>
+            <Banner id="inventory-app-work-orders-sachet-template-tunnel-top" />
             <List>
                <ListSearch
                   onChange={value => setSearch(value)}
@@ -117,6 +118,7 @@ export default function SelectLabelTemplateTunnel({ close, state }) {
                      ))}
                </ListOptions>
             </List>
+            <Banner id="inventory-app-work-orders-sachet-template-tunnel-bottom" />
          </TunnelWrapper>
       </>
    )

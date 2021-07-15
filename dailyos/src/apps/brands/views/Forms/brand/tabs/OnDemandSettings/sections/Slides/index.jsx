@@ -22,6 +22,7 @@ import {
    Flex,
    Tooltip,
    InlineLoader,
+   Banner,
 } from '../../../../../../../../../shared/components'
 import { toast } from 'react-toastify'
 import { logger } from '../../../../../../../../../shared/utils'
@@ -111,12 +112,14 @@ export const Slides = ({ update }) => {
          <Tunnels tunnels={tunnels}>
             <Tunnel layer={1} size="md">
                <TunnelHeader title="Add Slide" close={() => closeTunnel(1)} />
+               <Banner id="brands-app-brands-brand-details-add-slides-tunnel-top" />
                <Flex padding="16px">
                   <AssetUploader
                      onAssetUpload={data => addSlide(data)}
                      onImageSelect={data => addSlide(data)}
                   />
                </Flex>
+               <Banner id="brands-app-brands-brand-details-add-slides-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
       </div>

@@ -222,7 +222,6 @@ export default function DragNDrop({
                                  >
                                     <div
                                        style={{
-                                          display: 'flex',
                                           cursor: 'default',
                                        }}
                                     >
@@ -234,7 +233,7 @@ export default function DragNDrop({
                                        </div>
                                        <div
                                           style={{
-                                             flex: '1',
+                                             display: 'inline-block',
                                              cursor: 'default',
                                           }}
                                        >

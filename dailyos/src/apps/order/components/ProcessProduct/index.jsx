@@ -10,7 +10,6 @@ import { logger } from '../../../../shared/utils'
 import { QUERIES, MUTATIONS } from '../../graphql'
 import { useConfig, useOrder } from '../../context'
 import { useAccess } from '../../../../shared/providers'
-import { get_env } from '../../../../shared/utils'
 import { Tooltip, InlineLoader } from '../../../../shared/components'
 import { Wrapper, StyledStat, StyledMode, StyledHeader } from './styled'
 
@@ -26,13 +25,14 @@ export const ProcessProduct = () => {
          toast.error('Failed to update product details!')
       },
    })
-   const { loading, error, data: { product = {} } = {} } = useSubscription(
-      QUERIES.ORDER.PRODUCT,
-      {
-         skip: !state.current_product?.id,
-         variables: { id: state.current_product?.id },
-      }
-   )
+   const {
+      loading,
+      error,
+      data: { product = {} } = {},
+   } = useSubscription(QUERIES.ORDER.PRODUCT, {
+      skip: !state.current_product?.id,
+      variables: { id: state.current_product?.id },
+   })
 
    const print = React.useCallback(async () => {
       if (!product?.operationConfig?.labelTemplateId) {
@@ -41,13 +41,11 @@ export const ProcessProduct = () => {
       }
 
       if (config.print.print_simulation.value.isActive) {
-         const url = `${get_env('REACT_APP_TEMPLATE_URL')}?template={"name":"${
-            product?.operationConfig?.labelTemplate?.name
-         }","type":"label","format":"html"}&data={"id":${product?.id}}`
+         const url = `${window._env_.REACT_APP_TEMPLATE_URL}?template={"name":"${product?.operationConfig?.labelTemplate?.name}","type":"label","format":"html"}&data={"id":${product?.id}}`
          setLabel(url)
       } else {
          const url = `${
-            new URL(get_env('REACT_APP_DATA_HUB_URI')).origin
+            new URL(window._env_.REACT_APP_DATA_HUB_URI).origin
          }/datahub/v1/query`
 
          const data = { id: product?.id, status: 'READY' }
@@ -63,9 +61,8 @@ export const ProcessProduct = () => {
             {
                headers: {
                   'Content-Type': 'application/json; charset=utf-8',
-                  'x-hasura-admin-secret': get_env(
-                     'REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET'
-                  ),
+                  'x-hasura-admin-secret':
+                     window._env_.REACT_APP_HASURA_GRAPHQL_ADMIN_SECRET,
                },
             }
          )

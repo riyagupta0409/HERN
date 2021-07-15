@@ -11,8 +11,12 @@ import {
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
-import { logger, get_env } from '../../../../../../../shared/utils'
+import {
+   Banner,
+   InlineLoader,
+   Tooltip,
+} from '../../../../../../../shared/components'
+import { logger } from '../../../../../../../shared/utils'
 import { ERROR_UPDATING_ITEM_INFORMATION } from '../../../../../constants/errorMessages'
 import { useTabs } from '../../../../../../../shared/providers'
 import {
@@ -178,10 +182,8 @@ export default function InfoTunnel({ close, formState }) {
             })
             break
          case 'unit quantity':
-            const {
-               errors: unitSizeErrors,
-               isValid: isUnitSizeValid,
-            } = validators.quantity(e.target.value)
+            const { errors: unitSizeErrors, isValid: isUnitSizeValid } =
+               validators.quantity(e.target.value)
             setUnitSize({
                ...unitSize,
                meta: {
@@ -192,10 +194,8 @@ export default function InfoTunnel({ close, formState }) {
             })
             break
          case 'unit price':
-            const {
-               isValid: isUnitPriceValid,
-               errors: unitPriceErrors,
-            } = validators.quantity(e.target.value)
+            const { isValid: isUnitPriceValid, errors: unitPriceErrors } =
+               validators.quantity(e.target.value)
             setUnitPrice({
                ...unitPrice,
                meta: {
@@ -206,10 +206,8 @@ export default function InfoTunnel({ close, formState }) {
             })
             break
          case 'lead time':
-            const {
-               isValid: isLeadTimeValid,
-               errors: leadTimeErrors,
-            } = validators.quantity(e.target.value)
+            const { isValid: isLeadTimeValid, errors: leadTimeErrors } =
+               validators.quantity(e.target.value)
             setLeadTime({
                ...leadTime,
                meta: {
@@ -240,8 +238,8 @@ export default function InfoTunnel({ close, formState }) {
                <Tooltip identifier="supplier_item_form_item_information_tunnel" />
             }
          />
-
          <TunnelBody>
+            <Banner id="inventory-app-items-item-information-tunnel-top" />
             <Flex margin="0 0 32px 0">
                <StyledInputGroup>
                   <Form.Group>
@@ -354,7 +352,7 @@ export default function InfoTunnel({ close, formState }) {
                         <Form.Label title="unit price" htmlFor="unitPrice">
                            <Flex container alignItems="center">
                               {t(address.concat('unit price'))} (in{' '}
-                              {get_env('REACT_APP_CURRENCY')})*
+                              {window._env_.REACT_APP_CURRENCY})*
                               <Tooltip identifier="supplieritem_form_item_unit_pric_form_field" />
                            </Flex>
                         </Form.Label>
@@ -443,6 +441,7 @@ export default function InfoTunnel({ close, formState }) {
                   </Highlight>
                </StyledInputGroup>
             </Flex>
+            <Banner id="inventory-app-items-item-information-tunnel-bottom" />
          </TunnelBody>
       </>
    )

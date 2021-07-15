@@ -20,7 +20,11 @@ import {
 } from '../../../../../graphql'
 import { toast } from 'react-toastify'
 import { logger } from '../../../../../../../shared/utils'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
+import {
+   Banner,
+   InlineLoader,
+   Tooltip,
+} from '../../../../../../../shared/components'
 import { MASTER } from '../../../../../../settings/graphql'
 
 const CategoriesTunnel = ({ closeTunnel, state }) => {
@@ -97,6 +101,7 @@ const CategoriesTunnel = ({ closeTunnel, state }) => {
             close={() => closeTunnel(1)}
             tooltip={<Tooltip identifier="collections_categories_tunnel" />}
          />
+         <Banner id="menu-app-collections-collection-details-collections-categories-tunnel-top" />
          <TunnelBody>
             {loading ? (
                <InlineLoader />
@@ -159,6 +164,7 @@ const CategoriesTunnel = ({ closeTunnel, state }) => {
                </>
             )}
          </TunnelBody>
+         <Banner id="menu-app-collections-collection-details-collections-categories-tunnel-bottom" />
       </>
    )
 }

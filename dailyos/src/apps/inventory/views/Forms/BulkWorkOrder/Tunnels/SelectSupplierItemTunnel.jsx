@@ -12,7 +12,7 @@ import {
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../shared/components'
 import { InlineLoader } from '../../../../../../shared/components/InlineLoader'
 import { logger } from '../../../../../../shared/utils'
 import { TunnelContainer } from '../../../../components'
@@ -82,6 +82,7 @@ export default function SelectSupplierTunnel({ close, state }) {
                <Tooltip identifier="bulk-work-order_select_supplier_item_tunnel" />
             }
          />
+         <Banner id="inventory-app-work-orders-bulk-supplier-item-tunnel-top" />
          <TunnelContainer>
             {list.length ? (
                <List>
@@ -112,6 +113,7 @@ export default function SelectSupplierTunnel({ close, state }) {
                <Filler message={NO_SUPPLIER_ITEMS} />
             )}
          </TunnelContainer>
+         <Banner id="inventory-app-work-orders-bulk-supplier-item-tunnel-bottom" />
       </>
    )
 }

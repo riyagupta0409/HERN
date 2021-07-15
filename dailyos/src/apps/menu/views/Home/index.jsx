@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { StyledHome, StyledCardList } from './styled'
 import { useTabs } from '../../../../shared/providers'
 import { COLLECTIONS_COUNT } from '../../graphql'
+import { Banner } from '../../../../shared/components'
 
 const address = 'apps.menu.views.home.'
 
@@ -17,6 +18,7 @@ const Home = () => {
 
    return (
       <StyledHome>
+         <Banner id="menu-app-home-top" />
          <h1>{t(address.concat('menu'))}</h1>
          <StyledCardList>
             <DashboardTile
@@ -28,6 +30,7 @@ const Home = () => {
                onClick={() => addTab('Collections', '/menu/collections')}
             />
          </StyledCardList>
+         <Banner id="menu-app-home-bottom" />
       </StyledHome>
    )
 }

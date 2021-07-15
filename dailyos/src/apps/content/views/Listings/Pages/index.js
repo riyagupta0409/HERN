@@ -22,7 +22,7 @@ import {
    WEBPAGE_ARCHIVED,
    UPDATE_WEBPAGE,
 } from '../../../graphql'
-import { Tooltip, InlineLoader } from '../../../../../shared/components'
+import { Tooltip, InlineLoader, Banner } from '../../../../../shared/components'
 import { DeleteIcon } from '../../../../../shared/assets/icons'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
 import PageCreationTunnel from './Tunnel'
@@ -256,6 +256,7 @@ const PageListing = () => {
    }
    return (
       <StyledWrapper>
+         <Banner id="content-app-pages-listing-top" />
          <Flex
             container
             height="80px"
@@ -290,6 +291,7 @@ const PageListing = () => {
                <PageCreationTunnel close={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="content-app-pages-listing-bottom" />
       </StyledWrapper>
    )
 }

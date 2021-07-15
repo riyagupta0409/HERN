@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next'
 import PhoneInput from 'react-phone-input-2'
 import 'react-phone-input-2/lib/style.css'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { Camera } from '../../../../assets/icons'
 import { TunnelContainer } from '../../../../components'
@@ -131,6 +131,7 @@ export default function PersonContactTunnel({ close, formState }) {
                <Tooltip identifier="suppliers_form_add_person_of_contact_tunnel_header" />
             }
          />
+         <Banner id="inventory-apps-suppliers-person-of-contact-tunnel-top" />
          <TunnelContainer>
             <Flex container justifyContent="space-between" width="100%">
                <div>
@@ -259,6 +260,7 @@ export default function PersonContactTunnel({ close, formState }) {
                </Flex>
             </Flex>
          </TunnelContainer>
+         <Banner id="inventory-apps-suppliers-person-of-contact-tunnel-bottom" />
       </>
    )
 }

@@ -21,6 +21,7 @@ import {
    Tooltip,
    InlineLoader,
    InsightDashboard,
+   Banner,
 } from '../../../../../shared/components'
 import ContentSelection from './ContentSelection'
 import BrandContext from '../../../context/Brand'
@@ -209,6 +210,7 @@ const PageForm = () => {
    }
    return (
       <StyledWrapper>
+         <Banner id="content-app-pages-page-details-top" />
          <InputWrapper>
             <Flex
                container
@@ -341,6 +343,7 @@ const PageForm = () => {
             closeTunnel={closeTunnel}
             pageRoute={pageRoute}
          />
+         <Banner id="content-app-pages-page-details-bottom" />
       </StyledWrapper>
    )
 }

@@ -28,6 +28,7 @@ import {
 import { DELETE_CHECKUP, SAFETY_CHECK, USERS } from '../../../graphql'
 import { Container, StyledBody, StyledHeader, StyledWrapper } from '../styled'
 import { CheckTunnel, UserTunnel } from './tunnels'
+import { Banner } from '../../../../../shared/components'
 
 const address = 'apps.safety.views.forms.safetyform.'
 export default function SimpleRecipeProduct() {
@@ -76,6 +77,7 @@ export default function SimpleRecipeProduct() {
 
    return (
       <SafetyCheckContext.Provider value={{ checkState, checkDispatch }}>
+         <Banner id="safety-apps-safety-checks-safety-check-details-top" />
          <Tunnels tunnels={tunnels}>
             <Tunnel layer={1}>
                <UserTunnel
@@ -170,6 +172,7 @@ export default function SimpleRecipeProduct() {
                </Container>
             </StyledBody>
          </StyledWrapper>
+         <Banner id="safety-apps-safety-checks-safety-check-details-bottom" />
       </SafetyCheckContext.Provider>
    )
 }

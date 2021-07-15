@@ -10,6 +10,7 @@ import {
 import { useTranslation } from 'react-i18next'
 import { TunnelBody } from '../styled'
 import { SafetyCheckContext } from '../../../../../context/check'
+import { Banner } from '../../../../../../../shared/components'
 
 const address = 'apps.safety.views.forms.safetyform.tunnels.usertunnel.'
 const UserTunnel = ({ openTunnel, closeTunnel, users }) => {
@@ -36,6 +37,7 @@ const UserTunnel = ({ openTunnel, closeTunnel, users }) => {
             title={t(address.concat('select user'))}
             close={() => closeTunnel(1)}
          />
+         <Banner id="safety-apps-safety-checks-safety-check-details-user-tunnel-top" />
          <TunnelBody>
             <List>
                {Object.keys(current).length > 0 ? (
@@ -65,6 +67,7 @@ const UserTunnel = ({ openTunnel, closeTunnel, users }) => {
                </ListOptions>
             </List>
          </TunnelBody>
+         <Banner id="safety-apps-safety-checks-safety-check-details-user-tunnel-bottom" />
       </>
    )
 }

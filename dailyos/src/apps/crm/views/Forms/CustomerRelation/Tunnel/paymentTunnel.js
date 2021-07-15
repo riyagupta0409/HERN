@@ -5,7 +5,11 @@ import { ALL_DATA } from '../../../../graphql'
 import { PaymentCard } from '../../../../components'
 import { TunnelHeaderContainer } from './styled'
 import { logger } from '../../../../../../shared/utils'
-import { Tooltip, InlineLoader } from '../../../../../../shared/components'
+import {
+   Tooltip,
+   InlineLoader,
+   Banner,
+} from '../../../../../../shared/components'
 import { toast } from 'react-toastify'
 import BrandContext from '../../../../context/Brand'
 
@@ -38,6 +42,7 @@ const TunnelVision = ({ id, tunnels, closeTunnel }) => {
                   <Tooltip identifier="customer_paymentCard_list_tunnelHeader" />
                }
             />
+            <Banner id="crm-app-customers-customer-details-payment-tunnel-top" />
             <TunnelHeaderContainer>
                {allCards[0]?.customer?.platform_customers[0]?.stripePaymentMethods?.map(
                   card => {
@@ -52,6 +57,7 @@ const TunnelVision = ({ id, tunnels, closeTunnel }) => {
                   }
                )}
             </TunnelHeaderContainer>
+            <Banner id="crm-app-customers-customer-details-payment-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

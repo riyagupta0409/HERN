@@ -7,7 +7,7 @@ import { PRODUCT } from '../../../../../graphql'
 import { TunnelBody } from '../styled'
 import { logger } from '../../../../../../../shared/utils'
 import validator from '../../validators'
-import { Tooltip } from '../../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../../shared/components'
 
 const address =
    'apps.menu.views.forms.product.simplerecipeproduct.tunnels.descriptiontunnel.'
@@ -88,6 +88,7 @@ const DescriptionTunnel = ({ state, close }) => {
             }
          />
          <TunnelBody>
+            <Banner id="products-app-single-product-description-tunnel-top" />
             <Form.Group>
                <Form.Label htmlFor="text" title="text">
                   Additional Text (shown with Name)
@@ -157,6 +158,7 @@ const DescriptionTunnel = ({ state, close }) => {
                   placeholder="Write product description"
                />
             </Form.Group>
+            <Banner id="products-app-single-product-description-tunnel-bottom" />
          </TunnelBody>
       </>
    )

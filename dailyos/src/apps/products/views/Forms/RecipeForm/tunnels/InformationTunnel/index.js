@@ -11,7 +11,11 @@ import {
    TunnelHeader,
 } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
+import {
+   InlineLoader,
+   Tooltip,
+   Banner,
+} from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { CUISINES, UPDATE_RECIPE } from '../../../../../graphql'
 import validator from '../../validators'
@@ -153,6 +157,7 @@ const InformationTunnel = ({ state, closeTunnel }) => {
             tooltip={<Tooltip identifier="basic_information_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-recipes-create-recipe-basic-information-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -450,6 +455,7 @@ const InformationTunnel = ({ state, closeTunnel }) => {
                   )}
                </>
             )}
+            <Banner id="products-app-recipes-create-recipe-basic-information-tunnel-bottom" />
          </TunnelBody>
       </>
    )

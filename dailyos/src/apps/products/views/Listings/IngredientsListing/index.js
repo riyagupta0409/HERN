@@ -18,9 +18,11 @@ import * as moment from 'moment'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
+   InsightDashboard,
 } from '../../../../../shared/components'
 import FilterIcon from '../../../assets/icons/Filter'
 
@@ -108,6 +110,7 @@ const IngredientsListing = () => {
 
    return (
       <ResponsiveFlex maxWidth="1280px" margin="0 auto">
+         <Banner id="products-app-ingredients-listing-top" />
          <Tunnels tunnels={tunnels}>
             <Tunnel layer={1} size="full">
                <BulkActionsTunnel
@@ -149,6 +152,7 @@ const IngredientsListing = () => {
                setSelectedRows={setSelectedRows}
             />
          )}
+         <Banner id="products-app-ingredients-listing-bottom" />
       </ResponsiveFlex>
    )
 }
@@ -262,6 +266,11 @@ class DataTable extends React.Component {
                }}
                data-custom-attr="test-custom-attribute"
                className="custom-css-class"
+            />
+            <InsightDashboard
+               appTitle="Products App"
+               moduleTitle="Ingredient Listing"
+               showInTunnel={false}
             />
          </>
       )

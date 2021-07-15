@@ -23,7 +23,7 @@ import {
 
 import tableOptions from '../tableOption'
 import { useTooltip } from '../../../shared/providers'
-import { InlineLoader } from '../../../shared/components'
+import { Banner, InlineLoader } from '../../../shared/components'
 import { DeleteIcon } from '../../../shared/assets/icons'
 import { currencyFmt, logger } from '../../../shared/utils'
 import {
@@ -185,6 +185,7 @@ export const PlanProductsTunnel = ({ tunnel, occurenceId, subscriptionId }) => {
                   title="Manage Menu Products"
                   close={() => tunnel.close(1)}
                />
+               <Banner id="subscription-app-create-subscription-form-manage-menu-products-tunnel-top" />
                <Flex
                   overflowY="auto"
                   padding="0 16px 16px 16px"
@@ -211,6 +212,7 @@ export const PlanProductsTunnel = ({ tunnel, occurenceId, subscriptionId }) => {
                      </HorizontalTabPanels>
                   </Tabs>
                </Flex>
+               <Banner id="subscription-app-create-subscription-form-manage-menu-products-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
          <Tunnels tunnels={tunnels}>

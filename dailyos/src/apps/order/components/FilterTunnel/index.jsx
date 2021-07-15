@@ -17,7 +17,7 @@ import {
 
 import 'react-datetime/css/react-datetime.css'
 import { useOrder, useConfig } from '../../context'
-import { Tooltip } from '../../../../shared/components'
+import { Banner, Tooltip } from '../../../../shared/components'
 
 const formatDateTime = input => moment(input).format('YYYY-MM-DD HH:MM')
 const isValidDateTime = input => moment(input, 'YYYY-MM-DD HH:MM').isValid()
@@ -64,6 +64,7 @@ export const FilterTunnel = () => {
             }
             tooltip={<Tooltip identifier="app_order_tunnel_filter_heading" />}
          />
+         <Banner id="order-app-filter-tunnel-top" />
          <Wrapper padding="16px" overflowY="auto" height="calc(100% - 105px)">
             {/* <Flex container alignItems="center" justifyContent="space-between">
                <Text as="h3">Ready By</Text>
@@ -339,6 +340,7 @@ export const FilterTunnel = () => {
                />
             </div>
          </Wrapper>
+         <Banner id="order-app-filter-tunnel-bottom" />
       </>
    )
 }

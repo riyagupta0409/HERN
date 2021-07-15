@@ -47,6 +47,7 @@ import { currencyFmt, logger } from '../../../../../shared/utils'
 import { useTabs } from '../../../../../shared/providers'
 import BrandContext from '../../../context/Brand'
 import {
+   Banner,
    InlineLoader,
    InsightDashboard,
 } from '../../../../../shared/components'
@@ -239,121 +240,128 @@ const CustomerRelation = ({ match }) => {
       return <InlineLoader />
    }
    return (
-      <StyledWrapper>
-         <Flex container>
-            <StyledSideBar>
-               <CustomerCard
-                  brand={context}
-                  customer={customerData[0]?.customer}
-                  walletAmount={currencyFmt(
-                     walletNreferral[0]?.customer?.wallets[0].amount || 0
-                  )}
-                  toggle={customers[0]?.isTest}
-                  toggleHandler={() => toggleHandler(!customers[0]?.isTest)}
-               />
-               <SubscriptionInfoCard planData={subscriptionPlan[0] || {}} />
-               <ContactInfoCard
-                  defaultTag2="(Default)"
-                  customerData={customerData[0]?.customer?.platform_customer}
-                  onClick={() => openTunnel1(1)}
-               />
-               <PaymentCard
-                  defaultTag="(Default)"
-                  linkedTo="view all cards"
-                  onClick={() => openTunnel(1)}
-                  cardData={
-                     customerData[0]?.customer?.platform_customer
-                        ?.defaultStripePaymentMethod || 'N/A'
-                  }
-                  billingAddDisplay="none"
-                  identifier="default_payment_card_info"
-               />
-            </StyledSideBar>
-            <Flex container width="80%" flexDirection="column">
-               <FlexContainer>
-                  <OrderCard
-                     data={
-                        customerData[0]?.customer?.orders_aggregate?.aggregate
+      <>
+         <Banner id="crm-app-customers-customer-details-top" />
+         <StyledWrapper>
+            <Flex container>
+               <StyledSideBar>
+                  <CustomerCard
+                     brand={context}
+                     customer={customerData[0]?.customer}
+                     walletAmount={currencyFmt(
+                        walletNreferral[0]?.customer?.wallets[0].amount || 0
+                     )}
+                     toggle={customers[0]?.isTest}
+                     toggleHandler={() => toggleHandler(!customers[0]?.isTest)}
+                  />
+                  <SubscriptionInfoCard planData={subscriptionPlan[0] || {}} />
+                  <ContactInfoCard
+                     defaultTag2="(Default)"
+                     customerData={customerData[0]?.customer?.platform_customer}
+                     onClick={() => openTunnel1(1)}
+                  />
+                  <PaymentCard
+                     defaultTag="(Default)"
+                     linkedTo="view all cards"
+                     onClick={() => openTunnel(1)}
+                     cardData={
+                        customerData[0]?.customer?.platform_customer
+                           ?.defaultStripePaymentMethod || 'N/A'
                      }
-                     click={() => setActiveCard('Orders')}
-                     active={tab.data.activeCard}
-                     heading="Orders"
+                     billingAddDisplay="none"
+                     identifier="default_payment_card_info"
                   />
-                  <ReferralCard
-                     referralCount={
-                        walletNreferral[0]?.customer?.customerReferrals[0]
-                           ?.customerReferrals_aggregate?.aggregate?.count || 0
-                     }
-                     signUpCount={
-                        signUpCount[0]?.customer?.customerReferrals
-                           ?.customerReferrals_aggregate?.aggregate?.count || 0
-                     }
-                     click={() => setActiveCard('Referrals')}
-                     active={tab.data.activeCard}
-                     heading="Referrals"
-                  />
-                  <SubscriptionCard
-                     data={subscriptionData[0]?.customer}
-                     click={() => setActiveCard('Subscriber')}
-                     active={tab.data.activeCard}
-                     heading="Subscriber"
-                  />
-                  <WalletCard
-                     data={walletNreferral[0]?.customer?.wallets[0]?.amount}
-                     click={() => setActiveCard('Wallet')}
-                     active={tab.data.activeCard}
-                     heading="Wallet"
-                  />
-                  <LoyaltyCard
-                     data={
-                        data.brand.brand_customers[0]?.customer
-                           ?.loyaltyPoints[0]?.points ?? 0
-                     }
-                     click={() => setActiveCard('LoyaltyPoints')}
-                     active={tab.data.activeCard}
-                     heading="LoyaltyPoints"
-                  />
-               </FlexContainer>
-               <StyledTable>
-                  {renderTable()}
-                  <InsightDashboard
-                     appTitle="CRM App"
-                     moduleTitle="Customer Page"
-                     variables={{ keycloakId: match.params.id }}
-                  />
-               </StyledTable>
+               </StyledSideBar>
+               <Flex container width="80%" flexDirection="column">
+                  <FlexContainer>
+                     <OrderCard
+                        data={
+                           customerData[0]?.customer?.orders_aggregate
+                              ?.aggregate
+                        }
+                        click={() => setActiveCard('Orders')}
+                        active={tab.data.activeCard}
+                        heading="Orders"
+                     />
+                     <ReferralCard
+                        referralCount={
+                           walletNreferral[0]?.customer?.customerReferrals[0]
+                              ?.customerReferrals_aggregate?.aggregate?.count ||
+                           0
+                        }
+                        signUpCount={
+                           signUpCount[0]?.customer?.customerReferrals
+                              ?.customerReferrals_aggregate?.aggregate?.count ||
+                           0
+                        }
+                        click={() => setActiveCard('Referrals')}
+                        active={tab.data.activeCard}
+                        heading="Referrals"
+                     />
+                     <SubscriptionCard
+                        data={subscriptionData[0]?.customer}
+                        click={() => setActiveCard('Subscriber')}
+                        active={tab.data.activeCard}
+                        heading="Subscriber"
+                     />
+                     <WalletCard
+                        data={walletNreferral[0]?.customer?.wallets[0]?.amount}
+                        click={() => setActiveCard('Wallet')}
+                        active={tab.data.activeCard}
+                        heading="Wallet"
+                     />
+                     <LoyaltyCard
+                        data={
+                           data.brand.brand_customers[0]?.customer
+                              ?.loyaltyPoints[0]?.points ?? 0
+                        }
+                        click={() => setActiveCard('LoyaltyPoints')}
+                        active={tab.data.activeCard}
+                        heading="LoyaltyPoints"
+                     />
+                  </FlexContainer>
+                  <StyledTable>
+                     {renderTable()}
+                     <InsightDashboard
+                        appTitle="CRM App"
+                        moduleTitle="Customer Page"
+                        variables={{ keycloakId: match.params.id }}
+                     />
+                  </StyledTable>
+               </Flex>
             </Flex>
-         </Flex>
 
-         <PaymentTunnel
-            tunnels={tunnels}
-            openTunnel={openTunnel}
-            closeTunnel={closeTunnel}
-            id={match.params.id}
-         />
-         <AddressTunnel
-            tunnels={tunnels1}
-            openTunnel={openTunnel1}
-            closeTunnel={closeTunnel1}
-            id={match.params.id}
-         />
-         <Tunnels tunnels={walletTxnTunnels}>
-            <Tunnel layer={1}>
-               <WalletTxnTunnel
-                  closeWalletTxnTunnel={closeWalletTxnTunnel}
-                  walletId={walletId}
-               />
-            </Tunnel>
-         </Tunnels>
-         <Tunnels tunnels={loyaltyPointsTxnTunnels}>
-            <Tunnel layer={1}>
-               <LoyaltyPointsTxnTunnel
-                  closeLoyaltyPointsTxnTunnel={closeLoyaltyPointsTxnTunnel}
-                  loyaltyPointId={loyaltyPointId}
-               />
-            </Tunnel>
-         </Tunnels>
-      </StyledWrapper>
+            <PaymentTunnel
+               tunnels={tunnels}
+               openTunnel={openTunnel}
+               closeTunnel={closeTunnel}
+               id={match.params.id}
+            />
+            <AddressTunnel
+               tunnels={tunnels1}
+               openTunnel={openTunnel1}
+               closeTunnel={closeTunnel1}
+               id={match.params.id}
+            />
+            <Tunnels tunnels={walletTxnTunnels}>
+               <Tunnel layer={1}>
+                  <WalletTxnTunnel
+                     closeWalletTxnTunnel={closeWalletTxnTunnel}
+                     walletId={walletId}
+                  />
+               </Tunnel>
+            </Tunnels>
+            <Tunnels tunnels={loyaltyPointsTxnTunnels}>
+               <Tunnel layer={1}>
+                  <LoyaltyPointsTxnTunnel
+                     closeLoyaltyPointsTxnTunnel={closeLoyaltyPointsTxnTunnel}
+                     loyaltyPointId={loyaltyPointId}
+                  />
+               </Tunnel>
+            </Tunnels>
+         </StyledWrapper>
+         <Banner id="crm-app-customers-customer-details-bottom" />
+      </>
    )
 }
 

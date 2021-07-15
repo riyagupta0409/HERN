@@ -12,7 +12,7 @@ import {
 import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../shared/components'
 import { InlineLoader } from '../../../../../../shared/components/InlineLoader'
 import { logger } from '../../../../../../shared/utils'
 import { TunnelContainer } from '../../../../components'
@@ -87,6 +87,7 @@ export default function SelectUserTunnel({ close, state }) {
             }
          />
          <TunnelContainer>
+            <Banner id="inventory-app-work-orders-bulk-users-tunnel-top" />
             {list.length ? (
                <List>
                   <ListSearch
@@ -115,6 +116,7 @@ export default function SelectUserTunnel({ close, state }) {
             ) : (
                <Filler message={NO_USERS} />
             )}
+            <Banner id="inventory-app-work-orders-bulk-users-tunnel-bottom" />
          </TunnelContainer>
       </>
    )

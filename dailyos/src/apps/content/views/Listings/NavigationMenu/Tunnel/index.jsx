@@ -20,7 +20,11 @@ import NavMenuContext from '../../../../context/NavMenu'
 import { useNavbarMenu } from '../../../../context/Mutation'
 import { useTabs } from '../../../../../../shared/providers'
 import { logger, randomSuffix } from '../../../../../../shared/utils'
-import { Tooltip, InlineLoader } from '../../../../../../shared/components'
+import {
+   Tooltip,
+   InlineLoader,
+   Banner,
+} from '../../../../../../shared/components'
 import { createDataTree } from '../../../../utils/getTreeViewArray'
 
 const NavigationMenuTunnel = ({ close }) => {
@@ -196,6 +200,7 @@ const NavigationMenuTunnel = ({ close }) => {
                <Tooltip identifier="subscriptionFold_linking_tunnelHeader" />
             }
          />
+         <Banner id="content-app-nav-menu-edit-menu-tunnel-top" />
          <TunnelBody>
             <InputWrapper>
                <Flex
@@ -258,6 +263,7 @@ const NavigationMenuTunnel = ({ close }) => {
                <TreeView />
             </StyledDiv>
          </TunnelBody>
+         <Banner id="content-app-nav-menu-edit-menu-tunnel-bottom" />
       </StyledWrapper>
    )
 }

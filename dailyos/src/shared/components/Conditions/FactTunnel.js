@@ -6,6 +6,7 @@ import ReactRRule from '../ReactRRule'
 import styled, { css } from 'styled-components'
 import { useConditions } from './context'
 import { FACTS } from './graphql'
+import Banner from '../Banner'
 
 const FactTunnel = ({ closeTunnel }) => {
    const [factObj, setFactObj] = React.useState({})
@@ -129,6 +130,7 @@ const FactTunnel = ({ closeTunnel }) => {
             right={{ action: save, title: 'Add' }}
             close={() => closeTunnel(2)}
          />
+         <Banner id="condition-add-fact-tunnel-top" />
          <TunnelBody>
             <StyledSection>
                <Text as="subtitle">Select Fact</Text>
@@ -244,6 +246,7 @@ const FactTunnel = ({ closeTunnel }) => {
                )}
             </StyledSection>
          </TunnelBody>
+         <Banner id="condition-add-fact-tunnel-bottom" />
       </>
    )
 }

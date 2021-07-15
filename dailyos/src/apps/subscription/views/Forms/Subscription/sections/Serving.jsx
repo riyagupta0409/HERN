@@ -30,6 +30,7 @@ import {
    ErrorState,
    InlineLoader,
    ErrorBoundary,
+   Banner,
 } from '../../../../../../shared/components'
 import {
    EditIcon,
@@ -319,6 +320,7 @@ const ItemCountTunnel = ({ tunnels, itemTunnelState, closeTunnel }) => {
                   <Tooltip identifier="form_subscription_tunnel_item_create" />
                }
             />
+            <Banner id="subscription-app-create-subscription-item-count-tunnel-top" />
             <Flex padding="16px">
                <Form.Group>
                   <Form.Label htmlFor="count" title="count">
@@ -378,6 +380,7 @@ const ItemCountTunnel = ({ tunnels, itemTunnelState, closeTunnel }) => {
                   <Tooltip identifier="form_subscription_section_item_count_isTaxIncluded" />
                </Flex>
             </Flex>
+            <Banner id="subscription-app-create-subscription-item-count-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

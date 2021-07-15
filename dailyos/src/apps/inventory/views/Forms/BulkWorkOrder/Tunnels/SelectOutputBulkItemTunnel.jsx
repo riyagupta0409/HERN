@@ -12,7 +12,7 @@ import {
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../shared/components'
 import { InlineLoader } from '../../../../../../shared/components/InlineLoader'
 import { logger } from '../../../../../../shared/utils'
 import { TunnelContainer } from '../../../../components'
@@ -88,6 +88,7 @@ export default function SelectOutputBulkItem({ close, state }) {
                <Tooltip identifier="bulk-work-order_output_bulk_item_tunnel" />
             }
          />
+         <Banner id="inventory-app-work-orders-bulk-output-bulk-item-tunnel-top" />
          <TunnelContainer>
             {list.length ? (
                <List>
@@ -125,6 +126,7 @@ export default function SelectOutputBulkItem({ close, state }) {
                <Filler message={NO_BULK_ITEMS} />
             )}
          </TunnelContainer>
+         <Banner id="inventory-app-work-orders-bulk-output-bulk-item-tunnel-bottom" />
       </>
    )
 }

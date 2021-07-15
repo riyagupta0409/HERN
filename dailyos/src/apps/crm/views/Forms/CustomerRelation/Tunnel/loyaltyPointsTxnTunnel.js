@@ -9,7 +9,7 @@ import {
    Text,
 } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { CREATE_LOYALTY_POINT_TXN } from '../../../../graphql/mutations'
 import validators from '../../../validators'
@@ -87,6 +87,7 @@ const LoyaltyPointsTxnTunnel = ({
                action: handleCreateTxn,
             }}
          />
+         <Banner id="crm-app-customers-customer-details-loyalty-point-txn-tunnel-top" />
          <Flex padding="16px">
             <Text as="subtitle">Type</Text>
             <RadioGroup
@@ -119,6 +120,7 @@ const LoyaltyPointsTxnTunnel = ({
                   ))}
             </Form.Group>
          </Flex>
+         <Banner id="crm-app-customers-customer-details-loyalty-point-txn-tunnel-bottom" />
       </>
    )
 }

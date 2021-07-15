@@ -15,7 +15,11 @@ import { useMutation, useSubscription } from '@apollo/react-hooks'
 import { useTranslation } from 'react-i18next'
 import { TunnelBody } from '../styled'
 import { toast } from 'react-toastify'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
+import {
+   Banner,
+   InlineLoader,
+   Tooltip,
+} from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { PRODUCTS } from '../../../../../../products/graphql'
 import { CREATE_COLLECTION_PRODUCT_CATEGORY_PRODUCTS } from '../../../../../graphql'
@@ -105,6 +109,7 @@ const ProductsTunnel = ({ categoryId, closeTunnel }) => {
             close={() => closeTunnel(2)}
             tooltip={<Tooltip identifier="collections_products_tunnel" />}
          />
+         <Banner id="menu-app-collections-collection-details-collections-products-tunnel-top" />{' '}
          <TunnelBody>
             {loading ? (
                <InlineLoader />
@@ -166,6 +171,7 @@ const ProductsTunnel = ({ categoryId, closeTunnel }) => {
                </>
             )}
          </TunnelBody>
+         <Banner id="menu-app-collections-collection-details-collections-products-tunnel-bottom" />{' '}
       </>
    )
 }

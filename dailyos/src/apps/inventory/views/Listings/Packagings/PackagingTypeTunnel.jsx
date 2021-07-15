@@ -12,6 +12,7 @@ import {
 import { useTabs } from '../../../../../shared/providers'
 import { CREATE_PACKAGING } from '../../../graphql'
 import { SolidTile } from '../styled'
+import { Banner } from '../../../../../shared/components'
 
 export default function WorkOrderTypeTunnel({ close }) {
    const { addTab } = useTabs()
@@ -54,6 +55,7 @@ export default function WorkOrderTypeTunnel({ close }) {
                close(1)
             }}
          />
+         <Banner id="inventory-app-packaging-packaging-type-tunnel-top" />
          <TunnelContainer>
             <SolidTile onClick={() => createPackagingHandler('SACHET_PACKAGE')}>
                <Text as="h1">Sachets</Text>
@@ -72,6 +74,7 @@ export default function WorkOrderTypeTunnel({ close }) {
                </Text>
             </SolidTile>
          </TunnelContainer>
+         <Banner id="inventory-app-packaging-packaging-type-tunnel-bottom" />
       </>
    )
 }

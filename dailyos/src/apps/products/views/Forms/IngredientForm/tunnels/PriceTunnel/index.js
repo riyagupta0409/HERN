@@ -7,7 +7,7 @@ import { IngredientContext } from '../../../../../context/ingredient'
 import { UPDATE_PROCESSING } from '../../../../../graphql'
 import validator from '../../validators'
 import { TunnelBody } from '../styled'
-import { Tooltip } from '../../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../../shared/components'
 
 const PriceTunnel = ({ state, close }) => {
    const { ingredientState } = React.useContext(IngredientContext)
@@ -83,6 +83,7 @@ const PriceTunnel = ({ state, close }) => {
             tooltip={<Tooltip identifier="processing_price_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-ingredients-processing-price-tunnel-top" />
             <Flex container>
                <Form.Group>
                   <Form.Label htmlFor="cost" title="cost">
@@ -156,6 +157,7 @@ const PriceTunnel = ({ state, close }) => {
                      ))}
                </Form.Group>
             </Flex>
+            <Banner id="products-app-ingredients-processing-price-tunnel-bottom" />
          </TunnelBody>
       </>
    )

@@ -16,9 +16,11 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
+   InsightDashboard,
 } from '../../../../../shared/components'
 import { logger } from '../../../../../shared/utils'
 import { useTabs } from '../../../../../shared/providers'
@@ -144,6 +146,7 @@ const CollectionForm = () => {
             <CollectionContext.Provider
                value={{ collectionState, collectionDispatch }}
             >
+               <Banner id="menu-app-collections-collection-details-top" />
                <Flex
                   as="header"
                   container
@@ -217,11 +220,19 @@ const CollectionForm = () => {
                            <Availability state={state} />
                         </HorizontalTabPanel>
                         <HorizontalTabPanel>
-                           Insights coming soon!
+                           <InsightDashboard
+                              appTitle="Menu App"
+                              moduleTitle="Collection Page"
+                              variables={{
+                                 collectionId,
+                              }}
+                              showInTunnel={false}
+                           />
                         </HorizontalTabPanel>
                      </HorizontalTabPanels>
                   </HorizontalTabs>
                </Flex>
+               <Banner id="menu-app-collections-collection-details-bottom" />
             </CollectionContext.Provider>
          )}
       </>

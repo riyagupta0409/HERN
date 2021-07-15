@@ -18,6 +18,7 @@ import {
    Ingredients,
    SachetItems,
 } from './sections'
+import { Banner } from '../../../../shared/components'
 
 const Planned = () => {
    const { tab, addTab } = useTabs()
@@ -29,6 +30,7 @@ const Planned = () => {
    }, [tab, addTab])
    return (
       <Container>
+         <Banner id="orders-app-planned-top" />
          <Tabs>
             <TabList>
                <Tab>
@@ -71,6 +73,7 @@ const Planned = () => {
                </TabPanel>
             </TabPanels>
          </Tabs>
+         <Banner id="orders-app-planned-bottom" />
       </Container>
    )
 }

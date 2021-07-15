@@ -70,6 +70,40 @@ export const QUERIES = {
                      price: unitPrice
                      name: displayName
                      image: displayImage
+                     childs {
+                        id
+                        price: unitPrice
+                        name: displayName
+                        productOption {
+                           id
+                           label
+                        }
+                        childs {
+                           id
+                           displayName
+                           price: unitPrice
+                           modifierOption {
+                              id
+                              name
+                           }
+                        }
+                        customizableProductComponent {
+                           id
+                           fullName
+                           linkedProduct {
+                              id
+                              name
+                           }
+                        }
+                        comboProductComponent {
+                           id
+                           label
+                           linkedProduct {
+                              id
+                              name
+                           }
+                        }
+                     }
                   }
                }
             }

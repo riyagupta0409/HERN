@@ -23,7 +23,7 @@ import {
    DELETE_SUBSCRIPTION_FOLD,
 } from '../../../graphql'
 import { logger } from '../../../../../shared/utils'
-import { Tooltip, InlineLoader } from '../../../../../shared/components'
+import { Tooltip, InlineLoader, Banner } from '../../../../../shared/components'
 import { DeleteIcon } from '../../../../../shared/assets/icons'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
 
@@ -216,6 +216,7 @@ const SubscriptionFoldListing = () => {
    }
    return (
       <StyledWrapper>
+         <Banner id="content-app-subscriptions-listing-top" />
          <Flex
             container
             height="80px"
@@ -250,6 +251,7 @@ const SubscriptionFoldListing = () => {
                <LinkFoldTunnel close={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="content-app-subscriptions-listing-bottom" />
       </StyledWrapper>
    )
 }

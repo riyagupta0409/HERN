@@ -2,7 +2,7 @@ import { useMutation } from '@apollo/react-hooks'
 import { Flex, Form, Spacer, Toggle, TunnelHeader } from '@dailykit/ui'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { Separator } from '../../../../../components'
 import { GENERAL_ERROR_MESSAGE } from '../../../../../constants/errorMessages'
@@ -52,6 +52,7 @@ export default function OtherProperties({ close, state }) {
             }
          />
          <Spacer size="16px" />
+         <Banner id="inventory-app-packaging-form-other-properties-tunnel-top" />
          <TunnelWrapper>
             <Flex margin="0 auto">
                <Toggle
@@ -82,6 +83,7 @@ export default function OtherProperties({ close, state }) {
                </Form.Group>
             </Flex>
          </TunnelWrapper>
+         <Banner id="inventory-app-packaging-form-other-properties-tunnel-bottom" />
       </>
    )
 }

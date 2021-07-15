@@ -1,11 +1,12 @@
 import React from 'react'
 import { useHistory, useLocation } from 'react-router-dom'
+import { tabsInitialState } from './tabsInitialState'
 
 const Context = React.createContext()
 
 const initialState = {
    tabs: [],
-   routes: [],
+   routes: tabsInitialState,
 }
 
 const reducers = (state, { type, payload }) => {

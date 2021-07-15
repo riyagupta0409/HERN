@@ -32,6 +32,7 @@ const BulkActions = ({
    setBulkActions,
    clearAllActions,
    close,
+
    additionalBulkAction = {},
    additionalFunction,
 }) => {
@@ -320,7 +321,6 @@ const BulkActions = ({
                         onClick={() => {
                            setShowPopup(true)
                            setPopupHeading('Save All Changes')
-                           console.log(bulkActions)
                         }}
                      >
                         Save Changes

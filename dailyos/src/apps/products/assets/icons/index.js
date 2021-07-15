@@ -16,6 +16,17 @@ import DollarIcon from './Dollar'
 import InfoIcon from './Info'
 import LinkIcon from './Link'
 import MinusIcon from './Minus'
+import Serving from './Servings'
+import CalCount from './CalCount'
+import FoodCost from './FoodCost'
+import Yield from './Yield'
+import ChefPay from './ChefPay'
+import VisibiltyOn from './VisibilityOn';
+import VisibiltyOff from './VisibilityOff'
+import AutoGenerate from './AutoGenerate'
+import NextArrow from './NextArrow'
+import PreviousArrow from './PreviousArrow'
+import PlusIconLarge from './PlusIconLarge'
 import PublishIcon from './Publish'
 import UnPublishIcon from './Unpublish'
 import FilterIcon from './Filter'
@@ -42,4 +53,15 @@ export {
    LinkIcon,
    MinusIcon,
    RemoveIcon,
+   Serving,
+   CalCount,
+   FoodCost,
+   Yield,
+   ChefPay,
+   VisibiltyOn,
+   VisibiltyOff,
+   AutoGenerate,
+   NextArrow,
+   PreviousArrow,
+   PlusIconLarge
 }

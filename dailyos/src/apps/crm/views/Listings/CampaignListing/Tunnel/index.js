@@ -6,6 +6,7 @@ import { TunnelBody, SolidTile } from './styled'
 import { CREATE_CAMPAIGN, CAMPAIGN_TYPE } from '../../../../graphql'
 import { randomSuffix } from '../../../../../../shared/utils'
 import { useTabs } from '../../../../../../shared/providers'
+import { Banner } from '../../../../../../shared/components'
 
 export default function CampaignTypeTunnel({ close }) {
    const { addTab } = useTabs()
@@ -56,6 +57,7 @@ export default function CampaignTypeTunnel({ close }) {
    return (
       <>
          <TunnelHeader title="Select Type of Campaign" close={() => close(1)} />
+         <Banner id="crm-app-campaigns-campaign-type-tunnel-top" />
          <TunnelBody>
             {types.map(type => {
                return (
@@ -71,6 +73,7 @@ export default function CampaignTypeTunnel({ close }) {
                )
             })}
          </TunnelBody>
+         <Banner id="crm-app-campaigns-campaign-type-tunnel-bottom" />
       </>
    )
 }

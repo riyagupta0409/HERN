@@ -13,6 +13,7 @@ import { toast } from 'react-toastify'
 import {
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../../../shared/components'
 import { logger } from '../../../../../../../../shared/utils'
 import { ProductContext } from '../../../../../../context/product'
@@ -96,6 +97,7 @@ const ProductsTunnel = ({ closeTunnel, comboComponentId }) => {
             }
          />
          <TunnelBody>
+            <Banner id="products-app-products-combo-product-products-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -129,6 +131,7 @@ const ProductsTunnel = ({ closeTunnel, comboComponentId }) => {
                   </ListOptions>
                </List>
             )}
+            <Banner id="products-app-products-combo-product-products-tunnel-bottom" />
          </TunnelBody>
       </>
    )

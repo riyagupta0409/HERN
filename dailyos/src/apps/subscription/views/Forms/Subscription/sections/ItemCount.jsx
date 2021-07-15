@@ -39,6 +39,7 @@ import {
    ErrorState,
    InlineLoader,
    ErrorBoundary,
+   Banner,
 } from '../../../../../../shared/components'
 import {
    EditIcon,
@@ -351,6 +352,7 @@ const SubscriptionTunnel = ({ tunnels, closeTunnel }) => {
                   disabled: !isValid(),
                }}
             />
+            <Banner id="subscription-app-create-subscription-add-subscription-tunnel-top" />
             <Flex padding="16px">
                <section>
                   <Flex container alignItems="center">
@@ -457,6 +459,7 @@ const SubscriptionTunnel = ({ tunnels, closeTunnel }) => {
                   </Flex>
                </section>
             </Flex>
+            <Banner id="subscription-app-create-subscription-add-subscription-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

@@ -1,7 +1,7 @@
 import React from 'react'
 import { OptionTile, Spacer, TunnelHeader } from '@dailykit/ui'
 import { useTranslation } from 'react-i18next'
-import { Tooltip } from '../../../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../../../shared/components'
 import { ProductContext } from '../../../../../../context/product'
 import { TunnelBody } from '../../../tunnels/styled'
 
@@ -30,6 +30,7 @@ const ProductTypeTunnel = ({ closeTunnel, openTunnel }) => {
             }
          />
          <TunnelBody>
+            <Banner id="products-app-combo-product-products-type-tunnel-top" />
             <OptionTile
                title="Simple Product"
                onClick={() => select('simple')}
@@ -39,6 +40,7 @@ const ProductTypeTunnel = ({ closeTunnel, openTunnel }) => {
                title="Customizable Product"
                onClick={() => select('customizable')}
             />
+            <Banner id="products-app-combo-product-products-type-tunnel-bottom" />
          </TunnelBody>
       </>
    )

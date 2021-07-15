@@ -22,6 +22,7 @@ import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import AddIcon from '../../../../../shared/assets/icons/Add'
 import {
+   Banner,
    LinkUnitConversionTunnels,
    Tooltip,
 } from '../../../../../shared/components'
@@ -82,15 +83,11 @@ export default function ItemForm() {
       openLinkConversionTunnel,
       closeLinkConversionTunnel,
    ] = useTunnel(2)
-   const [supplierTunnel, openSupplierTunnel, closeSupplierTunnel] = useTunnel(
-      1
-   )
+   const [supplierTunnel, openSupplierTunnel, closeSupplierTunnel] =
+      useTunnel(1)
    const [infoTunnel, openInfoTunnel, closeInfoTunnel] = useTunnel(1)
-   const [
-      processingTunnel,
-      openProcessingTunnel,
-      closeProcessingTunnel,
-   ] = useTunnel(1)
+   const [processingTunnel, openProcessingTunnel, closeProcessingTunnel] =
+      useTunnel(1)
    const [configTunnel, openConfigTunnel, closeConfigTunnel] = useTunnel(1)
 
    const { loading: itemDetailLoading, error } = useSubscription(
@@ -215,6 +212,8 @@ export default function ItemForm() {
                />
             </Tunnel>
          </Tunnels>
+         <Banner id="inventory-app-items-form-top" />
+
          <div
             style={{ background: '#f3f3f3', minHeight: 'calc(100vh - 40px)' }}
          >
@@ -517,6 +516,7 @@ export default function ItemForm() {
             closeTunnel={closeLinkConversionTunnel}
             onSave={() => closeLinkConversionTunnel(1)}
          />
+         <Banner id="inventory-app-items-form-bottom" />
       </SupplierItemProvider>
    )
 }

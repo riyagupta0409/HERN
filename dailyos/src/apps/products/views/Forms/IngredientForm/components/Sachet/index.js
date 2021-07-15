@@ -10,6 +10,9 @@ import {
    Spacer,
    Collapsible,
    ComboButton,
+   Tunnels,
+   Tunnel,
+   useTunnel,
 } from '@dailykit/ui'
 import { toast } from 'react-toastify'
 
@@ -25,13 +28,23 @@ import {
    Tooltip,
 } from '../../../../../../../shared/components'
 import { useDnd } from '../../../../../../../shared/components/DragNDrop/useDnd'
+import { ItemTypeTunnel } from '../../tunnels'
+import ItemListTunnel from '../../tunnels/ItemListTunnel'
+import { DeleteIcon } from '../../../../../../../shared/assets/icons'
 
-const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
+const Sachet = ({
+   state,
+   openNutritionTunnel,
+   openSachetTunnel,
+   openEditSachetTunnel,
+}) => {
    const { initiatePriority } = useDnd()
 
    const { ingredientState, ingredientDispatch } = React.useContext(
       IngredientContext
    )
+
+   const [tunnels, openItemTunnel, closeItemTunnel] = useTunnel(2)
 
    const [sachet, setSachet] = React.useState(
       state.ingredientProcessings[ingredientState.processingIndex]
@@ -67,8 +80,12 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
 
    // Mutation
    const [updateMode] = useMutation(UPDATE_MODE, {
-      onCompleted: () => {
-         toast.success('Mode updated!')
+      onCompleted: data => {
+         if (data.updateModeOfFulfillment?.isArchived) {
+            toast.success('Item deleted successfully!')
+         } else {
+            toast.success('Item updated successfully!')
+         }
       },
       onError: error => {
          toast.error('Something went wrong!')
@@ -77,21 +94,20 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
    })
 
    // Handlers
-   const setLive = (mode, val) => {
-      if (val) {
-         if (!(mode.operationConfig && (mode.bulkItem || mode.sachetItem))) {
-            return toast.error('Mode not configured!')
-         }
+   const setPublished = (mode, val) => {
+      if (!mode.isLive) {
+         return toast.error('Mode is not available!')
       }
       return updateMode({
          variables: {
             id: mode.id,
             set: {
-               isLive: val,
+               isPublished: val,
             },
          },
       })
    }
+
    const editMOF = mode => {
       ingredientDispatch({
          type: 'EDIT_MODE',
@@ -123,38 +139,77 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
                : null,
          },
       })
-      ingredientDispatch({
-         type: 'CURRENT_MODE',
-         payload: mode.type,
-      })
       openEditSachetTunnel(2)
    }
 
-   const renderModeType = type => {
-      switch (type) {
-         case 'realTime':
-            return 'Real Time'
-         case 'plannedLot':
-            return 'Planned Lot'
-         default:
-            return 'Invalid mode!'
+   const deleteMOF = mode => {
+      updateMode({
+         variables: {
+            id: mode.id,
+            set: {
+               isArchived: true,
+            },
+         },
+      })
+   }
+
+   const renderLiveMOF = (id, modes = []) => {
+      const liveMode = modes.find(mode => mode.id === id)
+      if (liveMode) {
+         if (liveMode.sachetItem) {
+            return `${liveMode.sachetItem.bulkItem.supplierItem.name} ${liveMode.sachetItem.bulkItem.processingName} ${liveMode.sachetItem.unitSize} ${liveMode.sachetItem.unit}`
+         }
+         if (liveMode.bulkItem) {
+            return `${liveMode.bulkItem.supplierItem.name} ${liveMode.bulkItem.processingName}`
+         }
+         return 'NA'
       }
+      return 'NA'
+   }
+
+   const renderModeType = mode => {
+      if (mode.sachetItem) {
+         return 'Planned Lot'
+      }
+      if (mode.bulkItem) {
+         return 'Real-time'
+      }
+      return '-'
    }
 
    const renderItemName = mode => {
-      if (!mode.sachetItem && !mode.bulkItem) return 'No item linked!'
-      switch (mode.type) {
-         case 'realTime':
-            return `${mode.bulkItem.supplierItem.name} ${mode.bulkItem.processingName}`
-         case 'plannedLot':
-            return `${mode.sachetItem.bulkItem.supplierItem.name} ${mode.sachetItem.bulkItem.processingName} ${mode.sachetItem.unitSize} ${mode.sachetItem.unit}`
-         default:
-            return 'Invalid mode!'
+      if (mode.sachetItem) {
+         return `${mode.sachetItem.bulkItem.supplierItem.name} ${mode.sachetItem.bulkItem.processingName} ${mode.sachetItem.unitSize} ${mode.sachetItem.unit}`
       }
+      if (mode.bulkItem) {
+         return `${mode.bulkItem.supplierItem.name} ${mode.bulkItem.processingName}`
+      }
+      return '-'
+   }
+
+   const renderInventoryQuantity = (mode, category) => {
+      if (mode.bulkItem) {
+         return `${mode.bulkItem[category]} ${mode.bulkItem.unit}`
+      }
+      if (mode.sachetItem) {
+         return `${mode.sachetItem[category]} pkt`
+      }
+      return '-'
    }
 
    return (
       <>
+         <Tunnels tunnels={tunnels}>
+            <Tunnel layer={1}>
+               <ItemTypeTunnel
+                  closeTunnel={closeItemTunnel}
+                  openTunnel={openItemTunnel}
+               />
+            </Tunnel>
+            <Tunnel layer={2}>
+               <ItemListTunnel closeTunnel={closeItemTunnel} />
+            </Tunnel>
+         </Tunnels>
          <Container bottom="32">
             <Grid>
                <Flex container alignItems="center">
@@ -174,12 +229,13 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
                   justifyContent="space-between"
                >
                   <Flex container alignItems="center">
-                     <Text as="subtitle">Active: </Text>{' '}
-                     <Text as="title">
-                        {sachet.liveModeOfFulfillment?.type === 'realTime' &&
-                           'Real Time'}
-                        {sachet.liveModeOfFulfillment?.type === 'plannedLot' &&
-                           'Planned Lot'}
+                     <Text as="subtitle">Active: </Text>
+                     <Spacer xAxis size="8px" />
+                     <Text as="text2">
+                        {renderLiveMOF(
+                           sachet.liveMOF,
+                           sachet.modeOfFulfillments
+                        )}
                      </Text>
                   </Flex>
                   <IconButton
@@ -201,7 +257,7 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
                <Collapsible
                   key={mode.id}
                   isDraggable
-                  title={renderModeType(mode.type)}
+                  title={renderModeType(mode)}
                   head={
                      <Flex
                         container
@@ -235,11 +291,13 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
                            <Spacer xAxis size="24px" />
                         </Flex>
                         <Flex container alignItems="center">
-                           {mode.isLive ? (
+                           {mode.isPublished ? (
                               <ComboButton
                                  type="ghost"
                                  size="sm"
-                                 onClick={() => setLive(mode, !mode.isLive)}
+                                 onClick={() =>
+                                    setPublished(mode, !mode.isPublished)
+                                 }
                               >
                                  <CloseIcon
                                     color="#36B6E2"
@@ -252,7 +310,9 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
                               <ComboButton
                                  type="outline"
                                  size="sm"
-                                 onClick={() => setLive(mode, !mode.isLive)}
+                                 onClick={() =>
+                                    setPublished(mode, !mode.isPublished)
+                                 }
                               >
                                  <TickIcon
                                     color="#36B6E2"
@@ -262,12 +322,21 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
                                  Make Available
                               </ComboButton>
                            )}
-                           <Spacer xAxis size="24px" />
+                           <Spacer xAxis size="16px" />
                            <IconButton
                               type="ghost"
+                              size="sm"
                               onClick={() => editMOF(mode)}
                            >
                               <EditIcon color="#00A7E1" />
+                           </IconButton>
+                           <Spacer xAxis size="8px" />
+                           <IconButton
+                              type="ghost"
+                              size="sm"
+                              onClick={() => deleteMOF(mode)}
+                           >
+                              <DeleteIcon color="#FF5A52" />
                            </IconButton>
                         </Flex>
                      </Flex>
@@ -279,6 +348,7 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
                         height="60px"
                         margin="8px 0 0 0"
                         width="100%"
+                        justifyContent="space-between"
                      >
                         <Flex container alignItems="center">
                            <Flex>
@@ -301,11 +371,46 @@ const Sachet = ({ state, openNutritionTunnel, openEditSachetTunnel }) => {
                               </Text>
                            </Flex>
                         </Flex>
+                        <Flex container alignItems="center">
+                           <Flex>
+                              <Text as="subtitle">On Hand</Text>
+                              <Text as="p">
+                                 {renderInventoryQuantity(mode, 'onHand')}
+                              </Text>
+                           </Flex>
+                           <Spacer xAxis size="24px" />
+                           <Flex>
+                              <Text as="subtitle">Awaiting</Text>
+                              <Text as="p">
+                                 {renderInventoryQuantity(mode, 'awaiting')}
+                              </Text>
+                           </Flex>
+                           <Spacer xAxis size="24px" />
+                           <Flex>
+                              <Text as="subtitle">Committed</Text>
+                              <Text as="p">
+                                 {renderInventoryQuantity(mode, 'committed')}
+                              </Text>
+                           </Flex>
+                        </Flex>
                      </Flex>
                   }
                />
             ))}
          </DragNDrop>
+         <Container top="32">
+            <ButtonTile
+               type="secondary"
+               text="Add Item"
+               onClick={() => {
+                  ingredientDispatch({
+                     type: 'SACHET_ID',
+                     payload: sachet.id,
+                  })
+                  openItemTunnel(1)
+               }}
+            />
+         </Container>
          <Container top="32">
             <Flex container maxWidth="200px">
                <Text as="subtitle"> Cost </Text>

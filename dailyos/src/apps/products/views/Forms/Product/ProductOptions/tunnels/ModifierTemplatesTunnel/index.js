@@ -15,6 +15,7 @@ import {
    ErrorBoundary,
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../../../shared/components'
 import { logger } from '../../../../../../../../shared/utils'
 import { ModifiersContext } from '../../../../../../context/product/modifiers'
@@ -79,6 +80,7 @@ const ModifierTemplatesTunnel = ({ close }) => {
             tooltip={<Tooltip identifier="modifier_templates_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-single-product-modifier-templates-tunnel-top" />
             {!modifiers.length ? (
                <Filler
                   message="No modifiers found! To start, please add some."
@@ -112,6 +114,7 @@ const ModifierTemplatesTunnel = ({ close }) => {
                   </ListOptions>
                </List>
             )}
+            <Banner id="products-app-single-product-modifier-templates-tunnel-bottom" />
          </TunnelBody>
       </>
    )

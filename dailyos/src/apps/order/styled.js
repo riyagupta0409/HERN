@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components'
 export const StyledWrapper = styled.div(
    ({ position }) => css`
       display: grid;
-      height: calc(100vh - 110px);
+      height: calc(100vh - 40px);
       overflow: hidden;
       grid-template-rows: 1fr 40px;
       grid-template-areas: ${position === 'left'

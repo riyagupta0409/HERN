@@ -9,7 +9,7 @@ import {
 } from '../../graphql'
 import BrandContext from '../../context/Brand'
 import { StyledCardList, StyledHome } from './styled'
-import { InlineLoader } from '../../../../shared/components'
+import { Banner, InlineLoader } from '../../../../shared/components'
 import { logger } from '../../../../shared/utils'
 import { useTabs } from '../../../../shared/providers'
 
@@ -65,6 +65,7 @@ export const Home = () => {
 
    return (
       <StyledHome>
+         <Banner id="content-app-home-top" />
          <h1>Content App</h1>
          <StyledCardList>
             <DashboardTile
@@ -91,6 +92,7 @@ export const Home = () => {
                onClick={() => addTab('Blocks', '/content/blocks')}
             />
          </StyledCardList>
+         <Banner id="content-app-home-bottom" />
       </StyledHome>
    )
 }

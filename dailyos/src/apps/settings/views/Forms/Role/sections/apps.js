@@ -30,6 +30,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 
@@ -108,6 +109,7 @@ export const AppsTunnel = ({ closeTunnel, selectedApps }) => {
                <Tooltip identifier="form_role_section_apps_tunnel_heading" />
             }
          />
+         <Banner id="settings-app-roles-role-details-add-apps-tunnel-top" />
          <Flex padding="16px">
             {isLoading && <InlineLoader />}
             {!isLoading && error && <ErrorState />}
@@ -156,6 +158,7 @@ export const AppsTunnel = ({ closeTunnel, selectedApps }) => {
                <Filler message="No apps yet!" />
             )}
          </Flex>
+         <Banner id="settings-app-roles-role-details-add-apps-tunnel-bottom" />
       </>
    )
 }

@@ -132,6 +132,7 @@ const Ingredients = ({ state }) => {
                <IngredientsTunnel
                   closeTunnel={closeTunnel}
                   openTunnel={openTunnel}
+                  state={state}
                />
             </Tunnel>
             <Tunnel layer={2}>

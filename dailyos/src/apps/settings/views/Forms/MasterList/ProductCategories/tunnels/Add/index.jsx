@@ -7,7 +7,7 @@ import { Form, Spacer, TunnelHeader, Flex } from '@dailykit/ui'
 import validator from '../../../../validators'
 import { MASTER } from '../../../../../../graphql'
 import { logger } from '../../../../../../../../shared/utils'
-import { Tooltip } from '../../../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../../../shared/components'
 
 const address = 'apps.settings.views.forms.accompanimenttypes.tunnels.addnew.'
 
@@ -74,6 +74,7 @@ const AddTypesTunnel = ({ closeTunnel }) => {
             close={() => closeTunnel(1)}
             tooltip={<Tooltip identifier="tunnel_product_category_heading" />}
          />
+         <Banner id="settings-app-master-lists-product-categories-tunnel-top" />
          <Flex padding="16px">
             <Form.Group>
                <Form.Label htmlFor="name" title="name">
@@ -128,6 +129,7 @@ const AddTypesTunnel = ({ closeTunnel }) => {
                   ))}
             </Form.Group>
          </Flex>
+         <Banner id="settings-app-master-lists-product-categories-tunnel-bottom" />
       </>
    )
 }

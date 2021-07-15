@@ -1,34 +1,27 @@
-import { useMutation } from '@apollo/react-hooks'
-import { Tunnel, Tunnels, useTunnel } from '@dailykit/ui'
 import React from 'react'
+import { useMutation } from '@apollo/react-hooks'
 import { toast } from 'react-toastify'
-import CreateBrandTunnel from '../../../apps/brands/views/Listings/brands/CreateBrandTunnel'
-import { GENERAL_ERROR_MESSAGE } from '../../../apps/inventory/constants/errorMessages'
-import { CREATE_ITEM, CREATE_SUPPLIER } from '../../../apps/inventory/graphql'
-import { CREATE_COLLECTION } from '../../../apps/menu/graphql'
+import { GENERAL_ERROR_MESSAGE } from '../../../../../../apps/inventory/constants/errorMessages'
+import {
+   CREATE_ITEM,
+   CREATE_SUPPLIER,
+} from '../../../../../../apps/inventory/graphql'
+import { CREATE_COLLECTION } from '../../../../../../apps/menu/graphql'
 import {
    CREATE_INGREDIENT,
    CREATE_SIMPLE_RECIPE,
-} from '../../../apps/products/graphql'
-import { ProductTypeTunnel } from '../../../apps/products/views/Listings/ProductsListing/tunnels'
-import { RectangularIcon } from '../../assets/icons'
-import { useTabs, TooltipProvider } from '../../providers'
-import { logger, randomSuffix } from '../../utils'
+} from '../../../../../../apps/products/graphql'
+import { useTabs } from '../../../../../providers'
+import { logger, randomSuffix } from '../../../../../utils'
 import Styles from './styled'
+import BackButton from '../BackButton'
 
-const CreateNewItemPanel = () => {
-   const [
-      createProductTunnels,
-      openCreateProductTunnel,
-      closeCreateProductTunnel,
-   ] = useTunnel(1)
-
-   const [
-      createBrandTunnels,
-      openCreateBrandTunnel,
-      closeCreateBrandTunnel,
-   ] = useTunnel(1)
-
+const CreateNew = ({
+   setOpen,
+   setIsMenuOpen,
+   openCreateBrandTunnel,
+   openCreateProductTunnel,
+}) => {
    const { addTab } = useTabs()
    const [createSupplier] = useMutation(CREATE_SUPPLIER, {
       onCompleted: input => {
@@ -130,49 +123,52 @@ const CreateNewItemPanel = () => {
       const name = `ingredient-${randomSuffix()}`
       createIngredient({ variables: { name } })
    }
+   const handleCreate = cb => {
+      setOpen(null)
+      setIsMenuOpen(false)
+      cb()
+   }
 
    return (
-      <Styles.CreateNewItems>
+      <Styles.CreateNewWrapper>
+         <BackButton setIsMenuOpen={setIsMenuOpen} setOpen={setOpen} />
+         <span>Create new</span>
          <CreateNewBtn
             title="Brands"
-            onClick={() => openCreateBrandTunnel(1)}
+            onClick={() => handleCreate(() => openCreateBrandTunnel(1))}
          />
-         <CreateNewBtn title="Collection" onClick={createCollection} />
+         <CreateNewBtn
+            title="Collection"
+            onClick={() => handleCreate(createCollection)}
+         />
          <CreateNewBtn
             title="Products"
-            onClick={() => openCreateProductTunnel(1)}
+            onClick={() => handleCreate(() => openCreateProductTunnel(1))}
          />
-         <CreateNewBtn title="Recipe" onClick={createRecipeHandler} />
-         <CreateNewBtn title="Ingredient" onClick={createIngredientHandler} />
+         <CreateNewBtn
+            title="Recipe"
+            onClick={() => handleCreate(createRecipeHandler)}
+         />
+         <CreateNewBtn
+            title="Ingredient"
+            onClick={() => handleCreate(createIngredientHandler)}
+         />
          <CreateNewBtn
             title="Supplier Item"
-            onClick={createSupplierItemHandler}
+            onClick={() => handleCreate(createSupplierItemHandler)}
          />
-         <CreateNewBtn title="Supplier" onClick={createSupplierHandler} />
-
-         <Tunnels tunnels={createBrandTunnels}>
-            <Tunnel layer={1} size="md">
-               <TooltipProvider app="Brand App">
-                  <CreateBrandTunnel closeTunnel={closeCreateBrandTunnel} />
-               </TooltipProvider>
-            </Tunnel>
-         </Tunnels>
-         <Tunnels tunnels={createProductTunnels}>
-            <Tunnel layer={1}>
-               <TooltipProvider app="Products App">
-                  <ProductTypeTunnel close={closeCreateProductTunnel} />
-               </TooltipProvider>
-            </Tunnel>
-         </Tunnels>
-      </Styles.CreateNewItems>
+         <CreateNewBtn
+            title="Supplier"
+            onClick={() => handleCreate(createSupplierHandler)}
+         />
+      </Styles.CreateNewWrapper>
    )
 }
 
 const CreateNewBtn = ({ title, onClick }) => (
-   <Styles.PageItem onClick={onClick}>
-      <RectangularIcon size="10px" color="#367bf5" />
-      <span style={{ color: '#367bf5' }}>{title}</span>
-   </Styles.PageItem>
+   <Styles.CreateNewItem onClick={onClick}>
+      <span style={{ padding: '6px 0px' }}>{title}</span>
+   </Styles.CreateNewItem>
 )
 
-export default CreateNewItemPanel
+export default CreateNew

@@ -38,6 +38,7 @@ import {
    InlineLoader,
    ErrorBoundary,
    ErrorState,
+   Banner,
 } from '../../../../../../../shared/components'
 
 export const LabelPrinters = ({ station }) => {
@@ -280,6 +281,8 @@ const AddPrinterTunnel = ({ isOpen, setIsOpen, station }) => {
                   <Tooltip identifier="station_section_label_printer_tunnel_add" />
                }
             />
+
+            <Banner id="settings-app-stations-station-details-add-label-printer-tunnel-top" />
             <Flex padding="0 16px" overflowY="auto" height="calc(100% - 104px)">
                {isLoading && <InlineLoader />}
                {!isLoading && error && <ErrorState />}
@@ -331,6 +334,7 @@ const AddPrinterTunnel = ({ isOpen, setIsOpen, station }) => {
                   />
                )}
             </Flex>
+            <Banner id="settings-app-stations-station-details-add-label-printer-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

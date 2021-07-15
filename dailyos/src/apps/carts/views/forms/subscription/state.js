@@ -154,6 +154,7 @@ export const ManualProvider = ({ children }) => {
       },
    })
    const [updateBrandCustomer] = useMutation(MUTATIONS.BRAND.CUSTOMER.UPDATE, {
+      refetchQueries: ['customers'],
       onError: error => logger(error),
    })
    const { loading, error } = useSubscription(QUERIES.CART.ONE, {

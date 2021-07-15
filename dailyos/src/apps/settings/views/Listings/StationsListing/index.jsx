@@ -9,7 +9,7 @@ import tableOptions from '../tableOption'
 import { STATIONS } from '../../../graphql'
 import { logger } from '../../../../../shared/utils'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
-import { InlineLoader, Tooltip } from '../../../../../shared/components'
+import { InlineLoader, Tooltip, Banner } from '../../../../../shared/components'
 import { AddIcon, DeleteIcon } from '../../../../../shared/assets/icons'
 
 const StationsListing = () => {
@@ -83,6 +83,8 @@ const StationsListing = () => {
 
    return (
       <Flex margin="0 auto" width="calc(100% - 32px)" maxWidth="1280px">
+         <Banner id="settings-app-stations-listing-top" />
+
          <Flex
             container
             as="header"
@@ -125,6 +127,7 @@ const StationsListing = () => {
                }}
             />
          )}
+         <Banner id="settings-app-stations-listing-bottom" />
       </Flex>
    )
 }

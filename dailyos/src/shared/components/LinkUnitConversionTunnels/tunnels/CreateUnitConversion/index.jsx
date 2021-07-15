@@ -12,6 +12,7 @@ import { UNITS, UNIT_CONVERSIONS } from '../../graphql'
 import { InlineLoader } from '../../../InlineLoader'
 import { toast } from 'react-toastify'
 import { logger } from '../../../../utils'
+import Banner from '../../../Banner'
 
 const CreateUnitConversion = ({ closeTunnel }) => {
    const [inputUnitName, setInputUnitName] = React.useState('')
@@ -100,6 +101,8 @@ const CreateUnitConversion = ({ closeTunnel }) => {
                action: handleCreate,
             }}
          />
+         <Banner id="create-unit-conversion-tunnel-top" />
+
          {loading ? (
             <InlineLoader />
          ) : (
@@ -170,6 +173,7 @@ const CreateUnitConversion = ({ closeTunnel }) => {
                />
             </Flex>
          )}
+         <Banner id="create-unit-conversion-tunnel-bottom" />
       </>
    )
 }

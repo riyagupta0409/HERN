@@ -13,7 +13,11 @@ import {
 } from '@dailykit/ui'
 import React from 'react'
 import { toast } from 'react-toastify'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
+import {
+   InlineLoader,
+   Tooltip,
+   Banner,
+} from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import {
    CREATE_PROCESSINGS,
@@ -73,6 +77,7 @@ const ProcessingsTunnel = ({ state, closeTunnel }) => {
             tooltip={<Tooltip identifier="add_processings_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-ingredients-processing-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -127,6 +132,7 @@ const ProcessingsTunnel = ({ state, closeTunnel }) => {
                   )}
                </>
             )}
+            <Banner id="products-app-ingredients-processing-tunnel-bottom" />
          </TunnelBody>
       </>
    )

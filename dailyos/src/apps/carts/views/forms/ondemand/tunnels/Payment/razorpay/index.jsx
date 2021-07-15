@@ -14,9 +14,8 @@ const RAZORPAY_SCRIPT_URL =
 export const RazorpayTunnel = ({ closeViaTunnel }) => {
    const params = useParams()
    const [partnershipId, setPartnershipId] = React.useState(null)
-   const [isOrganizationLoading, setIsOrganizationLoading] = React.useState(
-      true
-   )
+   const [isOrganizationLoading, setIsOrganizationLoading] =
+      React.useState(true)
    const [isScriptLoading, setIsScriptLoading] = React.useState(true)
    useQuery(ORGANIZATION, {
       variables: {

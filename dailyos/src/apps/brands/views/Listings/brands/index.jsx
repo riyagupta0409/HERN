@@ -16,7 +16,12 @@ import tableOptions from '../../../tableOption'
 import { logger } from '../../../../../shared/utils'
 import { StyledWrapper, StyledHeader } from '../styled'
 import { DeleteIcon } from '../../../../../shared/assets/icons'
-import { InlineLoader, Flex, Tooltip } from '../../../../../shared/components'
+import {
+   InlineLoader,
+   Flex,
+   Tooltip,
+   Banner,
+} from '../../../../../shared/components'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
 import CreateBrandTunnel from './CreateBrandTunnel'
 
@@ -191,6 +196,7 @@ export const Brands = () => {
    if (listLoading) return <InlineLoader />
    return (
       <StyledWrapper>
+         <Banner id="brands-app-brands-listing-top" />
          <StyledHeader>
             <Flex container alignItems="center">
                <Text as="h2">Brands ({brands?.aggregate?.count || 0})</Text>
@@ -222,6 +228,7 @@ export const Brands = () => {
                <CreateBrandTunnel closeTunnel={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="brands-app-brands-listing-bottom" />
       </StyledWrapper>
    )
 }

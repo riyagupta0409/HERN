@@ -15,6 +15,7 @@ import useOrganizationBalanceInfo from '../../hooks/useOrganizationBalance'
 
 import StripeBalance from './StripeBalance'
 import PaymentDetails from './PaymentDetails'
+import { Banner } from '../../../../../shared/components'
 
 export default function CartTunnel({ close }) {
    const [balanceChecked, setBalanceChecked] = useState(false)
@@ -214,7 +215,7 @@ export default function CartTunnel({ close }) {
    return (
       <>
          <TunnelHeader title="Purchase Orders" close={() => close(2)} />
-
+         <Banner id="inventory-app-packaging-hub-products-payment-tunnel-top" />
          <Wrapper>
             <h2>Pay via:</h2>
 
@@ -231,6 +232,7 @@ export default function CartTunnel({ close }) {
                handlePayment={handlePayment}
             />
          </Wrapper>
+         <Banner id="inventory-app-packaging-hub-products-payment-tunnel-bottom" />
       </>
    )
 }

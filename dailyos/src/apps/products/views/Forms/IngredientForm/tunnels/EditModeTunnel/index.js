@@ -6,6 +6,8 @@ import {
    IconButton,
    PlusIcon,
    RadioGroup,
+   Spacer,
+   Text,
    TunnelHeader,
    useTunnel,
 } from '@dailykit/ui'
@@ -13,6 +15,7 @@ import { toast } from 'react-toastify'
 import {
    OperationConfig,
    Tooltip,
+   Banner,
 } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { EditIcon } from '../../../../../assets/icons'
@@ -23,9 +26,10 @@ import { TunnelBody } from '../styled'
 import { StyledTable } from './styled'
 
 const EditModeTunnel = ({ closeTunnel, openTunnel }) => {
-   const { ingredientState, ingredientDispatch } = React.useContext(
-      IngredientContext
-   )
+   const {
+      ingredientState: { editMode: mode },
+      ingredientDispatch,
+   } = React.useContext(IngredientContext)
 
    const [
       operationConfigTunnels,
@@ -43,11 +47,7 @@ const EditModeTunnel = ({ closeTunnel, openTunnel }) => {
       closeTunnel(2)
       ingredientDispatch({
          type: 'EDIT_MODE',
-         payload: undefined,
-      })
-      ingredientDispatch({
-         type: 'CURRENT_MODE',
-         payload: undefined,
+         payload: null,
       })
    }
 
@@ -69,14 +69,13 @@ const EditModeTunnel = ({ closeTunnel, openTunnel }) => {
          if (inFlight) return
          updateMode({
             variables: {
-               id: ingredientState.editMode.id,
+               id: mode.id,
                set: {
-                  accuracy: ingredientState.editMode.accuracy,
-                  bulkItemId: ingredientState.editMode.bulkItem?.id || null,
-                  sachetItemId: ingredientState.editMode.sachetItem?.id || null,
-                  packagingId: ingredientState.editMode.packaging?.id || null,
-                  operationConfigId:
-                     ingredientState.editMode.operationConfig?.id || null,
+                  accuracy: mode.accuracy,
+                  bulkItemId: mode.bulkItem?.id || null,
+                  sachetItemId: mode.sachetItem?.id || null,
+                  packagingId: mode.packaging?.id || null,
+                  operationConfigId: mode.operationConfig?.id || null,
                },
             },
          })
@@ -84,6 +83,26 @@ const EditModeTunnel = ({ closeTunnel, openTunnel }) => {
          toast.error('Something went wrong!')
          logger(error)
       }
+   }
+
+   const renderModeType = mode => {
+      if (mode.sachetItem) {
+         return 'Planned Lot'
+      }
+      if (mode.bulkItem) {
+         return 'Real-time'
+      }
+      return '-'
+   }
+
+   const renderItemName = mode => {
+      if (mode.sachetItem) {
+         return `${mode.sachetItem.bulkItem.supplierItem.name} ${mode.sachetItem.bulkItem.processingName} ${mode.sachetItem.unitSize} ${mode.sachetItem.unit}`
+      }
+      if (mode.bulkItem) {
+         return `${mode.bulkItem.supplierItem.name} ${mode.bulkItem.processingName}`
+      }
+      return '-'
    }
 
    return (
@@ -96,7 +115,7 @@ const EditModeTunnel = ({ closeTunnel, openTunnel }) => {
                ingredientDispatch({
                   type: 'EDIT_MODE',
                   payload: {
-                     ...ingredientState.editMode,
+                     ...mode,
                      operationConfig: config,
                   },
                })
@@ -109,7 +128,96 @@ const EditModeTunnel = ({ closeTunnel, openTunnel }) => {
             tooltip={<Tooltip identifier="edit_mode_tunnel" />}
          />
          <TunnelBody>
-            <StyledTable cellSpacing={0}>
+            <Banner id="products-app-ingredients-edit-mode-tunnel-top" />
+            <Flex margin="0 0 20px 0">
+               <Text as="subtitle">Mode of Fulfillment</Text>
+               <Text as="text1">{renderModeType(mode)}</Text>
+            </Flex>
+            <Flex margin="0 0 20px 0">
+               <Text as="subtitle">Item</Text>
+               <Flex container alignItems="center">
+                  <Text as="text1">{renderItemName(mode)}</Text>
+                  <Spacer xAxis size="12px" />
+                  <IconButton
+                     type="ghost"
+                     size="sm"
+                     onClick={() => openTunnel(3)}
+                  >
+                     <EditIcon color="#367BF5" />
+                  </IconButton>
+               </Flex>
+            </Flex>
+            <Flex margin="0 0 20px 0">
+               <Text as="subtitle">Accuracy</Text>
+               <RadioGroup
+                  options={options}
+                  active={
+                     options.find(op => op.value === mode?.accuracy)?.id || 3
+                  }
+                  onChange={option =>
+                     ingredientDispatch({
+                        type: 'EDIT_MODE',
+                        payload: {
+                           ...mode,
+                           accuracy: option.value,
+                        },
+                     })
+                  }
+               />
+            </Flex>
+            <Flex margin="0 0 20px 0" alignItems="center" container>
+               <Flex>
+                  <Text as="subtitle">Packaging</Text>
+                  {mode.packaging ? (
+                     <Flex container alignItems="center">
+                        <Text as="text1">{mode.packaging.title}</Text>
+                        <Spacer xAxis size="12px" />
+                        <IconButton
+                           type="ghost"
+                           size="sm"
+                           onClick={() => openTunnel(5)}
+                        >
+                           <EditIcon color="#367BF5" />
+                        </IconButton>
+                     </Flex>
+                  ) : (
+                     <IconButton
+                        type="ghost"
+                        size="sm"
+                        onClick={() => openTunnel(5)}
+                     >
+                        <PlusIcon color="#367BF5" />
+                     </IconButton>
+                  )}
+               </Flex>
+               <Spacer xAxis size="32px" />
+               <Flex>
+                  <Text as="subtitle">Label Template</Text>
+                  {mode.operationConfig ? (
+                     <Flex container alignItems="center">
+                        <Text as="text1">
+                           {`${mode.operationConfig.station.name} - ${mode.operationConfig.labelTemplate.name}`}
+                        </Text>
+                        <IconButton
+                           type="ghost"
+                           size="sm"
+                           onClick={() => openOperationConfigTunnel(1)}
+                        >
+                           <EditIcon color="#367BF5" />
+                        </IconButton>
+                     </Flex>
+                  ) : (
+                     <IconButton
+                        type="ghost"
+                        size="sm"
+                        onClick={() => openOperationConfigTunnel(1)}
+                     >
+                        <PlusIcon color="#367BF5" />
+                     </IconButton>
+                  )}
+               </Flex>
+            </Flex>
+            {/* <StyledTable cellSpacing={0}>
                <thead>
                   <tr>
                      <th>Mode of Fulfillment</th>
@@ -212,6 +320,8 @@ const EditModeTunnel = ({ closeTunnel, openTunnel }) => {
                   </tr>
                </tbody>
             </StyledTable>
+            </StyledTable> */}
+            <Banner id="products-app-ingredients-edit-mode-tunnel-bottom" />
          </TunnelBody>
       </>
    )

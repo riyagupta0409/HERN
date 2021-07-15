@@ -18,6 +18,7 @@ import {
    PACKAGINGS_COUNT_SUBSCRIPTION,
 } from '../../graphql/subscriptions/index'
 import { useTabs } from '../../../../shared/providers'
+import { Banner } from '../../../../shared/components'
 
 const address = 'apps.inventory.views.home.'
 
@@ -66,6 +67,7 @@ const Home = () => {
 
    return (
       <StyledHome>
+         <Banner id="inventory-app-home-top" />
          <h1>{t(address.concat('inventory app'))}</h1>
          <StyledCardList>
             <DashboardTile
@@ -117,6 +119,7 @@ const Home = () => {
                onClick={() => addTab('Packagings', '/inventory/packagings')}
             />
          </StyledCardList>
+         <Banner id="inventory-app-home-bottom" />
       </StyledHome>
    )
 }

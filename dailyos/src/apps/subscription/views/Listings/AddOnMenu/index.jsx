@@ -8,6 +8,7 @@ import DateSection from './DateSection'
 import PlansSection from './PlansSection'
 import ProductsSection from './ProductsSection'
 import { useTabs } from '../../../../../shared/providers'
+import { Banner } from '../../../../../shared/components'
 
 export const AddOnMenu = () => {
    const { tab, addTab } = useTabs()
@@ -20,6 +21,7 @@ export const AddOnMenu = () => {
 
    return (
       <MenuProvider>
+         <Banner id="subscription-app-add-on-menu-listing-top" />
          <Wrapper>
             <div>
                <DateSection />
@@ -27,6 +29,7 @@ export const AddOnMenu = () => {
                <ProductsSection />
             </div>
          </Wrapper>
+         <Banner id="subscription-app-add-on-menu-listing-bottom" />
       </MenuProvider>
    )
 }

@@ -14,6 +14,7 @@ import { toast } from 'react-toastify'
 import {
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../../../shared/components'
 import { logger } from '../../../../../../../../shared/utils'
 import { ModifiersContext } from '../../../../../../context/product/modifiers'
@@ -117,6 +118,7 @@ const ModifierOptionsTunnel = ({ close }) => {
             tooltip={<Tooltip identifier="modifiers_options_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-single-product-modifier-options-tunnel-top" />
             {[sachetItemsLoading, sachetsLoading, yieldsLoading].some(
                loading => loading
             ) ? (
@@ -161,6 +163,7 @@ const ModifierOptionsTunnel = ({ close }) => {
                   )}
                </>
             )}
+            <Banner id="products-app-single-product-modifier-options-tunnel-bottom" />
          </TunnelBody>
       </>
    )

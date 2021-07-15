@@ -22,6 +22,7 @@ import {
    InlineLoader,
    NutritionTunnel,
    Tooltip,
+   Banner,
 } from '../../../../../../../shared/components'
 import Nutrition from '../../../../../../../shared/components/Nutrition/index'
 import { logger } from '../../../../../../../shared/utils'
@@ -276,7 +277,7 @@ export default function ConfigTunnel({
                <Tooltip identifier="supplier_item_form_configure_bulkItem_tunnel" />
             }
          />
-
+         <Banner id="inventory-app-items-configure-processing-tunnel-top" />
          <TunnelBody>
             <StyledRow>
                <StyledInputGroup>
@@ -637,6 +638,7 @@ export default function ConfigTunnel({
                bulkItemId={bulkItem?.id || id}
             />
          </TunnelBody>
+         <Banner id="inventory-app-items-configure-processing-tunnel-bottom" />
       </>
    )
 }

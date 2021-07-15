@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import { Spacer, TunnelHeader, Form } from '@dailykit/ui'
 import GooglePlacesAutocomplete from 'react-google-places-autocomplete'
 
-import { Flex, Tooltip } from '../../../../../../shared/components'
+import { Banner, Flex, Tooltip } from '../../../../../../shared/components'
 import { useScript } from '../../../../../../shared/utils/useScript'
 import { get_env } from '../../../../../../shared/utils'
 
@@ -69,6 +69,8 @@ export const AddressTunnel = ({ address, update, settingId, closeTunnel }) => {
             close={() => closeTunnel(1)}
             tooltip={<Tooltip identifier="brand_address_tunnelHeader" />}
          />
+         <Banner id="brands-app-brands-brand-details-address-tunnel-top" />
+
          <Flex padding="16px">
             <GPlaces>
                {loaded && !error && (
@@ -223,6 +225,7 @@ export const AddressTunnel = ({ address, update, settingId, closeTunnel }) => {
                </>
             )}
          </Flex>
+         <Banner id="brands-app-brands-brand-details-address-tunnel-bottom" />
       </>
    )
 }

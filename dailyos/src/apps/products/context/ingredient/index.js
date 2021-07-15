@@ -29,6 +29,8 @@ export const state = {
    },
    currentMode: undefined,
    editMode: undefined,
+   itemType: null,
+   sachetId: null,
 }
 
 export const reducers = (state, { type, payload }) => {
@@ -93,6 +95,18 @@ export const reducers = (state, { type, payload }) => {
          return {
             ...state,
             editMode: payload,
+         }
+      }
+      case 'ITEM_TYPE': {
+         return {
+            ...state,
+            itemType: payload,
+         }
+      }
+      case 'SACHET_ID': {
+         return {
+            ...state,
+            sachetId: payload,
          }
       }
       default:

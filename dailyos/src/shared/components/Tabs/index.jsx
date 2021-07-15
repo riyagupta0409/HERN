@@ -1,70 +1,161 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { useTabs } from '../../providers'
 import { useWindowSize } from '../../hooks'
-import { StyledTabs, StyledTab, HomeButton } from './styled'
-import { CloseIcon, DoubleArrowRightIcon, HomeIcon } from '../../assets/icons'
-const Tabs = ({ open }) => {
+import { StyledTabs, HomeButton, StyledButton, TabsWrapper } from './styled'
+import { DoubleArrowIcon, HomeIcon } from '../../assets/icons'
+import ThreeDots from '../../assets/icons/ThreeDots'
+import TabOption from './components/TabOption'
+import { useOnClickOutside } from '@dailykit/ui'
+import Tab from './components/Tab'
+
+const Tabs = () => {
    const { pathname } = useLocation()
    const view = useWindowSize()
+   const [open, setOpen] = useState(false)
    const { tabs } = useTabs()
    const [firstIndex, setFirstIndex] = useState(0)
-   const [lastIndex, setLastIndex] = useState(8)
-   let numTabsToShow = Math.floor(
-      open ? (view.width - 300) / 100 - 1 : (view.width - 48) / 100 - 1
-   )
+   const [lastIndex, setLastIndex] = useState(0)
+   const [numTabsToShow, setNumTabsToShow] = useState(0)
+
+   const buttonRef = useRef()
+   useOnClickOutside(buttonRef, () => setOpen(false))
+
    useEffect(() => {
-      if (view) setLastIndex(numTabsToShow)
-   }, [view.width, open])
+      const tabWidth = 120
+      const toolBarWidth = view.width > 767 ? 450 : 262
+      const widthForTabs = Math.floor(view.width - toolBarWidth)
+
+      if (view.width) {
+         setFirstIndex(0)
+         setNumTabsToShow(Math.floor(widthForTabs / tabWidth))
+         setLastIndex(numTabsToShow)
+      }
+
+      if (tabs.length <= numTabsToShow) {
+         setFirstIndex(0)
+         setLastIndex(tabs.length)
+      }
+   }, [view.width, tabs.length, numTabsToShow])
+
+   const handleTabForward = () => {
+      if (lastIndex + numTabsToShow > tabs.length) {
+         let tabsRemain = tabs.length - lastIndex
+         setFirstIndex(lastIndex - (numTabsToShow - tabsRemain))
+         setLastIndex(tabs.length)
+      } else {
+         setFirstIndex(lastIndex)
+         setLastIndex(lastIndex + numTabsToShow)
+      }
+   }
+   const handleTabPrev = () => {
+      if (firstIndex <= numTabsToShow) {
+         setFirstIndex(0)
+         setLastIndex(numTabsToShow)
+      } else {
+         setFirstIndex(firstIndex - numTabsToShow)
+         setLastIndex(lastIndex - numTabsToShow)
+      }
+   }
+
+   const tabsToShow = tabs.slice(firstIndex, lastIndex)
+   const getWidth = () => {
+      if (view.width && view.width <= 767) {
+         if (tabs.length <= 0) return '156px'
+         if (
+            firstIndex !== 0 &&
+            numTabsToShow < tabs.length &&
+            tabs.length !== lastIndex
+         )
+            return '262px'
+         if (
+            firstIndex !== 0 ||
+            (numTabsToShow < tabs.length && tabs.length !== lastIndex)
+         )
+            return '227px'
+         return '192px'
+      } else {
+         if (tabs.length <= 0) return '344px'
+         if (
+            firstIndex !== 0 &&
+            numTabsToShow < tabs.length &&
+            tabs.length !== lastIndex
+         )
+            return '450px'
+         if (
+            firstIndex !== 0 ||
+            (numTabsToShow < tabs.length && tabs.length !== lastIndex)
+         )
+            return '415px'
+         return '380px'
+      }
+   }
+
+   const getWidthSm = () => {
+      if (tabs.length <= 0) return '156px'
+      if (
+         firstIndex !== 0 &&
+         numTabsToShow < tabs.length &&
+         tabs.length !== lastIndex
+      )
+         return '262px'
+      if (
+         firstIndex !== 0 ||
+         (numTabsToShow < tabs.length && tabs.length !== lastIndex)
+      )
+         return '227px'
+      return '192px'
+   }
+
    return (
-      <StyledTabs>
+      <TabsWrapper>
          <HomeButton active={pathname === '/'} to="/">
             <HomeIcon color={pathname === '/' ? '#367BF5' : '#919699'} />
          </HomeButton>
-         {tabs.slice(firstIndex, lastIndex).map((tab, index) => (
-            <Tab tab={tab} key={tab.path} index={index} />
-         ))}
-
-         {lastIndex + 3 <= tabs.length && (
-            <button
-               onClick={() => {
-                  if (lastIndex + 3 <= tabs.length) {
-                     setFirstIndex(firstIndex + 3)
-                     setLastIndex(lastIndex + 3)
-                  }
-               }}
-            >
-               <DoubleArrowRightIcon />
-            </button>
+         {tabs.length > 0 && (
+            <>
+               {firstIndex !== 0 && (
+                  <button onClick={() => handleTabPrev()}>
+                     <DoubleArrowIcon direction="left" />
+                  </button>
+               )}
+            </>
          )}
-      </StyledTabs>
+         <StyledTabs width={getWidth()}>
+            {tabsToShow.map((tab, index) => (
+               <Tab
+                  tab={tab}
+                  key={tab.path}
+                  index={index}
+                  numTabs={tabs.length}
+               />
+            ))}
+         </StyledTabs>
+         {tabs.length > 0 && (
+            <>
+               {numTabsToShow < tabs.length && tabs.length !== lastIndex && (
+                  <button onClick={() => handleTabForward()}>
+                     <DoubleArrowIcon />
+                  </button>
+               )}
+            </>
+         )}
+         {tabs.length > 0 && (
+            <div ref={buttonRef} style={{ position: 'relative' }}>
+               <StyledButton
+                  open={open}
+                  size="sm"
+                  type="ghost"
+                  style={{ outline: 'none' }}
+                  onClick={() => setOpen(!open)}
+               >
+                  <ThreeDots color={open ? '#367BF5' : '#45484C'} />
+               </StyledButton>
+               {open && <TabOption />}
+            </div>
+         )}
+      </TabsWrapper>
    )
 }
 
 export default Tabs
-
-const Tab = ({ index, tab, ...props }) => {
-   const location = useLocation()
-   const { switchTab, removeTab } = useTabs()
-   const active = tab.path === location.pathname
-   return (
-      <StyledTab
-         key={tab.path}
-         onClick={() => switchTab(tab.path)}
-         active={active}
-         {...props}
-      >
-         <span title={tab.title}>{tab.title}</span>
-         <button
-            type="button"
-            title="Close Tab"
-            onClick={e => {
-               e.stopPropagation()
-               removeTab({ tab, index })
-            }}
-         >
-            <CloseIcon color={active ? '#367BF5' : '#919699'} size="12" />
-         </button>
-      </StyledTab>
-   )
-}

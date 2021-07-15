@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import Condition from './Condition'
 import { useConditions } from './context'
 import { CONDITION, UPDATE_CONDITION, CREATE_CONDITION } from './graphql'
+import Banner from '../Banner'
 
 const MainTunnel = ({ id, onSave, openTunnel, closeTunnel }) => {
    const { state, dispatch } = useConditions()
@@ -117,6 +118,8 @@ const MainTunnel = ({ id, onSave, openTunnel, closeTunnel }) => {
             right={{ action: save, title: 'Save' }}
             close={() => closeTunnel(1)}
          />
+         <Banner id="condition-tunnel-top" />
+
          <TunnelBody>
             <Info> Whether All or Any Condition should be matched </Info>
             {state.data ? (
@@ -144,6 +147,7 @@ const MainTunnel = ({ id, onSave, openTunnel, closeTunnel }) => {
                </TextButton>
             )}
          </TunnelBody>
+         <Banner id="condition-tunnel-bottom" />
       </>
    )
 }

@@ -4,7 +4,11 @@ import { useQuery } from '@apollo/react-hooks'
 import { STATUS } from '../../../../graphql'
 import { TunnelHeaderContainer, StyledDiv } from './styled'
 import { logger } from '../../../../../../shared/utils'
-import { Tooltip, InlineLoader } from '../../../../../../shared/components'
+import {
+   Tooltip,
+   InlineLoader,
+   Banner,
+} from '../../../../../../shared/components'
 import { useTabs } from '../../../../../../shared/providers'
 import { toast } from 'react-toastify'
 import BrandContext from '../../../../context/Brand'
@@ -36,6 +40,7 @@ const PaymentStatus = ({ tunnels, closeTunnel }) => {
                   <Tooltip identifier="customer_payment_status_tunnelHeader" />
                }
             />
+            <Banner id="crm-app-customers-customer-details-payment-status-tunnel-top" />
             <TunnelHeaderContainer>
                <StyledDiv>
                   <Text as="h2">
@@ -50,6 +55,7 @@ const PaymentStatus = ({ tunnels, closeTunnel }) => {
                   </Text>
                </StyledDiv>
             </TunnelHeaderContainer>
+            <Banner id="crm-app-customers-customer-details-payment-status-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

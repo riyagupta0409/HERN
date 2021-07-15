@@ -23,6 +23,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../../../shared/components'
 
 const address = 'apps.settings.views.forms.units.'
@@ -93,6 +94,7 @@ const UnitsForm = () => {
    }
    return (
       <Flex width="calc(100% - 32px)" maxWidth="1280px" margin="0 auto">
+         <Banner id="settings-app-master-lists-unit-top" />
          <Flex
             as="header"
             container
@@ -121,6 +123,7 @@ const UnitsForm = () => {
                <AddTypesTunnel closeTunnel={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="settings-app-master-lists-unit-bottom" />
       </Flex>
    )
 }

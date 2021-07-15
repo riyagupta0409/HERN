@@ -11,7 +11,7 @@ import { Tooltip } from '../../../../shared/components'
 import { toast } from 'react-toastify'
 import { useMutation } from '@apollo/react-hooks'
 import { IMPERSONATE_USER_TOKEN } from '../../graphql/mutations'
-import { logger } from '../../../../shared/utils'
+import { logger, get_env } from '../../../../shared/utils'
 
 const CustomerCard = ({
    brand,
@@ -46,7 +46,7 @@ const CustomerCard = ({
          impersonateUser({
             variables: {
                keycloakId: customer?.keycloakId,
-               clientId: process.env.REACT_APP_SUBSCRIPTION_CLIENT_ID,
+               clientId: get_env(REACT_APP_SUBSCRIPTION_CLIENT_ID),
             },
          })
       } else {

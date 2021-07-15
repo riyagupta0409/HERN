@@ -6,6 +6,7 @@ import { useSubscription } from '@apollo/react-hooks'
 import { SAFETY_CHECKS_COUNT } from '../../graphql'
 import { StyledCardList, StyledHome } from './styled'
 import { useTabs } from '../../../../shared/providers'
+import { Banner } from '../../../../shared/components'
 
 const address = 'apps.safety.views.home.'
 
@@ -23,6 +24,7 @@ const Home = () => {
 
    return (
       <StyledHome>
+         <Banner id="safety-app-home-top" />
          <h1>{t(address.concat('safety and precautions app'))}</h1>
          <StyledCardList>
             <DashboardTile
@@ -32,6 +34,7 @@ const Home = () => {
                onClick={() => addTab('Safety Checks', '/safety/checks')}
             />
          </StyledCardList>
+         <Banner id="safety-app-home-bottom" />
       </StyledHome>
    )
 }

@@ -2,7 +2,11 @@ import React from 'react'
 import { useMutation, useSubscription } from '@apollo/react-hooks'
 import { Flex, Form, Spacer, TunnelHeader } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
+import {
+   Banner,
+   InlineLoader,
+   Tooltip,
+} from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { IngredientContext } from '../../../../../context/ingredient'
 import { FETCH_UNITS, UPDATE_SACHET } from '../../../../../graphql'
@@ -81,6 +85,7 @@ const EditSachetTunnel = ({ state, closeTunnel }) => {
             tooltip={<Tooltip identifier="edit_sachet_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-ingredients-edit-sachet-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -151,6 +156,7 @@ const EditSachetTunnel = ({ state, closeTunnel }) => {
                   <Spacer size="24px" />
                </>
             )}
+            <Banner id="products-app-ingredients-edit-sachet-tunnel-bottom" />
          </TunnelBody>
       </>
    )

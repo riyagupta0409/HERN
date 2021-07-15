@@ -16,6 +16,7 @@ import {
    ErrorState,
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { GENERAL_ERROR_MESSAGE } from '../../../../constants/errorMessages'
@@ -88,6 +89,7 @@ export default function SelectUserTunnel({ close, state }) {
             }
          />
          <TunnelWrapper>
+            <Banner id="inventory-app-work-orders-sachet-select-user-tunnel-top" />
             {list.length ? (
                <List>
                   <ListSearch
@@ -116,6 +118,7 @@ export default function SelectUserTunnel({ close, state }) {
             ) : (
                <Filler message={NO_USERS} />
             )}
+            <Banner id="inventory-app-work-orders-sachet-select-user-tunnel-bottom" />
          </TunnelWrapper>
       </>
    )

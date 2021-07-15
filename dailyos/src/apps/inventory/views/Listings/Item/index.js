@@ -11,6 +11,7 @@ import { CREATE_ITEM } from '../../../graphql'
 import { StyledTableActions, StyledTableHeader, StyledWrapper } from '../styled'
 import BulkItemsListings from './bulkItemsListing'
 import SupplierItemsListings from './supplierItemListing'
+import { Banner } from '../../../../../shared/components'
 
 export default function ItemListing() {
    const { addTab } = useTabs()
@@ -62,6 +63,7 @@ export default function ItemListing() {
 
    return (
       <StyledWrapper>
+         <Banner id="inventory-app-items-listing-top" />
          <StyledTableHeader>
             <Flex container alignItems="center">
                <Text as="h2">Supplier Items</Text>
@@ -86,6 +88,7 @@ export default function ItemListing() {
          />
 
          {renderTables(view)}
+         <Banner id="inventory-app-items-listing-bottom" />
       </StyledWrapper>
    )
 }

@@ -33,7 +33,7 @@ import { logger } from '../../../../../shared/utils'
 import { DEVICES, PRINT_JOB } from '../../../graphql'
 import { useTabs } from '../../../../../shared/providers'
 import { PrinterIcon } from '../../../../../shared/assets/icons'
-import { InlineLoader, Tooltip } from '../../../../../shared/components'
+import { InlineLoader, Tooltip, Banner } from '../../../../../shared/components'
 
 const DevicesListing = () => {
    const { tab, addTab } = useTabs()
@@ -68,6 +68,7 @@ const DevicesListing = () => {
 
    return (
       <Flex margin="0 auto" width="calc(100% - 32px)" maxWidth="1280px">
+         <Banner id="settings-app-devices-listing-top" />
          <Flex
             container
             as="header"
@@ -248,6 +249,7 @@ const DevicesListing = () => {
                <PrintTunnel closeTunnel={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="settings-app-devices-listing-bottom" />
       </Flex>
    )
 }
@@ -314,6 +316,7 @@ const PrintTunnel = ({ closeTunnel }) => {
             }}
             close={() => closeTunnel(1)}
          />
+         <Banner id="settings-app-devices-print-tunnel-top" />
          <Flex padding="16px" overflowY="auto" height="calc(100vh - 105px)">
             <Form.Group>
                <Form.Label htmlFor="url" title="url">
@@ -363,6 +366,7 @@ const PrintTunnel = ({ closeTunnel }) => {
                </List>
             )}
          </Flex>
+         <Banner id="settings-app-devices-print-tunnel-bottom" />
       </>
    )
 }

@@ -3,7 +3,7 @@ import { Flex } from '@dailykit/ui'
 import { useQuery } from '@apollo/react-hooks'
 
 import { useTabs } from '../../../../shared/providers'
-import { Insight, InlineLoader } from '../../../../shared/components'
+import { Insight, InlineLoader, Banner } from '../../../../shared/components'
 
 import { INSIGHTS } from '../../graphql'
 
@@ -33,6 +33,7 @@ const ReferralPlansListing = () => {
          height="calc(100vh - 40px)"
          style={{ background: '#ececec' }}
       >
+         <Banner id="insights-app-recipe-insight-top" />
          {insights.map(insight => {
             return (
                <Flex key={insight.identifier}>
@@ -42,11 +43,12 @@ const ReferralPlansListing = () => {
                      // where={{ amountPaid: { _lte: 2 } }}
                      // limit={2}
                      // order={{ amountPaid: 'desc' }}
-                     variables={{ amountVar: 90 }}
+                     // variables={{ amountVar: 90 }}
                   />
                </Flex>
             )
          })}
+         <Banner id="insights-app-recipe-insight-bottom" />
       </Flex>
    )
 }

@@ -15,6 +15,7 @@ import {
 } from '../../../graphql'
 import { StyledHeader, StyledWrapper } from '../styled'
 import tableOptions from '../tableOption'
+import { Banner } from '../../../../../shared/components'
 
 const address = 'apps.safety.views.listings.safetycheckslisting.'
 const SafetyChecksListing = () => {
@@ -64,6 +65,7 @@ const SafetyChecksListing = () => {
 
    return (
       <StyledWrapper>
+         <Banner id="safety-app-safety-checks-listing-top" />
          <StyledHeader>
             <h1>{t(address.concat('safety checks'))}</h1>
             <IconButton type="solid" onClick={createSafetyCheck}>
@@ -76,6 +78,7 @@ const SafetyChecksListing = () => {
             addTab={addTab}
             deleteCheck={deleteSafetyCheck}
          />
+         <Banner id="safety-app-safety-checks-listing-bottom" />
       </StyledWrapper>
    )
 }

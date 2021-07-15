@@ -8,6 +8,7 @@ import { TunnelBody, StyledInputWrapper } from '../styled'
 import { SafetyCheckContext } from '../../../../../context/check'
 import { Grid, Container } from '../../../styled'
 import { CREATE_CHECKUP } from '../../../../../graphql'
+import { Banner } from '../../../../../../../shared/components'
 
 const address = 'apps.safety.views.forms.safetyform.tunnels.checktunnel.'
 
@@ -64,6 +65,7 @@ const CheckTunnel = ({ state, closeTunnel }) => {
                title: busy ? 'Saving...' : 'Save',
             }}
          />
+         <Banner id="safety-apps-safety-checks-safety-check-details-check-tunnel-top" />
          <TunnelBody>
             <Grid>
                <Checkbox checked={mask} onChange={setMask}>
@@ -86,6 +88,7 @@ const CheckTunnel = ({ state, closeTunnel }) => {
                </StyledInputWrapper>
             </Container>
          </TunnelBody>
+         <Banner id="safety-apps-safety-checks-safety-check-details-check-tunnel-bottom" />
       </>
    )
 }

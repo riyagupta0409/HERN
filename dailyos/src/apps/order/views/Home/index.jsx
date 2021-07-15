@@ -11,6 +11,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../shared/components'
 
 const address = 'apps.order.views.home.'
@@ -40,6 +41,7 @@ const Home = () => {
          alignItems="flex-start"
          height="calc(100vh - 80px)"
       >
+         <Banner id="order-app-home-top" />
          <Flex container alignItems="center" justifyContent="center">
             <Text as="h1">{t(address.concat('order app'))}</Text>
             <Tooltip identifier="app_order_home_heading" />
@@ -60,6 +62,7 @@ const Home = () => {
                onClick={() => addTab('Planned', '/order/planned')}
             />
          </Flex>
+         <Banner id="order-app-home-bottom" />
       </Flex>
    )
 }

@@ -10,6 +10,7 @@ import {
 } from '@dailykit/ui'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { Banner } from '../../../../../shared/components'
 import { Tooltip } from '../../../../../shared/components/Tooltip'
 import { AddIcon } from '../../../assets/icons'
 import { ResponsiveFlex } from '../styled'
@@ -33,6 +34,7 @@ export default function PurchaseOrders() {
             </Tunnel>
          </Tunnels>
          <ResponsiveFlex margin="0 auto" maxWidth="1280px">
+            <Banner id="inventory-app-purchase-orders-listing-top" />
             <Flex container alignItems="center" justifyContent="space-between">
                <Flex container alignItems="center">
                   <Text as="h2">{t(address.concat('purchase orders'))}</Text>
@@ -68,6 +70,7 @@ export default function PurchaseOrders() {
             ) : (
                <PackagingPurchaseOrders />
             )}
+            <Banner id="inventory-app-purchase-orders-listing-bottom" />
          </ResponsiveFlex>
       </>
    )

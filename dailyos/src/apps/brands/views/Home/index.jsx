@@ -5,6 +5,7 @@ import { useSubscription } from '@apollo/react-hooks'
 import { BRANDS } from '../../graphql'
 import { StyledCardList, StyledHome } from './styled'
 import { useTabs } from '../../../../shared/providers'
+import { Banner } from '../../../../shared/components'
 
 export const Home = () => {
    const { addTab } = useTabs()
@@ -15,6 +16,7 @@ export const Home = () => {
 
    return (
       <StyledHome>
+         <Banner id="brands-app-home-top" />
          <h1>Brands</h1>
          <StyledCardList>
             <DashboardTile
@@ -26,6 +28,7 @@ export const Home = () => {
                onClick={() => addTab('Brands', '/brands/brands')}
             />
          </StyledCardList>
+         <Banner id="brands-app-home-bottom" />
       </StyledHome>
    )
 }

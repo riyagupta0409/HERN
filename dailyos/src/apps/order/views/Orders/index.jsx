@@ -11,7 +11,7 @@ import { useOrder } from '../../context'
 import { OrderListItem } from '../../components'
 import { logger } from '../../../../shared/utils'
 import { useTabs } from '../../../../shared/providers'
-import { ErrorState, InlineLoader } from '../../../../shared/components'
+import { ErrorState, InlineLoader, Banner } from '../../../../shared/components'
 
 const Orders = () => {
    const location = useLocation()
@@ -94,6 +94,7 @@ const Orders = () => {
    }
    return (
       <div>
+         <Banner id="orders-app-orders-top" />
          <Flex
             container
             height="48px"
@@ -142,6 +143,7 @@ const Orders = () => {
                <Filler message="No orders available!" />
             )}
          </Flex>
+         <Banner id="orders-app-orders-bottom" />
       </div>
    )
 }

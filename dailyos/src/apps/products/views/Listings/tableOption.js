@@ -3,7 +3,7 @@ const options = {
    // layout: 'fitColumns',
    autoResize: true,
    maxHeight: 420,
-   resizableColumns: true,
+   resizableColumns: false,
    virtualDomBuffer: 20,
    persistenceID: 'recipe_table',
    placeholder: 'No Data Available',
@@ -12,7 +12,7 @@ const options = {
    persistenceMode: 'local',
    selectablePersistence: true,
    persistence: {
-      group: false,
+      group: true,
       sort: true, //persist column sorting
       filter: true, //persist filter sorting
       page: true, //persist page

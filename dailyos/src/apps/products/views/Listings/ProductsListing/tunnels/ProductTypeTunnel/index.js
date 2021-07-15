@@ -7,7 +7,7 @@ import { randomSuffix } from '../../../../../../../shared/utils'
 import { TunnelBody, SolidTile } from '../styled'
 import { useTabs } from '../../../../../../../shared/providers'
 import { PRODUCTS } from '../../../../../graphql'
-import { Tooltip } from '../../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../../shared/components'
 
 const address = 'apps.menu.views.listings.productslisting.'
 
@@ -48,6 +48,7 @@ export default function ProductTypeTunnel({ close }) {
             }
          />
          <TunnelBody>
+            <Banner id="products-app-products-product-type-tunnel-top" />
             <SolidTile onClick={() => handleCreateProduct('simple')}>
                <Text as="h1">Simple Product</Text>
                <Text as="subtitle">Simple Product</Text>
@@ -73,6 +74,7 @@ export default function ProductTypeTunnel({ close }) {
                </Text>
             </SolidTile>
             <Spacer size="16px" />
+            <Banner id="products-app-products-product-type-tunnel-bottom" />
          </TunnelBody>
       </>
    )

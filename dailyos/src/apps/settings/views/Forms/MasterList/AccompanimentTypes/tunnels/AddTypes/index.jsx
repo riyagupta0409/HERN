@@ -6,7 +6,7 @@ import { TunnelHeader, ButtonTile, Flex, Form, Spacer } from '@dailykit/ui'
 
 import { MASTER } from '../../../../../../graphql'
 import { logger } from '../../../../../../../../shared/utils'
-import { Tooltip } from '../../../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../../../shared/components'
 
 const address = 'apps.settings.views.forms.accompanimenttypes.tunnels.addnew.'
 
@@ -68,6 +68,7 @@ const AddTypesTunnel = ({ closeTunnel }) => {
             close={() => closeTunnel(1)}
             tooltip={<Tooltip identifier="tunnel_accompaniment_heading" />}
          />
+         <Banner id="settings-app-master-lists-accompaniments-tunnel-top" />
          <Flex padding="16px">
             {types.map((type, i) => (
                <>
@@ -92,6 +93,7 @@ const AddTypesTunnel = ({ closeTunnel }) => {
                onClick={() => setTypes([...types, ''])}
             />
          </Flex>
+         <Banner id="settings-app-master-lists-accompaniments-tunnel-bottom" />
       </>
    )
 }

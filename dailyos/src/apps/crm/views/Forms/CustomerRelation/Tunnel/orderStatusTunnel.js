@@ -5,7 +5,11 @@ import { toast } from 'react-toastify'
 import { STATUS } from '../../../../graphql'
 import { TunnelHeaderContainer, StyledDiv } from './styled'
 import { logger } from '../../../../../../shared/utils'
-import { Tooltip, InlineLoader } from '../../../../../../shared/components'
+import {
+   Banner,
+   Tooltip,
+   InlineLoader,
+} from '../../../../../../shared/components'
 import { useTabs } from '../../../../../../shared/providers'
 import BrandContext from '../../../../context/Brand'
 
@@ -36,6 +40,8 @@ const OrderStatus = ({ tunnels, closeTunnel }) => {
                   <Tooltip identifier="customer_order_status_tunnelHeader" />
                }
             />
+            <Banner id="crm-app-customers-customer-details-order-status-tunnel-top" />
+
             <TunnelHeaderContainer>
                <StyledDiv>
                   <Text as="h2">
@@ -48,6 +54,7 @@ const OrderStatus = ({ tunnels, closeTunnel }) => {
                   </Text>
                </StyledDiv>
             </TunnelHeaderContainer>
+            <Banner id="crm-app-customers-customer-details-order-status-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

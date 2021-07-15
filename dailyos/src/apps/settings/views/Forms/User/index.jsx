@@ -12,6 +12,7 @@ import { initialState, reducers } from './store'
 import { logger } from '../../../../../shared/utils'
 import { useTabs } from '../../../../../shared/providers'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
@@ -130,6 +131,7 @@ const UserForm = () => {
    }
    return (
       <Flex padding="0 32px">
+         <Banner id="settings-app-users-user-details-top" />
          <Flex
             container
             as="header"
@@ -267,6 +269,7 @@ const UserForm = () => {
                />
             </StyledTemp>
          </div>
+         <Banner id="settings-app-users-user-details-bottom" />
       </Flex>
    )
 }

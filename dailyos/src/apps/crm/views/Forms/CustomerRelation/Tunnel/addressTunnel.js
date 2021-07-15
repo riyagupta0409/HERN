@@ -19,6 +19,7 @@ import {
    Tooltip,
    InlineLoader,
    AddressTunnel as EditAddress,
+   Banner,
 } from '../../../../../../shared/components'
 
 const AddressTunnel = ({ id, tunnels, closeTunnel }) => {
@@ -54,6 +55,7 @@ const AddressTunnel = ({ id, tunnels, closeTunnel }) => {
                      <Tooltip identifier="customer_address_list_tunnelHeader" />
                   }
                />
+               <Banner id="crm-app-customers-customer-details-address-tunnel-top" />
                <TunnelHeaderContainer>
                   {brand_customers[0]?.customer?.platform_customers[0]?.customerAddresses?.map(
                      address => {
@@ -80,6 +82,7 @@ const AddressTunnel = ({ id, tunnels, closeTunnel }) => {
                      }
                   )}
                </TunnelHeaderContainer>
+               <Banner id="crm-app-customers-customer-details-address-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
          <EditAddress

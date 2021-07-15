@@ -3,7 +3,7 @@ import { Flex, Form, Spacer, TunnelHeader } from '@dailykit/ui'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { TunnelContainer } from '../../../../components'
 import { GENERAL_ERROR_MESSAGE } from '../../../../constants/errorMessages'
@@ -117,7 +117,7 @@ export default function AddressTunnel({ close, formState }) {
             }
             description={`Add address for ${formState.name}`}
          />
-
+         <Banner id="inventory-apps-suppliers-address-tunnel-top" />
          <TunnelContainer>
             <>
                <Spacer size="16px" />
@@ -255,6 +255,7 @@ export default function AddressTunnel({ close, formState }) {
                </Form.Group>
             </>
          </TunnelContainer>
+         <Banner id="inventory-apps-suppliers-address-tunnel-bottom" />
       </>
    )
 }

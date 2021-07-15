@@ -7,6 +7,7 @@ import BrandContext from '../../context/Brand'
 import { useTabs } from '../../../../shared/providers'
 import { StyledHome, StyledCardList, StyledHeader } from './styled'
 import { CUSTOMERS_COUNT, COUPON_TOTAL, CAMPAIGN_TOTAL } from '../../graphql'
+import { Banner } from '../../../../shared/components'
 
 const Home = () => {
    const [context, setContext] = useContext(BrandContext)
@@ -23,6 +24,7 @@ const Home = () => {
    const [search, setSearch] = React.useState('')
    return (
       <StyledHome>
+         <Banner id="crm-app-home-top" />
          <StyledHeader>
             <Text as="h1">Customer Relation Manager</Text>
          </StyledHeader>
@@ -44,6 +46,7 @@ const Home = () => {
                onClick={() => addTab('Campaign', '/crm/campaign')}
             />
          </StyledCardList>
+         <Banner id="crm-app-home-bottom" />
       </StyledHome>
    )
 }

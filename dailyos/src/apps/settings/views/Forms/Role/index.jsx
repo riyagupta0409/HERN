@@ -20,6 +20,7 @@ import { Spacer } from '../../../../../shared/styled'
 import { useTabs } from '../../../../../shared/providers'
 import { Apps, AppsTunnel, Users, UsersTunnel } from './sections'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
@@ -139,6 +140,7 @@ const RoleForm = () => {
    }
    return (
       <Flex padding="0 32px">
+         <Banner id="settings-app-roles-role-details-top" />
          <Flex
             container
             as="header"
@@ -207,6 +209,7 @@ const RoleForm = () => {
                />
             </Tunnel>
          </Tunnels>
+         <Banner id="settings-app-roles-role-details-bottom" />
       </Flex>
    )
 }

@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/react-hooks'
 import { Flex, Form, Spacer, TunnelHeader } from '@dailykit/ui'
 import React from 'react'
-import { Tooltip } from '../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../shared/components'
 import { BRANDS } from '../../../graphql'
 import { toast } from 'react-toastify'
 import validator from '../../validator'
@@ -149,6 +149,7 @@ const CreateBrandTunnel = ({ closeTunnel }) => {
             close={close}
             tooltip={<Tooltip identifier="create_brand_tunnelHeader" />}
          />
+         <Banner id="brands-app-brands-create-brand-tunnel-top" />
          <Flex padding="16px">
             <Form.Group>
                <Form.Label htmlFor="title" title="title">
@@ -192,6 +193,7 @@ const CreateBrandTunnel = ({ closeTunnel }) => {
                   ))}
             </Form.Group>
          </Flex>
+         <Banner id="brands-app-brands-create-brand-tunnel-bottom" />
       </>
    )
 }

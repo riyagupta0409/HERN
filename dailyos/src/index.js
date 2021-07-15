@@ -14,7 +14,13 @@ import 'react-toastify/dist/ReactToastify.css'
 import Backend from 'i18next-http-backend'
 
 import App from './App'
-import { AuthProvider, TabProvider, DataProvider } from './shared/providers'
+import {
+   AuthProvider,
+   TabProvider,
+   DataProvider,
+   BottomBarProvider,
+   BannerProvider,
+} from './shared/providers'
 import { get_env } from './shared/utils'
 
 import './global.css'
@@ -22,8 +28,7 @@ import './global.css'
 const languages = ['en', 'fr', 'es', 'he', 'de', 'el', 'hi', 'it']
 
 Sentry.init({
-   dsn:
-      'https://55533db4419a47f1b4416c0512a608ad@o460444.ingest.sentry.io/5460641',
+   dsn: 'https://55533db4419a47f1b4416c0512a608ad@o460444.ingest.sentry.io/5460641',
    integrations: [new Integrations.BrowserTracing()],
 
    // We recommend adjusting this value in production, or using tracesSampler
@@ -67,20 +72,24 @@ i18n
          <AuthProvider keycloak={keycloak}>
             <DataProvider>
                <Router basename={get_env('PUBLIC_URL')}>
-                  <TabProvider>
-                     <ToastContainer
-                        position="bottom-left"
-                        autoClose={3000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                     />
-                     <App />
-                  </TabProvider>
+                  <BottomBarProvider>
+                     <BannerProvider>
+                        <TabProvider>
+                           <ToastContainer
+                              position="bottom-left"
+                              autoClose={3000}
+                              hideProgressBar={false}
+                              newestOnTop={false}
+                              closeOnClick
+                              rtl={false}
+                              pauseOnFocusLoss
+                              draggable
+                              pauseOnHover
+                           />
+                           <App />
+                        </TabProvider>
+                     </BannerProvider>
+                  </BottomBarProvider>
                </Router>
             </DataProvider>
          </AuthProvider>,

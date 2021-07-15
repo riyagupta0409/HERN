@@ -1,6 +1,10 @@
 import React from 'react'
 import { TunnelHeader } from '@dailykit/ui'
-import { AssetUploader, Tooltip } from '../../../../../../../shared/components'
+import {
+   AssetUploader,
+   Tooltip,
+   Banner,
+} from '../../../../../../../shared/components'
 import { TunnelBody } from '../styled'
 import { useMutation } from '@apollo/react-hooks'
 import { INSTRUCTION_STEP } from '../../../../../graphql'
@@ -42,10 +46,12 @@ const StepPhotoTunnel = ({ stepId, closeTunnel }) => {
             tooltip={<Tooltip identifier="cooking_step_photo_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-recipes-create-recipe-cooking-step-photo-tunnel-top" />
             <AssetUploader
                onAssetUpload={url => addImage(url)}
                onImageSelect={image => addImage(image)}
             />
+            <Banner id="products-app-recipes-create-recipe-cooking-step-photo-tunnel-bottom" />
          </TunnelBody>
       </>
    )

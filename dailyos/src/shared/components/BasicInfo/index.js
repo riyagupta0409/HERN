@@ -12,6 +12,7 @@ import { TunnelBody, ImageContainer } from './styled'
 import AssetTunnel from './asset'
 import { Tooltip } from '../Tooltip'
 import { DeleteIcon } from '../../assets/icons'
+import Banner from '../Banner'
 
 const BasicInfo = ({
    data,
@@ -152,6 +153,7 @@ const BasicInfo = ({
                   tooltip={<Tooltip identifier={headerIdentifier} />}
                />
                <TunnelBody>
+                  <Banner id="basic-info-tunnel-top" />
                   <Form.Group>
                      <Form.Label htmlFor="text" title="title">
                         <Flex container alignItems="center">
@@ -244,6 +246,7 @@ const BasicInfo = ({
                         style={{ margin: '20px 0' }}
                      />
                   )}
+                  <Banner id="basic-info-tunnel-bottom" />
                </TunnelBody>
             </Tunnel>
             <Tunnel layer={2}>

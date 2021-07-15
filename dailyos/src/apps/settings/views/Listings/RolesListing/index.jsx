@@ -8,7 +8,7 @@ import { ROLES } from '../../../graphql'
 import tableOptions from '../tableOption'
 import { logger } from '../../../../../shared/utils'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
-import { InlineLoader, Tooltip } from '../../../../../shared/components'
+import { InlineLoader, Tooltip, Banner } from '../../../../../shared/components'
 
 const RolesListing = () => {
    const tableRef = React.useRef()
@@ -64,6 +64,8 @@ const RolesListing = () => {
 
    return (
       <Flex margin="0 auto" width="calc(100% - 32px)" maxWidth="1280px">
+         <Banner id="settings-app-roles-listing-top" />
+
          <Flex
             container
             as="header"
@@ -89,6 +91,7 @@ const RolesListing = () => {
                }}
             />
          )}
+         <Banner id="settings-app-roles-listing-bottom" />
       </Flex>
    )
 }

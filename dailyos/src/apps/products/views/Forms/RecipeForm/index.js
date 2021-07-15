@@ -19,9 +19,11 @@ import { isEmpty, stubTrue } from 'lodash'
 import { useParams } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
+   InsightDashboard,
 } from '../../../../../shared/components'
 import { logger, randomSuffix } from '../../../../../shared/utils'
 import { CloseIcon, EyeIcon, TickIcon } from '../../../assets/icons'
@@ -62,9 +64,8 @@ const RecipeForm = () => {
       initialState
    )
 
-   const [productTunnels, openProductsTunnel, closeProductsTunnel] = useTunnel(
-      1
-   )
+   const [productTunnels, openProductsTunnel, closeProductsTunnel] =
+      useTunnel(1)
    const [
       linkedProductsTunnels,
       openLinkedProductsTunnel,
@@ -205,15 +206,15 @@ const RecipeForm = () => {
    }
    const toggleSubRecipe = () => {
       const val = !state.isSubRecipe
-         updateRecipe({
-            variables: {
-               id: state.id,
-               set: {
-                  isSubRecipe: val,
-               },
+      updateRecipe({
+         variables: {
+            id: state.id,
+            set: {
+               isSubRecipe: val,
             },
-         })
-      }
+         },
+      })
+   }
    const clone = () => {
       if (cloning) return
       const clonedRecipe = {
@@ -302,6 +303,7 @@ const RecipeForm = () => {
                   />
                </Tunnel>
             </Tunnels>
+            <Banner id="products-app-recipes-create-recipe-top" />
             <ResponsiveFlex
                container
                justifyContent="space-between"
@@ -378,9 +380,11 @@ const RecipeForm = () => {
                      name="subRecipe"
                      value={state.isSubRecipe}
                      onChange={toggleSubRecipe}
-                  > <Flex container alignItems="center">
+                  >
+                     {' '}
+                     <Flex container alignItems="center">
                         Sub Recipe
-                  <Spacer xAxis size="16px" />
+                        <Spacer xAxis size="16px" />
                         <Tooltip identifier="sub_publish" />
                      </Flex>
                   </Form.Toggle>
@@ -405,6 +409,7 @@ const RecipeForm = () => {
                      <HorizontalTab>Basic Details</HorizontalTab>
                      <HorizontalTab>Ingredients</HorizontalTab>
                      <HorizontalTab>Cooking Steps</HorizontalTab>
+                     <HorizontalTab>Insights</HorizontalTab>
                   </HorizontalTabList>
                   <HorizontalTabPanels>
                      <HorizontalTabPanel>
@@ -420,13 +425,26 @@ const RecipeForm = () => {
                         <Servings state={state} />
                         <Spacer size="32px" />
                         <Ingredients state={state} />
+                        <Banner id="products-app-single-ingredient-ingredient-tab-bottom" />
                      </HorizontalTabPanel>
                      <HorizontalTabPanel>
                         <Procedures state={state} />
+                        <Banner id="products-app-single-ingredient-cooking-steps-tab-bottom" />
+                     </HorizontalTabPanel>
+                     <HorizontalTabPanel>
+                        <InsightDashboard
+                           appTitle="Products App"
+                           moduleTitle="Recipe Page"
+                           variables={{
+                              recipeId,
+                           }}
+                           showInTunnel={false}
+                        />
                      </HorizontalTabPanel>
                   </HorizontalTabPanels>
                </HorizontalTabs>
             </Flex>
+            <Banner id="products-app-recipes-create-recipe-bottom" />
          </>
       </RecipeContext.Provider>
    )

@@ -9,7 +9,7 @@ import {
    Text,
 } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-import { Tooltip } from '../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { CREATE_WALLET_TXN } from '../../../../graphql/mutations'
 import validators from '../../../validators'
@@ -82,6 +82,7 @@ const WalletTxnTunnel = ({ closeWalletTxnTunnel, walletId }) => {
                action: handleCreateTxn,
             }}
          />
+         <Banner id="crm-app-customers-customer-details-wallet-txn-tunnel-top" />
          <Flex padding="16px">
             <Text as="subtitle">Type</Text>
             <RadioGroup
@@ -114,6 +115,7 @@ const WalletTxnTunnel = ({ closeWalletTxnTunnel, walletId }) => {
                   ))}
             </Form.Group>
          </Flex>
+         <Banner id="crm-app-customers-customer-details-wallet-txn-tunnel-bottom" />
       </>
    )
 }

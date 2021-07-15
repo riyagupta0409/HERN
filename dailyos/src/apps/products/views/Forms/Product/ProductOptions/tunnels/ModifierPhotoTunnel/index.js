@@ -3,6 +3,7 @@ import { TunnelHeader, Flex } from '@dailykit/ui'
 import {
    AssetUploader,
    Tooltip,
+   Banner,
 } from '../../../../../../../../shared/components'
 import { ModifiersContext } from '../../../../../../context/product/modifiers'
 import { TunnelBody } from '../../../tunnels/styled'
@@ -48,10 +49,12 @@ const ModifierPhotoTunnel = ({ close }) => {
             tooltip={<Tooltip identifier="modifier_option_photo_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-single-product-modifier-option-photo-tunnel-top" />
             <AssetUploader
                onAssetUpload={url => addImage(url)}
                onImageSelect={image => addImage(image)}
             />
+            <Banner id="products-app-single-product-modifier-option-photo-tunnel-bottom" />
          </TunnelBody>
       </>
    )

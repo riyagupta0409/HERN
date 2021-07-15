@@ -6,7 +6,7 @@ import { ReactTabulator } from '@dailykit/react-tabulator'
 
 import tableOptions from '../tableOption'
 import { MASTER } from '../../../graphql'
-import { Tooltip } from '../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../shared/components'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
 
 const address = 'apps.settings.views.listings.masterlist.'
@@ -138,6 +138,7 @@ const MasterList = () => {
 
    return (
       <Flex margin="0 auto" width="calc(100% - 32px)" maxWidth="1280px">
+         <Banner id="settings-app-masters-listing-top" />
          <Flex
             container
             as="header"
@@ -157,6 +158,7 @@ const MasterList = () => {
             rowClick={rowClick}
             options={tableOptions}
          />
+         <Banner id="settings-app-masters-listing-bottom" />
       </Flex>
    )
 }

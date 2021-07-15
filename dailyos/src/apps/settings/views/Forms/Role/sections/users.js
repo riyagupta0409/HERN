@@ -21,6 +21,7 @@ import {
 
 import { ROLES } from '../../../../graphql'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
@@ -92,6 +93,8 @@ export const UsersTunnel = ({ closeTunnel, selectedUsers }) => {
             right={{ action: save, title: 'Save' }}
             tooltip={<Tooltip identifier="form_role_tunnel_users_heading" />}
          />
+         <Banner id="settings-app-roles-role-details-add-users-tunnel-top" />
+
          <Flex padding="16px">
             {isLoading && <InlineLoader />}
             {!isLoading && error && <ErrorState />}
@@ -140,6 +143,7 @@ export const UsersTunnel = ({ closeTunnel, selectedUsers }) => {
                <Filler message="No users yet!" />
             )}
          </Flex>
+         <Banner id="settings-app-roles-role-details-add-users-tunnel-bottom" />
       </>
    )
 }

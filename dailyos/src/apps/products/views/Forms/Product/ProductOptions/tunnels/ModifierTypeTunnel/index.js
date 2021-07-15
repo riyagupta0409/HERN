@@ -2,7 +2,7 @@ import React from 'react'
 import { TunnelHeader, Text, OptionTile, Spacer } from '@dailykit/ui'
 import { TunnelBody, SolidTile } from '../../../tunnels/styled'
 import { ModifiersContext } from '../../../../../../context/product/modifiers'
-import { Tooltip } from '../../../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../../../shared/components'
 
 const ModifierTypeTunnel = ({ open, close }) => {
    const { modifiersDispatch } = React.useContext(ModifiersContext)
@@ -23,6 +23,7 @@ const ModifierTypeTunnel = ({ open, close }) => {
             tooltip={<Tooltip identifier="modifier_option_type_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-single-product-modifier-option-type-tunnel-top" />
             <OptionTile
                title="Sachet Item"
                onClick={() => select('sachetItem')}
@@ -37,6 +38,7 @@ const ModifierTypeTunnel = ({ open, close }) => {
                title="Simple Recipe Servings"
                onClick={() => select('simpleRecipeYield')}
             />
+            <Banner id="products-app-single-product-modifier-option-type-tunnel-bottom" />
          </TunnelBody>
       </>
    )

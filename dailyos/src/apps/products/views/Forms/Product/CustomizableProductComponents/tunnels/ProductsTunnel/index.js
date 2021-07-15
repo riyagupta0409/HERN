@@ -13,6 +13,7 @@ import { toast } from 'react-toastify'
 import {
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../../../shared/components'
 import { logger } from '../../../../../../../../shared/utils'
 import {
@@ -95,6 +96,7 @@ const ProductsTunnel = ({ closeTunnel, productId }) => {
             }
          />
          <TunnelBody>
+            <Banner id="products-app-customizable-product-products-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -128,6 +130,7 @@ const ProductsTunnel = ({ closeTunnel, productId }) => {
                   </ListOptions>
                </List>
             )}
+            <Banner id="products-app-customizable-product-products-tunnel-bottom" />
          </TunnelBody>
       </>
    )

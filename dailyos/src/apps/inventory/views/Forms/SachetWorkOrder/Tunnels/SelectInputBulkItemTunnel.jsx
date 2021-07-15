@@ -16,6 +16,7 @@ import {
    ErrorState,
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../shared/components'
 import { logger } from '../../../../../../shared/utils'
 import { GENERAL_ERROR_MESSAGE } from '../../../../constants/errorMessages'
@@ -87,6 +88,7 @@ export default function SelectInputBulkItemTunnel({ close, state }) {
             }
          />
          <TunnelWrapper>
+            <Banner id="inventory-app-work-orders-sachet-input-bulk-item-tunnel-top" />
             {list.length ? (
                <List>
                   <ListSearch
@@ -122,6 +124,7 @@ export default function SelectInputBulkItemTunnel({ close, state }) {
             ) : (
                <Filler message={NO_BULK_ITEMS} />
             )}
+            <Banner id="inventory-app-work-orders-sachet-input-bulk-item-tunnel-bottom" />
          </TunnelWrapper>
       </>
    )

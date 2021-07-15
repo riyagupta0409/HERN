@@ -7,7 +7,7 @@ import { useTabs } from '../../../../../../shared/providers'
 import { CREATE_WEBPAGE } from '../../../../graphql'
 import BrandContext from '../../../../context/Brand'
 
-import { Tooltip, InlineLoader } from '../../../../../../shared/components'
+import { Tooltip, Banner } from '../../../../../../shared/components'
 
 export default function PageCreationTunnel({ close }) {
    const { addTab } = useTabs()
@@ -150,6 +150,7 @@ export default function PageCreationTunnel({ close }) {
             close={() => closeFunc()}
             tooltip={<Tooltip identifier="webpage_creation_tunnelHeader" />}
          />
+         <Banner id="content-app-pages-create-page-tunnel-top" />
          <TunnelBody>
             <Form.Group>
                <Flex container alignItems="flex-end">
@@ -213,6 +214,7 @@ export default function PageCreationTunnel({ close }) {
                   ))}
             </Form.Group>
          </TunnelBody>
+         <Banner id="content-app-pages-create-page-tunnel-bottom" />
       </>
    )
 }

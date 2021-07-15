@@ -25,6 +25,7 @@ import {
    ORGANIZATION_PURCHASE_ORDER,
 } from '../../graphql'
 import { DeleteIcon } from '../../../assets/icons'
+import { Banner } from '../../../../../shared/components'
 
 export default function CartTunnel({ close, open }) {
    const {
@@ -42,7 +43,7 @@ export default function CartTunnel({ close, open }) {
    return (
       <>
          <TunnelHeader title="Purchase Orders" close={() => close(1)} />
-
+         <Banner id="inventory-app-packaging-hub-products-cart-tunnel-top" />
          <TunnelContainer>
             {loading ? (
                <Loader />
@@ -50,6 +51,7 @@ export default function CartTunnel({ close, open }) {
                <Content open={open} items={items} refresh={refetch} />
             )}
          </TunnelContainer>
+         <Banner id="inventory-app-packaging-hub-products-cart-tunnel-bottom" />
       </>
    )
 }

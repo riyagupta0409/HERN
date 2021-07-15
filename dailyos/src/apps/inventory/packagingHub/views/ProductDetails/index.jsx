@@ -40,6 +40,7 @@ export default function ProductDetailsPage() {
       <>
          <CartButton />
          <Wrapper>
+            <h1>HELLO </h1>
             <Header>
                <div />
                <Badge />

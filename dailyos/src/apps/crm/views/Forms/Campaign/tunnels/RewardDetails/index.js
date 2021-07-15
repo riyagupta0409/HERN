@@ -16,7 +16,7 @@ import { toast } from 'react-toastify'
 import { TunnelBody, StyledContainer, InputWrap } from './styled'
 import { UPDATE_REWARD } from '../../../../../graphql'
 import { logger } from '../../../../../../../shared/utils'
-import { Tooltip } from '../../../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../../../shared/components'
 import validatorFunc from '../../../validator'
 
 export default function RewardDetailsunnel({
@@ -182,6 +182,8 @@ export default function RewardDetailsunnel({
                      <Tooltip identifier="campaign_rewardDetails_tunnelHeader" />
                   }
                />
+               <Banner id="crm-app-campaigns-campaign-details-reward-details-tunnel-top" />
+
                <TunnelBody>
                   {conditionId ? (
                      <StyledContainer>
@@ -334,6 +336,7 @@ export default function RewardDetailsunnel({
                      )}
                   </InputWrap>
                </TunnelBody>
+               <Banner id="crm-app-campaigns-campaign-details-reward-details-tunnel-bottom" />
             </Tunnel>
          </Tunnels>
       </>

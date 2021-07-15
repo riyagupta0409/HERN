@@ -32,9 +32,11 @@ import {
 import { Processings, Stats } from './components'
 import validator from './validators'
 import {
+   Banner,
    ErrorState,
    InlineLoader,
    Tooltip,
+   InsightDashboard,
 } from '../../../../../shared/components'
 import { useTabs } from '../../../../../shared/providers'
 import { HeaderWrapper, InputTextWrapper } from './styled'
@@ -73,10 +75,8 @@ const IngredientForm = () => {
    const [state, setState] = React.useState({})
    const [linkedRecipesCount, setLinkedRecipesCount] = React.useState(0)
    const [options, setOptions] = React.useState([])
-   const [
-      searchIngredientCategory,
-      setSearchIngredientCategory,
-   ] = React.useState('')
+   const [searchIngredientCategory, setSearchIngredientCategory] =
+      React.useState('')
 
    const selectedOption = option => {
       updateIngredientCategory({
@@ -243,6 +243,7 @@ const IngredientForm = () => {
       <IngredientContext.Provider
          value={{ ingredientState, ingredientDispatch }}
       >
+         <Banner id="products-app-single-ingredient-top" />
          <Tunnels tunnels={linkedRecipesTunnels}>
             <Tunnel layer={1} size="sm">
                <LinkedRecipesTunnel
@@ -297,12 +298,23 @@ const IngredientForm = () => {
                   )}
                </Form.Group>
             </InputTextWrapper>
+
             <Flex
                container
                alignItems="center"
                justifyContent="flex-end"
                width="100%"
             >
+               <Flex container alignItems="center">
+                  <InsightDashboard
+                     appTitle="Products App"
+                     moduleTitle="Ingredient Page"
+                     variables={{
+                        ingredientId,
+                     }}
+                  />
+               </Flex>
+               <Spacer xAxis size="8px" />
                <div>
                   {state.isValid?.status ? (
                      <Flex container alignItems="center">
@@ -346,6 +358,7 @@ const IngredientForm = () => {
             <Spacer size="32px" />
             <Processings state={state} />
          </Flex>
+         <Banner id="products-app-single-ingredient-bottom" />
       </IngredientContext.Provider>
    )
 }

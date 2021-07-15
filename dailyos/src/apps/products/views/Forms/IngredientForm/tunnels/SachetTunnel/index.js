@@ -16,6 +16,7 @@ import {
    InlineLoader,
    OperationConfig,
    Tooltip,
+   Banner,
 } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
 import { IngredientContext } from '../../../../../context/ingredient'
@@ -149,37 +150,6 @@ const SachetTunnel = ({ state, closeTunnel, openTunnel }) => {
             quantity: quantity.value,
             unit: unit.value,
             tracking: tracking.value,
-            modeOfFulfillments: {
-               data: [
-                  {
-                     type: 'realTime',
-                     isPublished: ingredientState.realTime.isPublished,
-                     isLive: ingredientState.realTime.isLive,
-                     position: 0,
-                     bulkItemId: ingredientState.realTime.bulkItem?.id || null,
-                     sachetItemId: null,
-                     accuracy: ingredientState.realTime.accuracy,
-                     packagingId:
-                        ingredientState.realTime.packaging?.id || null,
-                     operationConfigId:
-                        ingredientState.realTime.operationConfig?.id || null,
-                  },
-                  {
-                     type: 'plannedLot',
-                     isPublished: ingredientState.plannedLot.isPublished,
-                     isLive: ingredientState.plannedLot.isLive,
-                     position: 1000000,
-                     bulkItemId: null,
-                     sachetItemId:
-                        ingredientState.plannedLot.sachetItem?.id || null,
-                     accuracy: ingredientState.plannedLot.accuracy,
-                     packagingId:
-                        ingredientState.plannedLot.packaging?.id || null,
-                     operationConfigId:
-                        ingredientState.realTime.operationConfig?.id || null,
-                  },
-               ],
-            },
          }
          createSachet({
             variables: {
@@ -218,6 +188,7 @@ const SachetTunnel = ({ state, closeTunnel, openTunnel }) => {
             tooltip={<Tooltip identifier="add_sachet_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-ingredients-sachet-tunnel-top" />
             {units.length ? (
                <>
                   <Flex maxWidth="300px">
@@ -286,232 +257,6 @@ const SachetTunnel = ({ state, closeTunnel, openTunnel }) => {
                         </Flex>
                      </Form.Toggle>
                   </Flex>
-                  <Spacer size="24px" />
-                  <StyledTable cellSpacing={0}>
-                     <thead>
-                        <tr>
-                           <th>
-                              <Flex container alignItems="center">
-                                 Mode of Fulfillment
-                                 <Tooltip identifier="sachet_mof" />
-                              </Flex>
-                           </th>
-                           <th>
-                              <Flex container alignItems="center">
-                                 Item
-                                 <Tooltip identifier="sachet_mode_item" />
-                              </Flex>
-                           </th>
-                           <th>
-                              <Flex container alignItems="center">
-                                 Accuracy
-                                 <Tooltip identifier="sachet_mode_accuracy" />
-                              </Flex>
-                           </th>
-                           <th>
-                              <Flex container alignItems="center">
-                                 Packaging
-                                 <Tooltip identifier="sachet_mode_packaging" />
-                              </Flex>
-                           </th>
-                           <th>
-                              <Flex container alignItems="center">
-                                 Operational Configuration
-                                 <Tooltip identifier="sachet_mode_opconfig" />
-                              </Flex>
-                           </th>
-                        </tr>
-                     </thead>
-                     <tbody>
-                        <tr>
-                           <td>
-                              <Flex container>
-                                 <Form.Checkbox
-                                    id="realTimeIsLive"
-                                    name="realTimeIsLive"
-                                    value={ingredientState.realTime.isLive}
-                                    onChange={() =>
-                                       propagate(
-                                          'realTime',
-                                          !ingredientState.realTime.isLive
-                                       )
-                                    }
-                                 >
-                                    Real Time
-                                 </Form.Checkbox>
-                                 <Tooltip identifier="sachet_real_time" />
-                              </Flex>
-                           </td>
-                           <td>
-                              {ingredientState.realTime.bulkItem?.title || '-'}
-                           </td>
-                           <td>
-                              {ingredientState.realTime.bulkItem ? (
-                                 <RadioGroup
-                                    options={options}
-                                    active={3}
-                                    onChange={option =>
-                                       ingredientDispatch({
-                                          type: 'MODE',
-                                          payload: {
-                                             mode: 'realTime',
-                                             name: 'accuracy',
-                                             value: option.value,
-                                          },
-                                       })
-                                    }
-                                 />
-                              ) : (
-                                 '-'
-                              )}
-                           </td>
-                           <td>
-                              {ingredientState.realTime.bulkItem ? (
-                                 <>
-                                    {ingredientState.realTime.packaging ? (
-                                       <>
-                                          {
-                                             ingredientState.realTime.packaging
-                                                ?.title
-                                          }
-                                       </>
-                                    ) : (
-                                       <IconButton
-                                          type="ghost"
-                                          onClick={() =>
-                                             selectPackaging('realTime')
-                                          }
-                                       >
-                                          <PlusIcon color="#07A8E2" />
-                                       </IconButton>
-                                    )}
-                                 </>
-                              ) : (
-                                 '-'
-                              )}
-                           </td>
-                           <td>
-                              {ingredientState.realTime.bulkItem ? (
-                                 <>
-                                    {ingredientState.realTime
-                                       .operationConfig ? (
-                                       <>
-                                          {`${ingredientState.realTime.operationConfig.station.name} - ${ingredientState.realTime.operationConfig.labelTemplate.name}`}
-                                       </>
-                                    ) : (
-                                       <IconButton
-                                          type="ghost"
-                                          onClick={() =>
-                                             selectOperationConfiguration(
-                                                'realTime'
-                                             )
-                                          }
-                                       >
-                                          <PlusIcon color="#07A8E2" />
-                                       </IconButton>
-                                    )}
-                                 </>
-                              ) : (
-                                 '-'
-                              )}
-                           </td>
-                        </tr>
-                        <tr>
-                           <td>
-                              <Flex container>
-                                 <Form.Checkbox
-                                    id="plannedLotIsLive"
-                                    name="plannedLotIsLive"
-                                    value={ingredientState.plannedLot.isLive}
-                                    onChange={() =>
-                                       propagate(
-                                          'plannedLot',
-                                          !ingredientState.plannedLot.isLive
-                                       )
-                                    }
-                                 >
-                                    Planned Lot
-                                 </Form.Checkbox>
-                                 <Tooltip identifier="sachet_planned_lot" />
-                              </Flex>
-                           </td>
-                           <td>
-                              {ingredientState.plannedLot.sachetItem?.title ||
-                                 '-'}
-                           </td>
-                           <td>
-                              {ingredientState.plannedLot.sachetItem ? (
-                                 <RadioGroup
-                                    options={options}
-                                    active={3}
-                                    onChange={option =>
-                                       ingredientDispatch({
-                                          type: 'MODE',
-                                          payload: {
-                                             mode: 'plannedLot',
-                                             name: 'accuracy',
-                                             value: option.value,
-                                          },
-                                       })
-                                    }
-                                 />
-                              ) : (
-                                 '-'
-                              )}
-                           </td>
-                           <td>
-                              {ingredientState.plannedLot.sachetItem ? (
-                                 <>
-                                    {ingredientState.plannedLot.packaging ? (
-                                       <>
-                                          {
-                                             ingredientState.plannedLot
-                                                .packaging?.title
-                                          }
-                                       </>
-                                    ) : (
-                                       <IconButton
-                                          type="ghost"
-                                          onClick={() =>
-                                             selectPackaging('plannedLot')
-                                          }
-                                       >
-                                          <PlusIcon color="#07A8E2" />
-                                       </IconButton>
-                                    )}
-                                 </>
-                              ) : (
-                                 '-'
-                              )}
-                           </td>
-                           <td>
-                              {ingredientState.plannedLot.sachetItem ? (
-                                 <>
-                                    {ingredientState.plannedLot
-                                       .operationConfig ? (
-                                       <>
-                                          {`${ingredientState.plannedLot.operationConfig.station.name} - ${ingredientState.plannedLot.operationConfig.labelTemplate.name}`}
-                                       </>
-                                    ) : (
-                                       <IconButton
-                                          type="ghost"
-                                          onClick={() =>
-                                             selectOperationConfiguration(
-                                                'plannedLot'
-                                             )
-                                          }
-                                       >
-                                          <PlusIcon color="#07A8E2" />
-                                       </IconButton>
-                                    )}
-                                 </>
-                              ) : (
-                                 '-'
-                              )}
-                           </td>
-                        </tr>
-                     </tbody>
-                  </StyledTable>
                </>
             ) : (
                <Filler
@@ -519,6 +264,7 @@ const SachetTunnel = ({ state, closeTunnel, openTunnel }) => {
                   height="500px"
                />
             )}
+            <Banner id="products-app-ingredients-sachet-tunnel-bottom" />
          </TunnelBody>
       </>
    )

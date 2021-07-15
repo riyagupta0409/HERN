@@ -14,7 +14,7 @@ import {
 import React from 'react'
 import { toast } from 'react-toastify'
 import EditIcon from '../../../../../shared/assets/icons/Edit'
-import { Tooltip } from '../../../../../shared/components'
+import { Banner, Tooltip } from '../../../../../shared/components'
 import { logger } from '../../../../../shared/utils'
 import { GENERAL_ERROR_MESSAGE } from '../../../constants/errorMessages'
 import { useTabs } from '../../../../../shared/providers'
@@ -86,7 +86,7 @@ export default function FormView({ state }) {
                <MoreItemInfoTunnel close={closeItemInfoTunnel} state={state} />
             </Tunnel>
          </Tunnels>
-
+         <Banner id="inventory-app-packaging-add-packaging-top" />
          <Flex
             container
             alignItems="center"
@@ -133,6 +133,7 @@ export default function FormView({ state }) {
          <Spacer size="16px" />
 
          <PackagingStats state={state} />
+         <Banner id="inventory-app-packaging-add-packaging-bottom" />
       </>
    )
 }

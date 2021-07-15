@@ -114,3 +114,190 @@ export const TOOLTIPS_BY_APP = gql`
       }
    }
 `
+
+export const GET_BANNER_DATA = gql`
+   subscription ux_dailyosDivId($id: String!, $params: jsonb!) {
+      ux_dailyosDivId(where: { id: { _eq: $id }, isActive: { _eq: true } }) {
+         id
+         isActive
+         dailyosDivIdFiles(where: { isActive: { _eq: true } }) {
+            isActive
+            condition {
+               isValid(args: { params: $params })
+            }
+            divId
+            file {
+               id
+               fileType
+               fileName
+               path
+               linkedCssFiles {
+                  id
+                  position
+                  cssFile {
+                     fileName
+                     fileType
+                     path
+                  }
+               }
+               linkedJsFiles {
+                  id
+                  position
+                  jsFile {
+                     fileName
+                     fileType
+                     path
+                  }
+               }
+            }
+            content
+         }
+      }
+   }
+`
+export const UPDATE_BANNER_CLOSE_COUNT = gql`
+   mutation UPDATE_CLOSE_COUNT(
+      $divId: String!
+      $userEmail: String!
+      $fileId: Int!
+   ) {
+      update_ux_user_dailyosDivIdFile(
+         where: {
+            divId: { _eq: $divId }
+            fileId: { _eq: $fileId }
+            userEmail: { _eq: $userEmail }
+         }
+         _inc: { closedCount: 1 }
+      ) {
+         returning {
+            closedCount
+            divId
+            fileId
+            userEmail
+         }
+      }
+   }
+`
+export const UPDATE_SHOWN_COUNT = gql`
+   mutation UPDATE_SHOWN_COUNT(
+      $divId: String!
+      $userEmail: String!
+      $fileId: Int!
+   ) {
+      update_ux_user_dailyosDivIdFile(
+         where: {
+            divId: { _eq: $divId }
+            fileId: { _eq: $fileId }
+            userEmail: { _eq: $userEmail }
+         }
+         _inc: { shownCount: 1 }
+      ) {
+         returning {
+            divId
+            fileId
+            userEmail
+            shownCount
+         }
+      }
+   }
+`
+
+export const UPDATE_LAST_VISITED = gql`
+   mutation UPDATE_LAST_VISITED(
+      $divId: String!
+      $userEmail: String!
+      $fileId: Int!
+      $lastVisited: timestamptz!
+   ) {
+      update_ux_user_dailyosDivIdFile(
+         where: {
+            divId: { _eq: $divId }
+            fileId: { _eq: $fileId }
+            userEmail: { _eq: $userEmail }
+         }
+         _set: { lastVisited: $lastVisited }
+      ) {
+         returning {
+            divId
+            fileId
+            userEmail
+            shownCount
+            lastVisited
+         }
+      }
+   }
+`
+export const GET_SHOW_COUNT = gql`
+   query MyQuery($divId: String!, $fileId: Int!, $userEmail: String!) {
+      ux_user_dailyosDivIdFile(
+         where: {
+            divId: { _eq: $divId }
+            fileId: { _eq: $fileId }
+            userEmail: { _eq: $userEmail }
+         }
+      ) {
+         showAgain
+         fileId
+         divId
+         userEmail
+         shownCount
+         lastVisited
+         closedCount
+      }
+   }
+`
+
+export const GET_BOTTOM_BAR_OPTIONS = gql`
+   subscription GET_BOTTOM_BAR_OPTIONS($app: [String!]!) {
+      ux_bottomBarOption(where: { app: { _in: $app } }) {
+         title
+         id
+         app
+         icon
+         navigationMenuId
+         navigationMenu {
+            title
+            id
+            description
+            navigationMenuItems {
+               id
+               label
+               position
+               parentNavigationMenuItemId
+               url
+               actionId
+               action {
+                  actionTypeTitle
+                  dailyos_action
+                  fileId
+                  id
+                  file {
+                     id
+                     fileName
+                     fileType
+                     path
+                     linkedCssFiles {
+                        id
+                        position
+                        cssFile {
+                           fileName
+                           fileType
+                           path
+                        }
+                     }
+                     linkedJsFiles {
+                        id
+                        position
+                        jsFile {
+                           fileName
+                           fileType
+                           path
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+`

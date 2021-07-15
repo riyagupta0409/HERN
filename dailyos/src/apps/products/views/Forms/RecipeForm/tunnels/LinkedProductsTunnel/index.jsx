@@ -1,7 +1,11 @@
 import React from 'react'
 import { useSubscription } from '@apollo/react-hooks'
 import { Filler, Text, TunnelHeader } from '@dailykit/ui'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
+import {
+   InlineLoader,
+   Tooltip,
+   Banner,
+} from '../../../../../../../shared/components'
 import { useTabs } from '../../../../../../../shared/providers'
 import { S_SIMPLE_PRODUCTS_FROM_RECIPE } from '../../../../../graphql'
 import { TunnelBody } from '../styled'
@@ -38,6 +42,7 @@ const LinkedProductsTunnel = ({ state, closeTunnel }) => {
             tooltip={<Tooltip identifier="recipe_create_product_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-recipes-create-recipe-linked-product-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -63,6 +68,7 @@ const LinkedProductsTunnel = ({ state, closeTunnel }) => {
                   )}
                </>
             )}
+            <Banner id="products-app-recipes-create-recipe-linked-product-tunnel-bottom" />
          </TunnelBody>
       </>
    )

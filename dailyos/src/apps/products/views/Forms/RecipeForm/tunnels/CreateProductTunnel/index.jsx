@@ -2,7 +2,11 @@ import React from 'react'
 import { useMutation, useSubscription } from '@apollo/react-hooks'
 import { OptionTile, Spacer, TunnelHeader } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-import { InlineLoader, Tooltip } from '../../../../../../../shared/components'
+import {
+   InlineLoader,
+   Tooltip,
+   Banner,
+} from '../../../../../../../shared/components'
 import { useTabs } from '../../../../../../../shared/providers'
 import { logger } from '../../../../../../../shared/utils'
 import { PRODUCTS, PRODUCT_OPTION_TYPES } from '../../../../../graphql'
@@ -66,6 +70,7 @@ const CreateProductTunnel = ({ state, closeTunnel }) => {
             tooltip={<Tooltip identifier="recipe_create_product_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-recipes-create-recipe-create-product-tunnel-top" />
             {loading ? (
                <InlineLoader />
             ) : (
@@ -81,6 +86,7 @@ const CreateProductTunnel = ({ state, closeTunnel }) => {
                   ))}
                </>
             )}
+            <Banner id="products-app-recipes-create-recipe-create-product-tunnel-bottom" />
          </TunnelBody>
       </>
    )

@@ -23,6 +23,7 @@ import {
    Tooltip,
    ErrorState,
    InlineLoader,
+   Banner,
 } from '../../../../../../shared/components'
 
 const address = 'apps.settings.views.forms.processings.'
@@ -98,6 +99,7 @@ const ProcessingsForm = () => {
    }
    return (
       <Flex width="calc(100% - 32px)" maxWidth="1280px" margin="0 auto">
+         <Banner id="settings-app-master-lists-processing-top" />
          <Flex
             as="header"
             container
@@ -126,6 +128,7 @@ const ProcessingsForm = () => {
                <AddTypesTunnel closeTunnel={closeTunnel} />
             </Tunnel>
          </Tunnels>
+         <Banner id="settings-app-master-lists-processing-bottom" />
       </Flex>
    )
 }

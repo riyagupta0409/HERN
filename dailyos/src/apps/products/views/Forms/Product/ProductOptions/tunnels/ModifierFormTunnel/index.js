@@ -15,6 +15,7 @@ import { CloseIcon } from '../../../../../../../../shared/assets/icons'
 import {
    InlineLoader,
    Tooltip,
+   Banner,
 } from '../../../../../../../../shared/components'
 import { logger, randomSuffix } from '../../../../../../../../shared/utils'
 import { DeleteIcon } from '../../../../../../assets/icons'
@@ -149,6 +150,8 @@ const ModifierFormTunnel = ({
             tooltip={<Tooltip identifier="add_modifier_tunnel" />}
          />
          <TunnelBody>
+            <Banner id="products-app-single-product-add-modifier-tunnel-top" />
+
             <Form.Group>
                <Form.Label htmlFor="name" title="name">
                   Template Name*
@@ -194,6 +197,7 @@ const ModifierFormTunnel = ({
                   })
                }
             />
+            <Banner id="products-app-single-product-add-modifier-tunnel-bottom" />
          </TunnelBody>
       </>
    )

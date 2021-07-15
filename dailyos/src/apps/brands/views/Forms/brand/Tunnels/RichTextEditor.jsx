@@ -4,7 +4,7 @@ import { isEmpty } from 'lodash'
 import styled from 'styled-components'
 import { Spacer, TunnelHeader, Form } from '@dailykit/ui'
 
-import { Flex, Tooltip } from '../../../../../../shared/components'
+import { Banner, Flex, Tooltip } from '../../../../../../shared/components'
 
 export const RichTextEditorTunnel = ({
    title,
@@ -32,9 +32,11 @@ export const RichTextEditorTunnel = ({
             close={() => closeTunnel(1)}
             tooltip={<Tooltip identifier="brand_rich_text_editor" />}
          />
+         <Banner id="brands-app-brands-brand-details-text-editor-tunnel-top" />
          <Flex padding="16px">
             <RichTextEditor value={value} onChange={value => setValue(value)} />
          </Flex>
+         <Banner id="brands-app-brands-brand-details-text-editor-tunnel-bottom" />
       </>
    )
 }

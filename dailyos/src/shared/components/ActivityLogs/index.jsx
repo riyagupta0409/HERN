@@ -16,6 +16,7 @@ import {
    Text,
 } from '@dailykit/ui'
 import moment from 'moment'
+import Banner from '../Banner'
 
 const parse_name = (node = {}) => {
    const { firstName = '', lastName = '' } = node || {}
@@ -83,6 +84,7 @@ export const ActivityLogs = ({
       <Tunnels tunnels={tunnels}>
          <Tunnel layer={1} size="lg">
             <TunnelHeader title="Activity Logs" close={() => closeTunnel(1)} />
+            <Banner id="activity-log-tunnel-top" />
             <Flex padding="16px" overflowY="auto" height="calc(100% - 196px)">
                {customer?.name && !subscriptionOccurenceId && (
                   <section>
@@ -110,6 +112,7 @@ export const ActivityLogs = ({
                   </>
                )}
             </Flex>
+            <Banner id="activity-log-tunnel-bottom" />
          </Tunnel>
       </Tunnels>
    )

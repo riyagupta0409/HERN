@@ -13,6 +13,7 @@ import React from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'react-toastify'
 import DeleteIcon from '../../../../../shared/assets/icons/Delete'
+import { Banner } from '../../../../../shared/components'
 import { Tooltip } from '../../../../../shared/components/Tooltip'
 import { useTooltip, useTabs } from '../../../../../shared/providers'
 import { logger, randomSuffix } from '../../../../../shared/utils/index'
@@ -148,6 +149,7 @@ export default function SupplierListing() {
    return (
       <>
          <StyledWrapper>
+            <Banner id="inventory-app-suppliers-listing-top" />
             <Flex
                container
                alignItems="center"
@@ -183,6 +185,7 @@ export default function SupplierListing() {
                data={suppliers}
                options={tableOptions}
             />
+            <Banner id="inventory-app-suppliers-listing-bottom" />
          </StyledWrapper>
       </>
    )
