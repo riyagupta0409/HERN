@@ -43,7 +43,7 @@ const router = express.Router()
 
 // Routes
 router.get('/api/about', (req, res) => {
-   res.json({ about: 'This is dailyos server API!' })
+   res.json({ about: 'This is express server API!' })
 })
 router.use('/api/mof', MOFRouter)
 router.use('/api/menu', MenuRouter)

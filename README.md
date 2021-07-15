@@ -46,8 +46,8 @@ curl -XPOST 'http://localhost:4000/server/api/envs'
 cd dailyos && yarn start
 ```
 
-8. To work in subscription shop, switch to subscription-shop folder and following and the your app will start running on port 3000:
+8. To work in subscription shop, switch to store folder and following and the your app will start running on port 3000:
 
 ```bash
-cd subscription-shop && yarn dev
+cd store && yarn dev
 ```
