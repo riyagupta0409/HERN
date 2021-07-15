@@ -176,7 +176,7 @@ const Header = styled.header`
    }
 `
 export const getStaticProps = async () => {
-   const client = await client
+   const client = await graphQLClient()
    const data = await client.request(GET_FILES, {
       divId: ['select-plan-top-01', 'select-plan-bottom-01'],
    })

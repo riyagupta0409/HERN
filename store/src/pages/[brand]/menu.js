@@ -43,6 +43,7 @@ export default MenuPage
 const MenuContent = () => {
    const { user } = useUser()
    const { state } = useMenu()
+   const router = useRouter()
    const { configOf } = useConfig('Select-Menu')
    const config = configOf('select-menu-header')
 
