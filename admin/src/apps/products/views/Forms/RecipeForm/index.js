@@ -42,7 +42,6 @@ import {
 } from '../../../graphql'
 import {
    Information,
-   Ingredients,
    Photo,
    Procedures,
    RecipeCard,
@@ -424,7 +423,6 @@ const RecipeForm = () => {
                      <HorizontalTabPanel>
                         <Servings state={state} />
                         <Spacer size="32px" />
-                        <Ingredients state={state} />
                         <Banner id="products-app-single-ingredient-ingredient-tab-bottom" />
                      </HorizontalTabPanel>
                      <HorizontalTabPanel>

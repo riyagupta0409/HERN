@@ -170,6 +170,13 @@ export const UPDATE_NUTRITIONINFO = gql`
    } 
 `
 
+export const UPDATE_SIMPLE_RECIPE_YIELD_USER_DEFINED_NUTRITION_INFO = gql`
+   mutation UpdateSimpleRecipeYieldUserDefinedNutritionInfo($pk_columns: simpleRecipe_simpleRecipeYield_pk_columns_input!, $_set: simpleRecipe_simpleRecipeYield_set_input!) {
+      updateSimpleRecipeYield_by_pk(pk_columns: $pk_columns, _set: $_set) {
+      id
+      }
+   } 
+`
 
 
 export const DELETE_SIMPLE_RECIPE_YIELD = gql`

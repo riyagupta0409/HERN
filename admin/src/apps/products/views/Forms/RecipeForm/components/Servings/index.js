@@ -67,6 +67,7 @@ import {
    PROCESSINGS,
    SACHETS,
    UPDATE_NUTRITIONINFO,
+   UPDATE_SIMPLE_RECIPE_YIELD_USER_DEFINED_NUTRITION_INFO
 } from '../../../../../graphql'
 import { ServingsTunnel, IngredientsTunnel } from '../../tunnels'
 import { RecipeContext } from '../../../../../context/recipe'
@@ -474,6 +475,24 @@ const Servings = ({ state }) => {
       })
    }
 
+   const [updateSimpleRecipeYieldUserDefinedNutritionInfo] = useMutation(UPDATE_SIMPLE_RECIPE_YIELD_USER_DEFINED_NUTRITION_INFO, {
+      onCompleted: () => {
+         toast.success('Nutrition updated!')
+      },
+      onError: error => {
+         toast.error('Something went wrong!')
+         logger(error)
+      },
+   })
+   const userDefinedNutritionInfo = (value) => {
+      updateSimpleRecipeYieldUserDefinedNutritionInfo({
+         variables: {
+            _set: {"userDefinedNutritionInfo": value  } , 
+            pk_columns: {"id": selectedYieldId }
+         },
+      })
+   }
+
    return (
       <>
          {/* {console.log(ingredientProcessings, 'Adrish Processings')} */}
@@ -496,8 +515,13 @@ const Servings = ({ state }) => {
                   <NutritionTunnel
                      tunnels={nutritionTunnels}
                      closeTunnel={closeNutritionTunnel}
-                     onSave={value => {console.log(value)}}
-                     value={{}}
+                     onSave={value => {
+                        userDefinedNutritionInfo(value)
+                     }}
+                     onReset={value => {
+                        userDefinedNutritionInfo(value)
+                     }}
+                     value={selectedNutrition}
                      perDynamic={true}
                   />
                </Tunnel>
