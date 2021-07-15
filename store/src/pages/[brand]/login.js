@@ -87,7 +87,7 @@ const LoginPanel = () => {
             setError('Email or password is incorrect!')
          } else if (response?.status === 200) {
             const session = await getSession()
-            const { id: keycloakId = null } = session?.user?.id
+            const { id: keycloakId = null } = session?.user
             if (keycloakId) {
                await createBrandCustomer({
                   variables: {

@@ -22,6 +22,7 @@ import {
    OTPS,
    RESEND_OTP,
    SEND_SMS,
+   UPSERT_BRAND_CUSTOMER,
 } from '../../../graphql'
 import {
    deleteStoredReferralCode,
@@ -339,11 +340,27 @@ const OTP = ({ setIsViaOtp }) => {
 
 const LoginPanel = () => {
    const router = useRouter()
+   const { brand } = useConfig()
    const [error, setError] = React.useState('')
    const [loading, setLoading] = React.useState(false)
    const [form, setForm] = React.useState({
       email: '',
       password: '',
+   })
+
+   const [createBrandCustomer] = useMutation(UPSERT_BRAND_CUSTOMER, {
+      onCompleted: () => {
+         const landedOn = isClient && localStorage.getItem('landed_on')
+         if (isClient && landedOn) {
+            localStorage.removeItem('landed_on')
+            window.location.href = landedOn
+         } else {
+            router.push(getRoute('/menu'))
+         }
+      },
+      onError: error => {
+         console.error(error)
+      },
    })
 
    const isValid = form.email && form.password
@@ -369,12 +386,18 @@ const LoginPanel = () => {
          if (response?.status !== 200) {
             setError('Email or password is incorrect!')
          } else if (response?.status === 200) {
-            const landedOn = isClient && localStorage.getItem('landed_on')
-            if (isClient && landedOn) {
-               localStorage.removeItem('landed_on')
-               window.location.href = landedOn
-            } else {
-               router.push(getRoute('/menu'))
+            const session = await getSession()
+            const { id: keycloakId = null } = session?.user
+            if (keycloakId) {
+               await createBrandCustomer({
+                  variables: {
+                     object: {
+                        keycloakId,
+                        brandId: brand.id,
+                        subscriptionOnboardStatus: 'SELECT_DELIVERY',
+                     },
+                  },
+               })
             }
          }
       } catch (error) {
