@@ -296,7 +296,7 @@ const PrintTunnel = ({ closeTunnel }) => {
       createPrint({
          variables: {
             url,
-            source: 'DailyOS',
+            source: 'Admin',
             title: 'Custom Print',
             contentType: 'pdf_uri',
             printerId: current?.id,

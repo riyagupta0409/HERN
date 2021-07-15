@@ -3,8 +3,8 @@
 This project consists of:
 
 1. Express Server: REST API for event triggers, inventory management, customer management, occurrence management etc.
-2. DailyOS: A react app serving as admin portal for managing subscription store's products, plans, customers, order etc.
-3. Subscription Store: A nextjs app to run consumer oriented platform for subscribing to a plan, placing order weekly etc
+2. Admin: A react app serving as admin portal for managing subscription store's products, plans, customers, order etc.
+3. Store: A nextjs app to run consumer oriented platform for subscribing to a plan, placing order weekly etc
 4. Template Service: Manages building email, sachet, label, reciept templates in html or pdf format.
 
 #### Contriubution Guide
@@ -34,20 +34,20 @@ yarn install:packages
 yarn dev:server
 ```
 
-6. To create env config files required by dailyos and subscription shop, make a POST request to:
+6. To create env config files required by admin and store, make a POST request to:
 
 ```bash
 curl -XPOST 'http://localhost:4000/server/api/envs'
 ```
 
-7. To work in dailyos, switch to dailyos folder and do following and the your app will start running on port 3000:
+7. To work in admin, switch to admin folder and do following and the your app will start running on port 3000:
 
 ```bash
-cd dailyos && yarn start
+cd admin && yarn start
 ```
 
-8. To work in subscription shop, switch to subscription-shop folder and following and the your app will start running on port 3000:
+1. To work in store, switch to store folder and following and the your app will start running on port 3000:
 
 ```bash
-cd subscription-shop && yarn dev
+cd store && yarn dev
 ```
