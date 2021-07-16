@@ -6,7 +6,7 @@ import { useSubscription } from '@apollo/react-hooks'
 import { Switch, Route, Link } from 'react-router-dom'
 import FullOccurrenceReport from './shared/components/FullOccurrenceReport'
 import { isKeycloakSupported } from './shared/utils'
-
+import DashboardAnalytics from './shared/components/DashboardAnalytics'
 import {
    TabBar,
    Lang,
@@ -115,6 +115,7 @@ const App = () => {
                         </AppItem>
                      ))}
                   </AppList>
+                  <DashboardAnalytics />
                   <InsightDiv>
                      <InsightDashboard
                         appTitle="global"
