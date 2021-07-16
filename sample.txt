@@ -1,0 +1,83 @@
+TOP SELLING PRODUCTS:
+- specific categories(optional)
+- grid view count
+- product image style - circular or sq
+
+1. create  a folder - top-selling-products
+   - index.js (has to return HTML)
+   - config.json
+    [
+      {
+        keyName: "gridCount",
+        dataType: "int",
+        inputType: "text",
+        isRequired: false,
+        default: 3
+      },
+      {
+        keyName: "categoryId",
+        dataType: "int",
+        inputType: "text",
+        isRequired: false,
+        default: null
+      },
+       {
+        keyName: "imageStyle",
+        dataType: "int",
+        inputType: "text",
+        isRequired: false,
+        default: 3
+      },
+    ]
+   - request params: brandId, route, foldId, position, keycloakId(if logged in), cartId(if has cart)
+
+1.5 read config using foldId
+
+2. query for top selling products
+  - limit 20, order by sold count desc
+  - productId, name, image, price, count
+  - make use of config is needed
+
+3. create a template file - index.pug or index.ejs
+  - use config to apply styles or code HTML
+  - <button class="cta" data-product-id="23">
+
+4. create index.css if needed, and link it to file in step 3
+
+5. create script.js and link it to your pug file in step 3
+
+6. call pug or ejs render and return html
+  
+   
+ORDER FEEDBACK:
+* User Story:
+- feedback form
+  - 5 star rating
+  - input - type (optional)
+  - submit
+
+  - text - you rated 3 star.
+
+1. create folder for plugin - order-feedback
+  - index.js (required) returns html
+  - feedback.ejs
+  - form.ejs
+
+2. fire query for feedback using orderId
+ - if feedback:
+   - feedback.ejs with feedback data
+- else:
+   - form.ejs 
+
+3. script.js
+  - POST request for storing feedback
+
+
+ESTIMATED DELIVERY COST
+- FedX API that returns price
+
+- create index.ejs to render price
+
+
+
+
