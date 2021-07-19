@@ -131,7 +131,7 @@ const OTP = ({ setIsViaOtp }) => {
    })
 
    const [fetchCustomer] = useLazyQuery(CUSTOMER.WITH_BRAND, {
-      onCompleted: ({ customers = [] } = []) => {
+      onCompleted: async ({ customers = [] } = []) => {
          const session = await getSession()
 
          const customerExists = customers.length > 0
