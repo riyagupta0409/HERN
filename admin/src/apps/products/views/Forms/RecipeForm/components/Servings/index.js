@@ -67,7 +67,7 @@ import {
    PROCESSINGS,
    SACHETS,
    UPDATE_NUTRITIONINFO,
-   UPDATE_SIMPLE_RECIPE_YIELD_USER_DEFINED_NUTRITION_INFO
+   UPDATE_SIMPLE_RECIPE_YIELD_USER_DEFINED_NUTRITION_INFO,
 } from '../../../../../graphql'
 import { ServingsTunnel, IngredientsTunnel } from '../../tunnels'
 import { RecipeContext } from '../../../../../context/recipe'
@@ -180,7 +180,7 @@ const Servings = ({ state }) => {
       state.simpleRecipeYields?.map((option, index) => {
          console.log(option, 'option')
          const autoGenerate = recipeYield => {
-            console.log({ recipeYield })
+            //console.log({ recipeYield })
             if (recipeYield.id && recipeYield.baseYieldId) {
                retryInfo.current = {
                   recipeYield,
@@ -258,6 +258,19 @@ const Servings = ({ state }) => {
                   onClick={() => {
                      setShowNutritionalInfo(!showNutritionalInfo)
                      if (option.nutritionalInfo) {
+                        if (
+                           option.nutritionalInfo.excludes.length > 0 &&
+                           option.nutritionalInfo.allergens.length > 0
+                        ) {
+                           option.nutritionalInfo.excludes =
+                              option.nutritionalInfo.excludes.filter(
+                                 item => item !== ''
+                              )
+                           option.nutritionalInfo.allergens =
+                              option.nutritionalInfo.allergens.filter(
+                                 item => item !== ''
+                              )
+                        }
                         setSelectedNutrition(option.nutritionalInfo)
                      } else {
                         setSelectedNutrition(null)
@@ -282,7 +295,7 @@ const Servings = ({ state }) => {
 
    const ingredientsOptions =
       state.simpleRecipeIngredients?.map((option, index) => {
-         console.log(option, 'Adrish option')
+         //console.log(option, 'Adrish option')
          const deleteIngredientProcessing = id => {
             const isConfirmed = window.confirm(
                'Are you sure you want to delete this ingredient?'
@@ -475,20 +488,23 @@ const Servings = ({ state }) => {
       })
    }
 
-   const [updateSimpleRecipeYieldUserDefinedNutritionInfo] = useMutation(UPDATE_SIMPLE_RECIPE_YIELD_USER_DEFINED_NUTRITION_INFO, {
-      onCompleted: () => {
-         toast.success('Nutrition updated!')
-      },
-      onError: error => {
-         toast.error('Something went wrong!')
-         logger(error)
-      },
-   })
-   const userDefinedNutritionInfo = (value) => {
+   const [updateSimpleRecipeYieldUserDefinedNutritionInfo] = useMutation(
+      UPDATE_SIMPLE_RECIPE_YIELD_USER_DEFINED_NUTRITION_INFO,
+      {
+         onCompleted: () => {
+            toast.success('Nutrition updated!')
+         },
+         onError: error => {
+            toast.error('Something went wrong!')
+            logger(error)
+         },
+      }
+   )
+   const userDefinedNutritionInfo = value => {
       updateSimpleRecipeYieldUserDefinedNutritionInfo({
          variables: {
-            _set: {"userDefinedNutritionInfo": value  } , 
-            pk_columns: {"id": selectedYieldId }
+            _set: { userDefinedNutritionInfo: value },
+            pk_columns: { id: selectedYieldId },
          },
       })
    }
@@ -548,7 +564,9 @@ const Servings = ({ state }) => {
                      onClick={() => openNutritionTunnel(1)}
                   >
                      <PlusIcon />
-                     <div style={{ color: '#202020' }}>Add Nutritional Info</div>
+                     <div style={{ color: '#202020' }}>
+                        Add Nutritional Info
+                     </div>
                   </ComboButton>
                   <Popup.Close
                      closePopup={() =>

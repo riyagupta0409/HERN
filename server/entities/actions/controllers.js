@@ -50,7 +50,8 @@ export const nutritionInfo = async (req, res) => {
             'dietaryFibre',
             'saturatedFat',
             'totalCarbohydrates',
-            'excludes'
+            'excludes',
+            'allergens',
          ]
          if (nutritionalInfo !== null) {
             if(nutritionalInfo.excludes===null){
