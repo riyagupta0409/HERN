@@ -27,8 +27,8 @@ app.use('/:path(*)', async (req, res, next) => {
          res.sendFile(filePath)
       } else {
          const url = RESTRICTED_FILES.some(file => routePath.includes(file))
-            ? 'http://localhost:8000/' + routePath
-            : 'http://localhost:8000/' + brand + '/' + routePath
+            ? 'http://localhost:3000/' + routePath
+            : 'http://localhost:3000/' + brand + '/' + routePath
          request(url, function (error, _, body) {
             if (error) {
                console.log(error)
