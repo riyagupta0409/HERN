@@ -46,7 +46,7 @@ curl -XPOST 'http://localhost:4000/server/api/envs'
 cd admin && yarn start
 ```
 
-1. To work in store, switch to store folder and following and the your app will start running on port 3000:
+1. To work in store, switch to store folder and following and the your app will start running on port 8000:
 
 ```bash
 cd store && yarn dev

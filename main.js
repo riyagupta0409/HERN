@@ -53,7 +53,7 @@ app.use('/template', TemplateRouter)
 const isProd = process.env.NODE_ENV === 'production' ? true : false
 
 const proxy = createProxyMiddleware({
-   target: 'http://localhost:3000',
+   target: 'http://localhost:8000',
    changeOrigin: true,
    onProxyReq: (proxyReq, req) => {
       if (req.body) {
@@ -66,7 +66,7 @@ const proxy = createProxyMiddleware({
 })
 
 /*
-request on test.dailykit.org forwards to http://localhost:3000
+request on test.dailykit.org forwards to http://localhost:8000
 */
 app.use('/api/:path(*)', proxy)
 
@@ -98,8 +98,8 @@ const serveSubscription = async (req, res, next) => {
       */
       if (process.env.NODE_ENV === 'development') {
          const url = RESTRICTED_FILES.some(file => routePath.includes(file))
-            ? 'http://localhost:3000/' + routePath
-            : 'http://localhost:3000/' + brand + '/' + routePath
+            ? 'http://localhost:8000/' + routePath
+            : 'http://localhost:8000/' + brand + '/' + routePath
          request(url, function (error, _, body) {
             if (error) {
                throw error
@@ -136,8 +136,8 @@ const serveSubscription = async (req, res, next) => {
                const url = RESTRICTED_FILES.some(file =>
                   routePath.includes(file)
                )
-                  ? 'http://localhost:3000/' + routePath
-                  : 'http://localhost:3000/' + brand + '/' + routePath
+                  ? 'http://localhost:8000/' + routePath
+                  : 'http://localhost:8000/' + brand + '/' + routePath
                request(url, function (error, _, body) {
                   if (error) {
                      console.log(error)

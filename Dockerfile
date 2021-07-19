@@ -59,7 +59,7 @@ RUN yarn add puppeteer
 
 # used to expose container level
 EXPOSE 4000
-EXPOSE 3000
+EXPOSE 8000
 
 ENTRYPOINT ["dumb-init", "--"]
 
