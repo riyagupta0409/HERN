@@ -99,10 +99,10 @@ const NutritionTunnel = ({
             iron: +state.iron.value || 0,
             excludes: Array.isArray(state.excludes.value)
                ? state.excludes.value
-               : state.excludes.value.replaceAll(", ", ",").replaceAll(" ,", ",").trim().split(',') || [],
+               : state.excludes.value!== null? state.excludes.value.replaceAll(", ", ",").replaceAll(" ,", ",").trim().split(',') : [],
             allergens: Array.isArray(state.allergens.value)
                ? state.allergens.value
-               : state.allergens.value.replaceAll(", ", ",").replaceAll(" ,", ",").trim().split(',') || [],
+               : state.allergens.value!==null? state.allergens.value.replaceAll(", ", ",").replaceAll(" ,", ",").trim().split(',') : [],
          })
          closeTunnel(1)
       } else {

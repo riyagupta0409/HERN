@@ -259,17 +259,22 @@ const Servings = ({ state }) => {
                      setShowNutritionalInfo(!showNutritionalInfo)
                      if (option.nutritionalInfo) {
                         if (
-                           option.nutritionalInfo.excludes.length > 0 &&
-                           option.nutritionalInfo.allergens.length > 0
+                           Array.isArray(option.nutritionalInfo.excludes) &&
+                           Array.isArray(option.nutritionalInfo.allergens)
                         ) {
-                           option.nutritionalInfo.excludes =
-                              option.nutritionalInfo.excludes.filter(
-                                 item => item !== ''
-                              )
-                           option.nutritionalInfo.allergens =
-                              option.nutritionalInfo.allergens.filter(
-                                 item => item !== ''
-                              )
+                           if (
+                              option.nutritionalInfo.excludes.length > 0 &&
+                              option.nutritionalInfo.allergens.length > 0
+                           ) {
+                              option.nutritionalInfo.excludes =
+                                 option.nutritionalInfo.excludes.filter(
+                                    item => item !== ''
+                                 )
+                              option.nutritionalInfo.allergens =
+                                 option.nutritionalInfo.allergens.filter(
+                                    item => item !== ''
+                                 )
+                           }
                         }
                         setSelectedNutrition(option.nutritionalInfo)
                      } else {
