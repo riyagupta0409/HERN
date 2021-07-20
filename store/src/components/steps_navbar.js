@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/router'
 import tw, { styled, css } from 'twin.macro'
 import { findKey, has, isEmpty } from 'lodash'
+import { signOut } from 'next-auth/client'
 
 import { useConfig } from '../lib'
 import { useUser } from '../context'
@@ -56,11 +57,9 @@ export const StepsNavbar = () => {
    const brand = configOf('theme-brand', 'brand')
    const theme = configOf('theme-color', 'Visual')
 
-   const logout = () => {
-      isClient && localStorage.removeItem('token')
-      if (isClient) {
-         window.location.href = window.location.origin
-      }
+   const logout = async () => {
+      await signOut({ redirect: false })
+      window.location.href = window.location.origin + getRoute('/')
    }
 
    const canGoToStep = route => {

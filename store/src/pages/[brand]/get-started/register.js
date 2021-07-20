@@ -79,7 +79,7 @@ const Register = props => {
                                  provider.name === 'Google' &&
                                     tw`bg-blue-500 text-white`,
                               ]}
-                              onClick={() => signIn(provider.id, { brand: 1 })}
+                              onClick={() => signIn(provider.id)}
                            >
                               Sign in with {provider.name}
                            </button>
@@ -113,7 +113,7 @@ const OTP = ({ setIsViaOtp }) => {
    const [resending, setResending] = React.useState(false)
    const [time, setTime] = React.useState(null)
 
-   const [createBrandCustomer] = useMutation(MUTATIONS.BRAND.CUSTOMER.CREATE, {
+   const [createBrandCustomer] = useMutation(BRAND.CUSTOMER.CREATE, {
       onError: () =>
          addToast('Something went wrong!', {
             appearance: 'error',

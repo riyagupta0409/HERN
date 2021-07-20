@@ -2,6 +2,7 @@ import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import tw, { styled, css } from 'twin.macro'
+import { signOut } from 'next-auth/client'
 
 import { useUser } from '../context'
 import { isClient, getInitials, getRoute } from '../utils'
@@ -14,11 +15,9 @@ import NavigationBar from './navbar'
 export const Header = ({ settings, navigationMenus }) => {
    const router = useRouter()
    const { isAuthenticated, user, isLoading } = useUser()
-   const logout = () => {
-      isClient && localStorage.removeItem('token')
-      if (isClient) {
-         window.location.href = window.location.origin
-      }
+   const logout = async () => {
+      await signOut({ redirect: false })
+      window.location.href = window.location.origin + getRoute('/')
    }
 
    const brand = settings['brand']['theme-brand']
