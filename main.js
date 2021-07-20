@@ -42,7 +42,16 @@ app.use('/server', ServerRouter)
 /*
 serves build folder of admin
 */
-app.use('/apps', express.static('admin/build'))
+app.use('/apps', (req, res, next) => {
+   if (process.env.NODE_ENV === 'development') {
+      return createProxyMiddleware({
+         target: 'http://localhost:8000',
+         changeOrigin: true
+      })(req, res, next)
+   }
+
+   express.static('admin/build')(req, res, next)
+})
 /*
 handles template endpoints for ex. serving labels, sachets, emails in pdf or html format
 
