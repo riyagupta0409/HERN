@@ -1,5 +1,5 @@
 import React from 'react'
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks'
 import {
    Filler,
    Flex,
@@ -9,6 +9,7 @@ import {
    Spacer,
    Text,
    TunnelHeader,
+   Dropdown,
 } from '@dailykit/ui'
 import { toast } from 'react-toastify'
 import {
@@ -17,13 +18,16 @@ import {
    Banner,
 } from '../../../../../../../shared/components'
 import { logger } from '../../../../../../../shared/utils'
-import { CUISINES, UPDATE_RECIPE } from '../../../../../graphql'
+import {
+   CUISINES,
+   UPDATE_RECIPE,
+   CREATE_CUSINE_NAME,
+} from '../../../../../graphql'
 import validator from '../../validators'
 
 const Information = ({ state }) => {
    // State
    const [_state, _dispatch] = React.useReducer(reducer, initialState)
-   const [type, setType] = React.useState('Vegetarian')
    const options = [
       { id: 'Non-vegetarian', title: 'Non-vegetarian' },
       { id: 'Vegetarian', title: 'Vegetarian' },
@@ -31,24 +35,27 @@ const Information = ({ state }) => {
    ]
 
    // Subscription
-   const { data: { cuisineNames = [] } = {}, loading } = useQuery(CUISINES, {
-      onCompleted: data => {
-         if (!state.cuisine && data.cuisineNames.length) {
-            _dispatch({
-               type: 'SET_VALUE',
-               payload: {
-                  field: 'cuisine',
-                  value: data.cuisineNames[0].title,
-               },
-            })
-         }
-      },
-      onError: error => {
-         console.log('Something went wrong!')
-         logger(error)
-      },
-      fetchPolicy: 'cache-and-network',
-   })
+   const { data: { cuisineNames = [] } = {}, loading } = useSubscription(
+      CUISINES,
+      {
+         onCompleted: data => {
+            if (!state.cuisine && data.cuisineNames.length) {
+               _dispatch({
+                  type: 'SET_VALUE',
+                  payload: {
+                     field: 'cuisine',
+                     value: data.cuisineNames[0].title,
+                  },
+               })
+            }
+         },
+         onError: error => {
+            console.log('Something went wrong!')
+            logger(error)
+         },
+         fetchPolicy: 'cache-and-network',
+      }
+   )
 
    // Mutation
    const [updateRecipe, { loading: inFlight }] = useMutation(UPDATE_RECIPE, {
@@ -87,7 +94,98 @@ const Information = ({ state }) => {
       },
    })
 
-   
+   const [updateCuisine, { loading: loadingCuisine }] = useMutation(
+      UPDATE_RECIPE,
+      {
+         onCompleted: () => {
+            toast.success('Updated Cuisine!')
+         },
+         onError: error => {
+            toast.error('Something went wrong!')
+            logger(error)
+         },
+      }
+   )
+
+   const [updateCookingTime, { loading: loadingTime }] = useMutation(
+      UPDATE_RECIPE,
+      {
+         onCompleted: () => {
+            toast.success('Updated Cooking Time!')
+         },
+         onError: error => {
+            toast.error('Something went wrong!')
+            logger(error)
+         },
+      }
+   )
+
+   const [updateAuthor, { loading: loadingAuthor }] = useMutation(
+      UPDATE_RECIPE,
+      {
+         onCompleted: () => {
+            toast.success('Updated Author Name!')
+         },
+         onError: error => {
+            toast.error('Something went wrong!')
+            logger(error)
+         },
+      }
+   )
+
+   const [updateUtensils, { loading: loadingUtensils }] = useMutation(
+      UPDATE_RECIPE,
+      {
+         onCompleted: () => {
+            toast.success('Updated utensils!')
+         },
+         onError: error => {
+            toast.error('Something went wrong!')
+            logger(error)
+         },
+      }
+   )
+
+   const [updateNotIncluded, { loading: loadingnotIncluded }] = useMutation(
+      UPDATE_RECIPE,
+      {
+         onCompleted: () => {
+            toast.success('Updated not included!')
+         },
+         onError: error => {
+            toast.error('Something went wrong!')
+            logger(error)
+         },
+      }
+   )
+
+   const [updateDescription, { loading: loadingDesription }] = useMutation(
+      UPDATE_RECIPE,
+      {
+         onCompleted: () => {
+            toast.success('Updated description!')
+         },
+         onError: error => {
+            toast.error('Something went wrong!')
+            logger(error)
+         },
+      }
+   )
+
+   const [createCuisine, { loading: craetingCuisine }] = useMutation(
+      CREATE_CUSINE_NAME,
+      {
+         onCompleted: () => {
+            toast.success('Created Cuisine!')
+         },
+         onError: error => {
+            console.log(error)
+            toast.error('Something went wrong!')
+
+            logger(error)
+         },
+      }
+   )
 
    const save = () => {
       if (inFlight) return
@@ -104,10 +202,10 @@ const Information = ({ state }) => {
             value: state.type || 'Vegetarian',
          },
          cuisine: {
-            value: state.cuisine || '',
+            value: state.cuisine === null ? '' : state.cuisine,
          },
          cookingTime: {
-            value: state.cookingTime || '30',
+            value: state.cookingTime || '0',
             meta: {
                isTouched: false,
                isValid: true,
@@ -154,12 +252,97 @@ const Information = ({ state }) => {
          },
       })
    }, [state])
+
+   console.log(state, 'state')
+
+   let search = ''
+
    const changeType = title => {
       updateType({
          variables: {
             id: state.id,
             set: {
                type: title,
+            },
+         },
+      })
+   }
+
+   const changeCuisine = cuisine => {
+      updateCuisine({
+         variables: {
+            id: state.id,
+            set: {
+               cuisine: cuisine.title,
+            },
+         },
+      })
+   }
+
+   const changeCookingTime = time => {
+      updateCookingTime({
+         variables: {
+            id: state.id,
+            set: {
+               cookingTime: time,
+            },
+         },
+      })
+   }
+
+   const changeAuthor = name => {
+      updateAuthor({
+         variables: {
+            id: state.id,
+            set: {
+               author: name,
+            },
+         },
+      })
+   }
+
+   const changeUtensils = utensils => {
+      updateUtensils({
+         variables: {
+            id: state.id,
+            set: {
+               utensils: utensils.split(',').map(tag => tag.trim()),
+            },
+         },
+      })
+   }
+
+   const changeNotIncluded = notIncluded => {
+      updateNotIncluded({
+         variables: {
+            id: state.id,
+            set: {
+               notIncluded: notIncluded.split(',').map(tag => tag.trim()),
+            },
+         },
+      })
+   }
+
+   const changeDescription = description => {
+      updateDescription({
+         variables: {
+            id: state.id,
+            set: {
+               description: description,
+            },
+         },
+      })
+   }
+
+   const searchedCuisineOption = searchedCuisine => {
+      search = searchedCuisine
+   }
+
+   const quickCreateCuisine = () => {
+      createCuisine({
+         variables: {
+            objects: {
+               name: (search.charAt(0).toUpperCase() + search.slice(1)).trim(),
             },
          },
       })
@@ -192,9 +375,9 @@ const Information = ({ state }) => {
                               changeType(option.title)
                            }}
                         />
-                        <Spacer size="16px" />
-                        <Flex maxWidth="300px">
-                           <Form.Group>
+                        <Spacer size="50px" />
+                        <Flex container width="700px">
+                           {/* <Form.Group>
                               <Form.Label htmlFor="cuisine" title="cuisine">
                                  <Flex container alignItems="center">
                                     Cuisine
@@ -217,20 +400,56 @@ const Information = ({ state }) => {
                                  value={_state.cuisine.value}
                                  placeholder="Choose cuisine"
                               />
+                           </Form.Group> */}
+                           <div
+                              style={{
+                                 display: 'inline-block',
+                                 width: '240px',
+                                 paddingTop: '10px',
+                              }}
+                           >
+                              <Dropdown
+                                 type="single"
+                                 variant="revamp"
+                                 typeName="cuisine"
+                                 defaultName={
+                                    state.cuisine === null ? '' : state.cuisine
+                                 }
+                                 addOption={quickCreateCuisine}
+                                 options={cuisineNames}
+                                 searchedOption={searchedCuisineOption}
+                                 selectedOption={changeCuisine}
+                                 typeName="cuisine"
+                              />
+                           </div>
+                           <Spacer xAxis size="16px" />
+                           <Form.Group>
+                              <Form.Stepper
+                                 unitText="min"
+                                 fieldName="Cooking time:"
+                                 id="containers"
+                                 name="containers"
+                                 value={parseFloat(_state.cookingTime.value)}
+                                 onChange={value => {
+                                    _dispatch({
+                                       type: 'SET_VALUE',
+                                       payload: {
+                                          field: 'cookingTime',
+                                          value: parseFloat(value),
+                                       },
+                                    })
+                                    changeCookingTime(value + '')
+                                 }}
+                              />
                            </Form.Group>
                         </Flex>
-                        <Spacer size="16px" />
+                        <Spacer size="50px" />
                         <Flex container>
                            <Form.Group>
-                              <Form.Label htmlFor="author" title="author">
-                                 <Flex container alignItems="center">
-                                    Author
-                                    <Tooltip identifier="recipe_author" />
-                                 </Flex>
-                              </Form.Label>
                               <Form.Text
                                  id="author"
                                  name="author"
+                                 variant="revamp-sm"
                                  onChange={e =>
                                     _dispatch({
                                        type: 'SET_VALUE',
@@ -240,6 +459,9 @@ const Information = ({ state }) => {
                                        },
                                     })
                                  }
+                                 onBlur={e => {
+                                    changeAuthor(e.target.value)
+                                 }}
                                  value={_state.author.value}
                                  placeholder="Enter author name"
                                  hasError={
@@ -258,7 +480,7 @@ const Information = ({ state }) => {
                                  )}
                            </Form.Group>
                            <Spacer xAxis size="16px" />
-                           <Form.Group>
+                           {/* <Form.Group>
                               <Form.Label
                                  htmlFor="cookingTime"
                                  title="cookingTime"
@@ -313,20 +535,15 @@ const Information = ({ state }) => {
                                        </Form.Error>
                                     )
                                  )}
-                           </Form.Group>
+                           </Form.Group> */}
                         </Flex>
-                        <Spacer size="16px" />
+                        <Spacer size="50px" />
                         <Form.Group>
-                           <Form.Label htmlFor="utensils" title="utensils">
-                              <Flex container alignItems="center">
-                                 Utensils
-                                 <Tooltip identifier="recipe_utensils" />
-                              </Flex>
-                           </Form.Label>
                            <Form.Text
                               id="utensils"
                               name="utensils"
-                              onChange={e =>
+                              variant="revamp-sm"
+                              onChange={e => {
                                  _dispatch({
                                     type: 'SET_VALUE',
                                     payload: {
@@ -334,10 +551,8 @@ const Information = ({ state }) => {
                                        value: e.target.value,
                                     },
                                  })
-                              }
-                              onBlur={() => {
                                  const { isValid, errors } = validator.csv(
-                                    _state.utensils.value
+                                    e.target.value
                                  )
                                  _dispatch({
                                     type: 'SET_ERRORS',
@@ -351,8 +566,15 @@ const Information = ({ state }) => {
                                     },
                                  })
                               }}
+                              onBlur={e => {
+                                 if (_state.utensils.meta.isValid) {
+                                    changeUtensils(e.target.value)
+                                 } else {
+                                    toast.error('Invalid values!')
+                                 }
+                              }}
                               value={_state.utensils.value}
-                              placeholder="Enter utensils"
+                              placeholder="enter utensils used"
                               hasError={
                                  _state.utensils.meta.isTouched &&
                                  !_state.utensils.meta.isValid
@@ -366,25 +588,18 @@ const Information = ({ state }) => {
                                  )
                               )}
                         </Form.Group>
+                        <Spacer size="20px" />
                         <HelperText
                            type="hint"
                            message="Enter comma separated values, for example: Pan, Spoon, Bowl"
                         />
-                        <Spacer size="16px" />
+                        <Spacer size="50px" />
                         <Form.Group>
-                           <Form.Label
-                              htmlFor="notIncluded"
-                              title="notIncluded"
-                           >
-                              <Flex container alignItems="center">
-                                 What you'll need
-                                 <Tooltip identifier="recipe_not_included" />
-                              </Flex>
-                           </Form.Label>
                            <Form.Text
                               id="notIncluded"
                               name="notIncluded"
-                              onChange={e =>
+                              variant="revamp-sm"
+                              onChange={e => {
                                  _dispatch({
                                     type: 'SET_VALUE',
                                     payload: {
@@ -392,10 +607,8 @@ const Information = ({ state }) => {
                                        value: e.target.value,
                                     },
                                  })
-                              }
-                              onBlur={() => {
                                  const { isValid, errors } = validator.csv(
-                                    _state.notIncluded.value
+                                    e.target.value
                                  )
                                  _dispatch({
                                     type: 'SET_ERRORS',
@@ -409,8 +622,15 @@ const Information = ({ state }) => {
                                     },
                                  })
                               }}
+                              onBlur={e => {
+                                 if (_state.notIncluded.meta.isValid) {
+                                    changeNotIncluded(e.target.value)
+                                 } else {
+                                    toast.error('Invalid values!')
+                                 }
+                              }}
                               value={_state.notIncluded.value}
-                              placeholder="Enter what you'll need"
+                              placeholder="what's not included"
                               hasError={
                                  _state.notIncluded.meta.isTouched &&
                                  !_state.notIncluded.meta.isValid
@@ -424,21 +644,13 @@ const Information = ({ state }) => {
                                  )
                               )}
                         </Form.Group>
+                        <Spacer size="20px" />
                         <HelperText
                            type="hint"
                            message="Enter comma separated values, for example: Salt, Oil, Pepper"
                         />
-                        <Spacer size="16px" />
+                        <Spacer size="50px" />
                         <Form.Group>
-                           <Form.Label
-                              htmlFor="description"
-                              title="description"
-                           >
-                              <Flex container alignItems="center">
-                                 Description
-                                 <Tooltip identifier="recipe_description" />
-                              </Flex>
-                           </Form.Label>
                            <Form.TextArea
                               id="description"
                               name="description"
@@ -451,8 +663,13 @@ const Information = ({ state }) => {
                                     },
                                  })
                               }
+                              noBorder
+                              style={{ padding: '0px' }}
                               value={_state.description.value}
-                              placeholder="Write description for recipe"
+                              onBlur={e => {
+                                 changeDescription(e.target.value)
+                              }}
+                              placeholder="Add Recipe Description in 120 words"
                            />
                         </Form.Group>
                      </>
