@@ -75,18 +75,26 @@ const auth = {
             if (otps.length > 0) {
                const [otp] = otps
                if (Number(credentials.otp) === otp.code) {
-                  const { platform_customer = {} } = await _client.request(
+                  const { platform_customer = [] } = await _client.request(
                      PLATFORM_CUSTOMER,
                      {
                         where: { phoneNumber: { _eq: credentials.phone } },
                      }
                   )
-                  if (get(platform_customer, 'id')) {
-                     return platform_customer
+                  if (platform_customer.length > 0) {
+                     const [customer] = platform_customer
+                     return customer
                   } else {
                      const { insertCustomer = {} } = await _client.request(
                         INSERT_CUSTOMER,
-                        { object: { phoneNumber: credentials.phone } }
+                        {
+                           object: {
+                              ...(credentials.email && {
+                                 email: credentials.email,
+                              }),
+                              phoneNumber: credentials.phone,
+                           },
+                        }
                      )
                      return insertCustomer
                   }
@@ -182,28 +190,24 @@ export default async (req, res) => {
             }
          },
          async session(session, token) {
-            session.user.id = token.sub
-
-            if (get(session, 'user.email', '')) {
-               const id = get(token, 'sub')
-               const _client = await client()
-               const { provider_customers = [] } = await _client.request(
-                  PROVIDER_CUSTOMERS,
-                  {
-                     where: {
-                        _or: [
-                           { providerAccountId: { _eq: id } },
-                           { customerId: { _eq: id } },
-                        ],
-                     },
-                  }
-               )
-               if (provider_customers.length > 0) {
-                  const [customer] = provider_customers
-                  session.user.id = customer.customerId
+            const id = get(token, 'sub')
+            const _client = await client()
+            const { provider_customers = [] } = await _client.request(
+               PROVIDER_CUSTOMERS,
+               {
+                  where: {
+                     _or: [
+                        { providerAccountId: { _eq: id } },
+                        { customerId: { _eq: id } },
+                     ],
+                  },
                }
+            )
+            if (provider_customers.length > 0) {
+               const [customer] = provider_customers
+               session.user.email = customer.customer.email
+               session.user.id = customer.customerId
             }
-
             return session
          },
       },
@@ -272,6 +276,9 @@ const PROVIDER_CUSTOMERS = `
       provider_customers: platform_provider_customer(where: $where) {
          id
          customerId
+         customer {
+            email
+         }
       }
    }
 `
