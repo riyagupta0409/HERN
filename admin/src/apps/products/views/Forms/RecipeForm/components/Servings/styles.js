@@ -34,7 +34,7 @@ export const StyledCardEven = styled.div(
       div#calCount {
          display: inline-block;
          text-align: left;
-         min-width: 50px;
+         min-width: 36px;
          height: 16px;
          background: ${nutritionIsInSync?`#f6c338`: `#ff5b52`};
          border: none;
@@ -47,7 +47,7 @@ export const StyledCardEven = styled.div(
          line-height: 16px;
          margin: 0px 2px 0px 0px;
          letter-spacing: 0.32px;
-         padding: 1px 0px 2.5px 5px;
+         padding: 1px 5px 2.5px 5px;
          color: #ffffff;
       }
       div#foodCost {
