@@ -178,7 +178,7 @@ const Servings = ({ state }) => {
 
    const options =
       state.simpleRecipeYields?.map((option, index) => {
-         console.log(option, 'option')
+         //console.log(option, 'option')
          const autoGenerate = recipeYield => {
             //console.log({ recipeYield })
             if (recipeYield.id && recipeYield.baseYieldId) {

@@ -1,5 +1,10 @@
 import React from 'react'
-import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks'
+import {
+   useMutation,
+   useQuery,
+   useSubscription,
+   useLazyQuery,
+} from '@apollo/react-hooks'
 import {
    Filler,
    Flex,
@@ -26,6 +31,7 @@ import {
 import validator from '../../validators'
 
 const Information = ({ state }) => {
+   console.log(state, 'state')
    // State
    const [_state, _dispatch] = React.useReducer(reducer, initialState)
    const options = [
@@ -35,9 +41,9 @@ const Information = ({ state }) => {
    ]
 
    // Subscription
-   const { data: { cuisineNames = [] } = {}, loading } = useSubscription(
-      CUISINES,
-      {
+
+   const [loadCuisines, { called, loading, data: { cuisineNames = [] } = {} }] =
+      useLazyQuery(CUISINES, {
          onCompleted: data => {
             if (!state.cuisine && data.cuisineNames.length) {
                _dispatch({
@@ -54,8 +60,7 @@ const Information = ({ state }) => {
             logger(error)
          },
          fetchPolicy: 'cache-and-network',
-      }
-   )
+      })
 
    // Mutation
    const [updateRecipe, { loading: inFlight }] = useMutation(UPDATE_RECIPE, {
@@ -277,6 +282,13 @@ const Information = ({ state }) => {
             },
          },
       })
+      _dispatch({
+         type: 'SET_VALUE',
+         payload: {
+            field: 'cuisine',
+            value: cuisine.title,
+         },
+      })
    }
 
    const changeCookingTime = time => {
@@ -338,349 +350,404 @@ const Information = ({ state }) => {
       search = searchedCuisine
    }
 
-   const quickCreateCuisine = () => {
-      createCuisine({
+   const quickCreateCuisine = async () => {
+      await createCuisine({
          variables: {
             objects: {
                name: (search.charAt(0).toUpperCase() + search.slice(1)).trim(),
             },
          },
       })
+      await loadCuisines()
    }
+
+   const [focus, setFocus] = React.useState(false)
    return (
       <>
          <Flex width="100%">
             <Banner id="products-app-recipes-create-recipe-basic-information-tunnel-top" />
-            {loading ? (
-               <InlineLoader />
-            ) : (
-               <>
-                  {cuisineNames.length ? (
-                     <>
-                        <Flex container alignItems="center">
-                           <Text as="subtitle">Type</Text>
-                           <Tooltip identifier="recipe_type" />
-                        </Flex>
-                        <RadioGroup
-                           options={options}
-                           active={_state.type.value}
-                           onChange={option => {
+            <>
+               <Flex container alignItems="center">
+                  <Text as="subtitle">Type</Text>
+                  <Tooltip identifier="recipe_type" />
+               </Flex>
+               <RadioGroup
+                  options={options}
+                  active={_state.type.value}
+                  onChange={option => {
+                     _dispatch({
+                        type: 'SET_VALUE',
+                        payload: {
+                           field: 'type',
+                           value: option.title,
+                        },
+                     })
+                     changeType(option.title)
+                  }}
+               />
+               <Spacer size="50px" />
+               <Flex container width="700px">
+                  <div
+                     style={{
+                        display: 'inline-block',
+                        width: '240px',
+                        paddingTop: `${_state.cuisine.value ? '0px' : '10px'}`,
+                     }}
+                  >
+                     <Form.Group>
+                        {_state.cuisine.value && (
+                           <Form.Label htmlFor="cuisine" title="cuisine">
+                              <Flex container alignItems="center">
+                                 Cuisine
+                                 <Tooltip identifier="recipe_cuisine" />
+                              </Flex>
+                           </Form.Label>
+                        )}
+                        <Dropdown
+                           type="single"
+                           variant="revamp"
+                           typeName="cuisine"
+                           defaultName={
+                              state.cuisine === null ? '' : state.cuisine
+                           }
+                           handleClick={() => {
+                              loadCuisines()
+                           }}
+                           isLoading={loading}
+                           addOption={quickCreateCuisine}
+                           options={cuisineNames}
+                           searchedOption={searchedCuisineOption}
+                           selectedOption={changeCuisine}
+                           typeName="cuisine"
+                        />
+                     </Form.Group>
+                  </div>
+                  <Spacer xAxis size="16px" />
+                  <div
+                     style={{
+                        display: 'inline-block',
+                        paddingTop: `${_state.cuisine.value ? '10px' : '0px'}`,
+                     }}
+                  >
+                     <Form.Group>
+                        <Form.Stepper
+                           unitText="min"
+                           fieldName="Cooking time:"
+                           id="containers"
+                           name="containers"
+                           value={parseFloat(_state.cookingTime.value)}
+                           onChange={value => {
                               _dispatch({
                                  type: 'SET_VALUE',
                                  payload: {
-                                    field: 'type',
-                                    value: option.title,
+                                    field: 'cookingTime',
+                                    value: parseFloat(value),
                                  },
                               })
-                              changeType(option.title)
+                              changeCookingTime(value + '')
                            }}
                         />
-                        <Spacer size="50px" />
-                        <Flex container width="700px">
-                           {/* <Form.Group>
-                              <Form.Label htmlFor="cuisine" title="cuisine">
-                                 <Flex container alignItems="center">
-                                    Cuisine
-                                    <Tooltip identifier="recipe_cuisine" />
-                                 </Flex>
-                              </Form.Label>
-                              <Form.Select
-                                 id="cuisine"
-                                 name="cuisine"
-                                 options={cuisineNames}
-                                 onChange={e =>
-                                    _dispatch({
-                                       type: 'SET_VALUE',
-                                       payload: {
-                                          field: 'cuisine',
-                                          value: e.target.value,
-                                       },
-                                    })
-                                 }
-                                 value={_state.cuisine.value}
-                                 placeholder="Choose cuisine"
-                              />
-                           </Form.Group> */}
-                           <div
-                              style={{
-                                 display: 'inline-block',
-                                 width: '240px',
-                                 paddingTop: '10px',
-                              }}
-                           >
-                              <Dropdown
-                                 type="single"
-                                 variant="revamp"
-                                 typeName="cuisine"
-                                 defaultName={
-                                    state.cuisine === null ? '' : state.cuisine
-                                 }
-                                 addOption={quickCreateCuisine}
-                                 options={cuisineNames}
-                                 searchedOption={searchedCuisineOption}
-                                 selectedOption={changeCuisine}
-                                 typeName="cuisine"
-                              />
-                           </div>
-                           <Spacer xAxis size="16px" />
-                           <Form.Group>
-                              <Form.Stepper
-                                 unitText="min"
-                                 fieldName="Cooking time:"
-                                 id="containers"
-                                 name="containers"
-                                 value={parseFloat(_state.cookingTime.value)}
-                                 onChange={value => {
-                                    _dispatch({
-                                       type: 'SET_VALUE',
-                                       payload: {
-                                          field: 'cookingTime',
-                                          value: parseFloat(value),
-                                       },
-                                    })
-                                    changeCookingTime(value + '')
-                                 }}
-                              />
-                           </Form.Group>
-                        </Flex>
-                        <Spacer size="50px" />
-                        <Flex container>
-                           <Form.Group>
-                              <Form.Text
-                                 id="author"
-                                 name="author"
-                                 variant="revamp-sm"
-                                 onChange={e =>
-                                    _dispatch({
-                                       type: 'SET_VALUE',
-                                       payload: {
-                                          field: 'author',
-                                          value: e.target.value,
-                                       },
-                                    })
-                                 }
-                                 onBlur={e => {
-                                    changeAuthor(e.target.value)
-                                 }}
-                                 value={_state.author.value}
-                                 placeholder="Enter author name"
-                                 hasError={
-                                    _state.author.meta.isTouched &&
-                                    !_state.author.meta.isValid
-                                 }
-                              />
-                              {_state.author.meta.isTouched &&
-                                 !_state.author.meta.isValid &&
-                                 _state.author.meta.errors.map(
-                                    (error, index) => (
-                                       <Form.Error key={index}>
-                                          {error}
-                                       </Form.Error>
-                                    )
-                                 )}
-                           </Form.Group>
-                           <Spacer xAxis size="16px" />
-                           {/* <Form.Group>
-                              <Form.Label
-                                 htmlFor="cookingTime"
-                                 title="cookingTime"
-                              >
-                                 <Flex container alignItems="center">
-                                    Cooking Time(mins)
-                                    <Tooltip identifier="recipe_cooking_time" />
-                                 </Flex>
-                              </Form.Label>
-                              <Form.Number
-                                 id="cookingTime"
-                                 name="cookingTime"
-                                 value={_state.cookingTime.value}
-                                 placeholder="Enter cooking time"
-                                 onChange={e =>
-                                    _dispatch({
-                                       type: 'SET_VALUE',
-                                       payload: {
-                                          field: 'cookingTime',
-                                          value: e.target.value,
-                                       },
-                                    })
-                                 }
-                                 onBlur={() => {
-                                    const { isValid, errors } =
-                                       validator.cookingTime(
-                                          _state.cookingTime.value
-                                       )
-                                    _dispatch({
-                                       type: 'SET_ERRORS',
-                                       payload: {
-                                          field: 'cookingTime',
-                                          meta: {
-                                             isTouched: true,
-                                             isValid,
-                                             errors,
-                                          },
-                                       },
-                                    })
-                                 }}
-                                 hasError={
-                                    _state.cookingTime.meta.isTouched &&
-                                    !_state.cookingTime.meta.isValid
-                                 }
-                              />
-                              {_state.cookingTime.meta.isTouched &&
-                                 !_state.cookingTime.meta.isValid &&
-                                 _state.cookingTime.meta.errors.map(
-                                    (error, index) => (
-                                       <Form.Error key={index}>
-                                          {error}
-                                       </Form.Error>
-                                    )
-                                 )}
-                           </Form.Group> */}
-                        </Flex>
-                        <Spacer size="50px" />
-                        <Form.Group>
-                           <Form.Text
-                              id="utensils"
-                              name="utensils"
-                              variant="revamp-sm"
-                              onChange={e => {
-                                 _dispatch({
-                                    type: 'SET_VALUE',
-                                    payload: {
-                                       field: 'utensils',
-                                       value: e.target.value,
-                                    },
-                                 })
-                                 const { isValid, errors } = validator.csv(
-                                    e.target.value
-                                 )
-                                 _dispatch({
-                                    type: 'SET_ERRORS',
-                                    payload: {
-                                       field: 'utensils',
-                                       meta: {
-                                          isTouched: true,
-                                          isValid,
-                                          errors,
-                                       },
-                                    },
-                                 })
-                              }}
-                              onBlur={e => {
-                                 if (_state.utensils.meta.isValid) {
-                                    changeUtensils(e.target.value)
-                                 } else {
-                                    toast.error('Invalid values!')
-                                 }
-                              }}
-                              value={_state.utensils.value}
-                              placeholder="enter utensils used"
-                              hasError={
-                                 _state.utensils.meta.isTouched &&
-                                 !_state.utensils.meta.isValid
-                              }
-                           />
-                           {_state.utensils.meta.isTouched &&
-                              !_state.utensils.meta.isValid &&
-                              _state.utensils.meta.errors.map(
-                                 (error, index) => (
-                                    <Form.Error key={index}>{error}</Form.Error>
-                                 )
-                              )}
-                        </Form.Group>
-                        <Spacer size="20px" />
-                        <HelperText
-                           type="hint"
-                           message="Enter comma separated values, for example: Pan, Spoon, Bowl"
-                        />
-                        <Spacer size="50px" />
-                        <Form.Group>
-                           <Form.Text
-                              id="notIncluded"
-                              name="notIncluded"
-                              variant="revamp-sm"
-                              onChange={e => {
-                                 _dispatch({
-                                    type: 'SET_VALUE',
-                                    payload: {
-                                       field: 'notIncluded',
-                                       value: e.target.value,
-                                    },
-                                 })
-                                 const { isValid, errors } = validator.csv(
-                                    e.target.value
-                                 )
-                                 _dispatch({
-                                    type: 'SET_ERRORS',
-                                    payload: {
-                                       field: 'notIncluded',
-                                       meta: {
-                                          isTouched: true,
-                                          isValid,
-                                          errors,
-                                       },
-                                    },
-                                 })
-                              }}
-                              onBlur={e => {
-                                 if (_state.notIncluded.meta.isValid) {
-                                    changeNotIncluded(e.target.value)
-                                 } else {
-                                    toast.error('Invalid values!')
-                                 }
-                              }}
-                              value={_state.notIncluded.value}
-                              placeholder="what's not included"
-                              hasError={
-                                 _state.notIncluded.meta.isTouched &&
-                                 !_state.notIncluded.meta.isValid
-                              }
-                           />
-                           {_state.notIncluded.meta.isTouched &&
-                              !_state.notIncluded.meta.isValid &&
-                              _state.notIncluded.meta.errors.map(
-                                 (error, index) => (
-                                    <Form.Error key={index}>{error}</Form.Error>
-                                 )
-                              )}
-                        </Form.Group>
-                        <Spacer size="20px" />
-                        <HelperText
-                           type="hint"
-                           message="Enter comma separated values, for example: Salt, Oil, Pepper"
-                        />
-                        <Spacer size="50px" />
-                        <Form.Group>
-                           <Form.TextArea
-                              id="description"
-                              name="description"
-                              onChange={e =>
-                                 _dispatch({
-                                    type: 'SET_VALUE',
-                                    payload: {
-                                       field: 'description',
-                                       value: e.target.value,
-                                    },
-                                 })
-                              }
-                              noBorder
-                              style={{ padding: '0px' }}
-                              value={_state.description.value}
-                              onBlur={e => {
-                                 changeDescription(e.target.value)
-                              }}
-                              placeholder="Add Recipe Description in 120 words"
-                           />
-                        </Form.Group>
-                     </>
-                  ) : (
-                     <Filler
-                        message="No cuisines found! To start, add some."
-                        height="500px"
+                     </Form.Group>
+                  </div>
+               </Flex>
+               <Spacer size="50px" />
+               <Flex container>
+                  <Form.Group>
+                     {(_state.author.value || _state.author.meta.isTouched) && (
+                        <Form.Label htmlFor="author" title="author">
+                           <Flex container alignItems="center">
+                              Author
+                              <Tooltip identifier="recipe_author" />
+                           </Flex>
+                        </Form.Label>
+                     )}
+
+                     <Form.Text
+                        id="author"
+                        name="author"
+                        variant="revamp-sm"
+                        onChange={e =>
+                           _dispatch({
+                              type: 'SET_VALUE',
+                              payload: {
+                                 field: 'author',
+                                 value: e.target.value,
+                              },
+                           })
+                        }
+                        onFocus={() => {
+                           _dispatch({
+                              type: 'SET_ERRORS',
+                              payload: {
+                                 field: 'author',
+                                 meta: {
+                                    isTouched: true,
+                                    isValid: true,
+                                    errors: [],
+                                 },
+                              },
+                           })
+                        }}
+                        onBlur={e => {
+                           changeAuthor(e.target.value)
+                           _dispatch({
+                              type: 'SET_ERRORS',
+                              payload: {
+                                 field: 'author',
+                                 meta: {
+                                    isTouched: false,
+                                    isValid: true,
+                                    errors: [],
+                                 },
+                              },
+                           })
+                        }}
+                        value={_state.author.value}
+                        placeholder="Enter author name"
+                        hasError={
+                           _state.author.meta.isTouched &&
+                           !_state.author.meta.isValid
+                        }
                      />
+                     {_state.author.meta.isTouched &&
+                        !_state.author.meta.isValid &&
+                        _state.author.meta.errors.map((error, index) => (
+                           <Form.Error key={index}>{error}</Form.Error>
+                        ))}
+                  </Form.Group>
+                  <Spacer xAxis size="16px" />
+               </Flex>
+               <Spacer size="50px" />
+               <Form.Group>
+                  {(_state.utensils.value ||
+                     _state.utensils.meta.isTouched) && (
+                     <Form.Label htmlFor="utensils" title="utensils">
+                        <Flex container alignItems="center">
+                           Utensils
+                           <Tooltip identifier="recipe_utensils" />
+                        </Flex>
+                     </Form.Label>
                   )}
-               </>
-            )}
+
+                  <Form.Text
+                     id="utensils"
+                     name="utensils"
+                     variant="revamp-sm"
+                     onChange={e => {
+                        _dispatch({
+                           type: 'SET_VALUE',
+                           payload: {
+                              field: 'utensils',
+                              value: e.target.value,
+                           },
+                        })
+                        const { isValid, errors } = validator.csv(
+                           e.target.value
+                        )
+                        _dispatch({
+                           type: 'SET_ERRORS',
+                           payload: {
+                              field: 'utensils',
+                              meta: {
+                                 isTouched: true,
+                                 isValid,
+                                 errors,
+                              },
+                           },
+                        })
+                     }}
+                     onBlur={e => {
+                        if (_state.utensils.meta.isValid) {
+                           changeUtensils(e.target.value)
+                        } else {
+                           toast.error('Invalid values!')
+                        }
+                        _dispatch({
+                           type: 'SET_ERRORS',
+                           payload: {
+                              field: 'utensils',
+                              meta: {
+                                 isTouched: false,
+                                 isValid: true,
+                                 errors: [],
+                              },
+                           },
+                        })
+                     }}
+                     value={_state.utensils.value}
+                     placeholder="enter utensils used"
+                     hasError={
+                        _state.utensils.meta.isTouched &&
+                        !_state.utensils.meta.isValid
+                     }
+                     onFocus={() => {
+                        _dispatch({
+                           type: 'SET_ERRORS',
+                           payload: {
+                              field: 'utensils',
+                              meta: {
+                                 isTouched: true,
+                                 isValid: true,
+                                 errors: [],
+                              },
+                           },
+                        })
+                     }}
+                  />
+                  {_state.utensils.meta.isTouched &&
+                     !_state.utensils.meta.isValid &&
+                     _state.utensils.meta.errors.map((error, index) => (
+                        <Form.Error key={index}>{error}</Form.Error>
+                     ))}
+               </Form.Group>
+               <Spacer size="20px" />
+               <HelperText
+                  type="hint"
+                  message="Enter comma separated values, for example: Pan, Spoon, Bowl"
+               />
+               <Spacer size="50px" />
+               <Form.Group>
+                  {(_state.notIncluded.value ||
+                     _state.notIncluded.meta.isTouched) && (
+                     <Form.Label htmlFor="notIncluded" title="notIncluded">
+                        <Flex container alignItems="center">
+                           What's not included
+                           <Tooltip identifier="recipe_not_included" />
+                        </Flex>
+                     </Form.Label>
+                  )}
+                  <Form.Text
+                     id="notIncluded"
+                     name="notIncluded"
+                     variant="revamp-sm"
+                     onChange={e => {
+                        _dispatch({
+                           type: 'SET_VALUE',
+                           payload: {
+                              field: 'notIncluded',
+                              value: e.target.value,
+                           },
+                        })
+                        const { isValid, errors } = validator.csv(
+                           e.target.value
+                        )
+                        _dispatch({
+                           type: 'SET_ERRORS',
+                           payload: {
+                              field: 'notIncluded',
+                              meta: {
+                                 isTouched: true,
+                                 isValid,
+                                 errors,
+                              },
+                           },
+                        })
+                     }}
+                     onBlur={e => {
+                        if (_state.notIncluded.meta.isValid) {
+                           changeNotIncluded(e.target.value)
+                        } else {
+                           toast.error('Invalid values!')
+                        }
+                        _dispatch({
+                           type: 'SET_ERRORS',
+                           payload: {
+                              field: 'notIncluded',
+                              meta: {
+                                 isTouched: false,
+                                 isValid: true,
+                                 errors: [],
+                              },
+                           },
+                        })
+                     }}
+                     onFocus={() => {
+                        _dispatch({
+                           type: 'SET_ERRORS',
+                           payload: {
+                              field: 'notIncluded',
+                              meta: {
+                                 isTouched: true,
+                                 isValid: true,
+                                 errors: [],
+                              },
+                           },
+                        })
+                     }}
+                     value={_state.notIncluded.value}
+                     placeholder="enter what's not included"
+                     hasError={
+                        _state.notIncluded.meta.isTouched &&
+                        !_state.notIncluded.meta.isValid
+                     }
+                  />
+                  {_state.notIncluded.meta.isTouched &&
+                     !_state.notIncluded.meta.isValid &&
+                     _state.notIncluded.meta.errors.map((error, index) => (
+                        <Form.Error key={index}>{error}</Form.Error>
+                     ))}
+               </Form.Group>
+               <Spacer size="20px" />
+               <HelperText
+                  type="hint"
+                  message="Enter comma separated values, for example: Salt, Oil, Pepper"
+               />
+               <Spacer size="50px" />
+               <Form.Group>
+                  {(_state.description.value || _state.description.meta.isTouched) && (
+                     <Form.Label htmlFor="description" title="description">
+                        <Flex container alignItems="center">
+                           Description
+                           <Tooltip identifier="recipe_description" />
+                        </Flex>
+                     </Form.Label>
+                  )}
+                  <Form.TextArea
+                     id="description"
+                     name="description"
+                     onChange={e =>
+                        _dispatch({
+                           type: 'SET_VALUE',
+                           payload: {
+                              field: 'description',
+                              value: e.target.value,
+                           },
+                        })
+                     }
+                     noBorder
+                     style={{ padding: '0px' }}
+                     value={_state.description.value}
+                     onBlur={e => {
+                        changeDescription(e.target.value)
+                        _dispatch({
+                          type: 'SET_ERRORS',
+                          payload: {
+                             field: 'description',
+                             meta: {
+                                isTouched: false,
+                                isValid: true,
+                                errors: [],
+                             },
+                          },
+                       })
+                     }}
+                     onFocus={() => {
+                        _dispatch({
+                           type: 'SET_ERRORS',
+                           payload: {
+                              field: 'description',
+                              meta: {
+                                 isTouched: true,
+                                 isValid: true,
+                                 errors: [],
+                              },
+                           },
+                        })
+                     }}
+                     placeholder="Add Recipe Description in 120 words"
+                  />
+               </Form.Group>
+            </>
             <Banner id="products-app-recipes-create-recipe-basic-information-tunnel-bottom" />
          </Flex>
       </>
