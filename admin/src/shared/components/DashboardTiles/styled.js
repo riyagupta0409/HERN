@@ -79,7 +79,7 @@ export const Counts = styled.div(
       width: 100%;
       span {
          display: flex;
-         align-items: center;
+         align-items: baseline;
          padding: 4px 4px;
          margin: 4px 4px;
          flex: 1;
@@ -90,7 +90,7 @@ export const Counts = styled.div(
       span:only-child {
          flex: unset;
          display: flex;
-         align-items: flex-end;
+         align-items: baseline;
          span {
             margin: 4px 4px;
             padding: 1px 1px;

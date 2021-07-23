@@ -133,7 +133,7 @@ const Chart = ({ children, title }) => {
 const SubCount = ({ children, subCountColor }) => {
    return (
       <styles.SubCount subCountColor={subCountColor}>
-         ${children}
+         {children}
       </styles.SubCount>
    )
 }
