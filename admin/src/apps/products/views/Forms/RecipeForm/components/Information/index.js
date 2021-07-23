@@ -361,7 +361,6 @@ const Information = ({ state }) => {
       await loadCuisines()
    }
 
-   const [focus, setFocus] = React.useState(false)
    return (
       <>
          <Flex width="100%">
@@ -390,7 +389,7 @@ const Information = ({ state }) => {
                   <div
                      style={{
                         display: 'inline-block',
-                        width: '240px',
+                        width: '200px',
                         paddingTop: `${_state.cuisine.value ? '0px' : '10px'}`,
                      }}
                   >
@@ -422,7 +421,7 @@ const Information = ({ state }) => {
                         />
                      </Form.Group>
                   </div>
-                  <Spacer xAxis size="16px" />
+                  <Spacer xAxis size="6px" />
                   <div
                      style={{
                         display: 'inline-block',
@@ -436,6 +435,7 @@ const Information = ({ state }) => {
                            id="containers"
                            name="containers"
                            value={parseFloat(_state.cookingTime.value)}
+                           width="70px"
                            onChange={value => {
                               _dispatch({
                                  type: 'SET_VALUE',

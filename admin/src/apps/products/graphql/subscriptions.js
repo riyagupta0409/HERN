@@ -233,6 +233,9 @@ export const S_RECIPE = gql`
          cookingTime
          notIncluded
          cuisine
+         cuisineNameId {
+            id
+         }
          utensils
          showIngredients
          showIngredientsQuantity
