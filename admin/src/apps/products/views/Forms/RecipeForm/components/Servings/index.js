@@ -178,7 +178,7 @@ const Servings = ({ state }) => {
 
    const options =
       state.simpleRecipeYields?.map((option, index) => {
-         //console.log(option, 'option')
+         console.log(option, 'option')
          const autoGenerate = recipeYield => {
             //console.log({ recipeYield })
             if (recipeYield.id && recipeYield.baseYieldId) {
@@ -292,7 +292,10 @@ const Servings = ({ state }) => {
                   <FoodCost /> {option.cost}$
                </div>
                <div id="yield">
-                  <Yield /> 2kg
+                  <Yield />{' '}
+                  {option.quantity === null
+                     ? 'N/A'
+                     : option.quantity + ' '+ option.unit}
                </div>
             </StyledCardEven>
          )
@@ -320,7 +323,7 @@ const Servings = ({ state }) => {
                key={index}
                style={{
                   display: 'grid',
-                  gridTemplateColumns: `238px repeat(${state.simpleRecipeYields?.length}, 160px)`,
+                  gridTemplateColumns: `238px repeat(${state.simpleRecipeYields?.length}, 180px)`,
                   gridTemplateRows: `170px`,
                }}
             >
@@ -449,7 +452,7 @@ const Servings = ({ state }) => {
 
    const onButtonClickLeft = () => {
       setButtonClickLeft(++buttonClickLeft)
-      recipeForm.current.scrollLeft -= 160
+      recipeForm.current.scrollLeft -= 180
       if (buttonClickLeft > 0) {
          setButtonClickRightRender(true)
       }
@@ -462,7 +465,7 @@ const Servings = ({ state }) => {
    const onButtonClickRight = () => {
       setButtonClickRight(++buttonClickRight)
 
-      recipeForm.current.scrollLeft += 160
+      recipeForm.current.scrollLeft += 180
       if (
          state.simpleRecipeYields.length -
             buttonClickRight +
@@ -693,7 +696,7 @@ const Servings = ({ state }) => {
                      <div
                         style={{
                            display: 'grid',
-                           gridTemplateColumns: '30px 1080px 30px',
+                           gridTemplateColumns: '30px 1183px 30px',
                         }}
                      >
                         {buttonClickLeftRender ? (
@@ -728,7 +731,7 @@ const Servings = ({ state }) => {
                            <div
                               style={{
                                  display: 'grid',
-                                 gridTemplateColumns: `283px repeat(${state.simpleRecipeYields?.length}, 160px)`,
+                                 gridTemplateColumns: `283px repeat(${state.simpleRecipeYields?.length}, 180px)`,
                               }}
                            >
                               <IconButton
@@ -766,7 +769,7 @@ const Servings = ({ state }) => {
                                        left: '0',
                                        position: 'sticky',
                                        overflowX: 'hidden',
-                                       zIndex: '+5',
+                                       zIndex: '+6',
                                        display: 'inline-block',
                                        width: '27px',
                                        height: '27px',
@@ -954,7 +957,7 @@ const SachetDetails = ({
                disabled={disabled}
             />
          </div>
-         <div style={{ display: 'inline-block', width: '130px' }}>
+         <div style={{ display: 'inline-block', width: '150px' }}>
             <div
                style={{
                   display: 'inline-block',

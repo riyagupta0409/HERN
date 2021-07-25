@@ -47,6 +47,14 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                errors: [],
             },
          },
+         yield: {
+            value: '',
+            meta: {
+               isTouched: false,
+               isValid: true,
+               errors: [],
+            },
+         },
       },
    ])
 
@@ -94,11 +102,13 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
          object =>
             !object.serving.meta.isValid ||
             !object.serving.value.trim() ||
-            !object.label.meta.isValid
+            !object.label.meta.isValid ||
+            !object.yield.meta.isValid
       )
       if (hasInvalidFields) {
          return toast.error('All servings should be valid!')
       }
+
       const objects = servings.map(object => ({
          simpleRecipeId: state.id,
          baseYieldId,
@@ -109,6 +119,16 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
          nutritionInfo: {
             data: {},
          },
+         quantity:
+            object.yield.value === ''
+               ? null
+               : +object.yield.value.substr(0, object.yield.value.indexOf(' ')),
+         unit:
+            object.yield.value === ''
+               ? null
+               : object.yield.value
+                    .substr(object.yield.value.indexOf(' '))
+                    .trim(),
       }))
       createYields({
          variables: {
@@ -148,6 +168,7 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
    }
 
    const addField = () => {
+      console.log('added')
       if (servings.every(object => object.serving.value.trim().length)) {
          setServings([
             ...servings,
@@ -161,6 +182,14 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                   },
                },
                label: {
+                  value: '',
+                  meta: {
+                     isTouched: false,
+                     isValid: true,
+                     errors: [],
+                  },
+               },
+               yield: {
                   value: '',
                   meta: {
                      isTouched: false,
@@ -281,6 +310,37 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                            >
                               <DeleteIcon color="#FF5A52" />
                            </IconButton>
+                        </Flex>
+                        <Spacer size="16px" />
+                        <Flex container alignItems="end">
+                           <Flex container alignItems="start">
+                              <Form.Group>
+                                 <Form.Text
+                                    id={`yield-${i}`}
+                                    name={`yield-${i}`}
+                                    variant="revamp-sm"
+                                    onChange={e =>
+                                       handleChange('yield', e.target.value, i)
+                                    }
+                                    onBlur={() => validate('yield', i)}
+                                    value={object.yield.value}
+                                    placeholder="Enter yield"
+                                    hasError={
+                                       object.yield.meta.isTouched &&
+                                       !object.yield.meta.isValid
+                                    }
+                                 />
+                                 {object.yield.meta.isTouched &&
+                                    !object.yield.meta.isValid &&
+                                    object.yield.meta.errors.map(
+                                       (error, index) => (
+                                          <Form.Error key={index}>
+                                             {error}
+                                          </Form.Error>
+                                       )
+                                    )}
+                              </Form.Group>
+                           </Flex>
                         </Flex>
                         <Spacer size="16px" />
                      </>

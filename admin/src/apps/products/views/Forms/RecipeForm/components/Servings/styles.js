@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components'
 export const StyledCardEven = styled.div(
    ({ index, baseYieldId, nutritionIsInSync }) => css`
       height: 85px;
-      width: 160px;
+      width: 180px;
       padding: 5px 5px 5px 5px;
       margin-bottom: 40px;
       background: ${index % 2 == 0 ? `#FFFFFF` : `#F4F4F4`};
@@ -18,7 +18,7 @@ export const StyledCardEven = styled.div(
       div#Serving {
          padding-left: 5px;
          display: inline-block;
-         width: ${baseYieldId ? `56px` : `86px`};
+         width: ${baseYieldId ? `76px` : `106px`};
       }
       div#menu {
          text-align: right;
@@ -174,7 +174,7 @@ export const StyledCardIngredient = styled.div(
 export const SatchetCard = styled.div(
    ({ index }) => css`
       height: 90px;
-      width: 160px;
+      width: 180px;
       padding: 5px 5px 5px 5px;
       background: ${index % 2 == 0 ? `#FFFFFF` : `#F4F4F4`};
       border: 1px solid #f4f4f4;

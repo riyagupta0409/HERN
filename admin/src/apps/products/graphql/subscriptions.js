@@ -295,6 +295,8 @@ export const S_RECIPE = gql`
             yield
             baseYieldId
             cost
+            quantity
+      		unit
             nutritionalInfo
             nutritionId
             nutritionIsInSync
