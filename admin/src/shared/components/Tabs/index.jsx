@@ -151,7 +151,7 @@ const Tabs = () => {
                >
                   <ThreeDots color={open ? '#367BF5' : '#45484C'} />
                </StyledButton>
-               {open && <TabOption />}
+               {open && <TabOption setOpen={setOpen} />}
             </div>
          )}
       </TabsWrapper>
