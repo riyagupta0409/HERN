@@ -8,7 +8,7 @@ import { logger } from '../../../../utils'
 import { ErrorState } from '../../../ErrorState'
 import { InlineLoader } from '../../../InlineLoader'
 import 'react-day-picker/lib/style.css'
-import { DatePicker } from 'antd'
+import { DatePicker, Space } from 'antd'
 import 'antd/dist/antd.css'
 import {
    CartesianGrid,
@@ -89,6 +89,7 @@ const TotalEarningTunnel = ({ currency }) => {
       loading: subsLoading,
       error: subsError,
    } = useSubscription(GET_TOTAL_EARNING, {
+      fetchPolicy: 'network-only',
       variables: {
          //totalEarning
          args: {
@@ -117,16 +118,17 @@ const TotalEarningTunnel = ({ currency }) => {
    })
    // subscription for compare data
    useSubscription(GET_TOTAL_EARNING, {
+      fetchPolicy: 'network-only',
       variables: {
          //totalEarning
          args: {
             params: {
                where: `"isAccepted" = true AND COALESCE("isRejected", false) = false AND "paymentStatus" = \'SUCCEEDED\' ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at >= '${from}'`
+                  compare.from !== moment('2017 - 01 - 01') &&
+                  `AND a.created_at >= '${compare.from}'`
                } ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at < '${to}'`
+                  compare.from !== moment('2017 - 01 - 01') &&
+                  `AND a.created_at < '${compare.to}'`
                } AND a."brandId" = ${brandShop.brandId} ${
                   brandShop.shopTitle
                      ? `AND b.source = \'${brandShop.shopTitle}\'`
@@ -228,7 +230,7 @@ const DrillDownLineChart = ({
    subsLoading,
    currency,
 }) => {
-   const [dataForGraph, setDataForGraph] = useState(undefined)
+   const [dataForGraph, setDataForGraph] = useState([])
 
    const dataGeneratorBetweenToDates = (from, to, groupBy) => {
       if (groupBy[groupBy.length - 1] == 'hour') {
@@ -452,7 +454,6 @@ const DrillDownLineChart = ({
                'totalCompare',
                'past'
             )
-
          if (!weekBundlePast) {
             setDataForGraph(weekBundlePresent)
             return
@@ -556,9 +557,17 @@ const DrillDownLineChart = ({
             }
          }
       }
-   }, [from, to, groupBy, compare, subsLoading])
+   }, [
+      from,
+      to,
+      groupBy,
+      compare,
+      subsLoading,
+      insightAnalyticsData,
+      compareInsightAnalyticsData,
+   ])
 
-   if (subsLoading || !dataForGraph) {
+   if (subsLoading) {
       return <InlineLoader />
    }
    if (subsError) {
