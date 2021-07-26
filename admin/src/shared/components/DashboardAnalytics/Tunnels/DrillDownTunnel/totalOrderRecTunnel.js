@@ -583,7 +583,15 @@ const DrillDownLineChart = ({
             }
          }
       }
-   }, [from, to, groupBy, compare, subsLoading])
+   }, [
+      from,
+      to,
+      groupBy,
+      compare,
+      subsLoading,
+      insightAnalyticsData,
+      compareInsightAnalyticsData,
+   ])
    const handleBarClick = (data, index) => {
       if (data.orderRefspresent || data.orderRefspast) {
          setGraphTunnelData(prevState => ({

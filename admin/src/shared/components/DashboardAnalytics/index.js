@@ -42,7 +42,7 @@ import {
    AnalyticsApiArgsContext,
    AnalyticsApiArgsProvider,
 } from './context/apiArgs'
-import { TotalEarningAnalytics } from './Analytics'
+import { OrderReceivedAnalytics, TotalEarningAnalytics } from './Analytics'
 const { RangePicker } = DatePicker
 
 //currencies
@@ -1021,67 +1021,7 @@ const DashboardAnalyticsTiles = ({
       <>
          <Tiles>
             <TotalEarningAnalytics />
-            <Tile>
-               <Tile.Head title="Order Recieved">
-                  <Tile.Head.Actions>
-                     <Tile.Head.Action
-                        title="Expand"
-                        onClick={() => {
-                           openTunnel(2)
-                        }}
-                     >
-                        <Expand />
-                     </Tile.Head.Action>
-                  </Tile.Head.Actions>
-               </Tile.Head>
-               <Tile.Body>
-                  <Tile.Counts>
-                     <Tile.Count
-                        subCount={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getOrdersRecieved')[0]
-                        }
-                        subCountColor={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getOrdersRecieved')[1]
-                        }
-                     >
-                        {
-                           insights_analytics.getOrdersRecieved.find(
-                              x => x.year === null
-                           )['count']
-                        }
-                     </Tile.Count>
-                  </Tile.Counts>
-                  {insights_analytics.getOrdersRecieved.length > 1 && (
-                     <Tile.Chart>
-                        <SparkChart
-                           from={from}
-                           to={to}
-                           groupBy={groupBy}
-                           idName={['total_order_recieved']}
-                           dataOf="count"
-                           insightAnalyticsData={insights_analytics.getOrdersRecieved.filter(
-                              x => x.year !== null
-                           )}
-                           compare={compare}
-                           compareInsightAnalyticsData={
-                              !compare.isSkip &&
-                              compare.data &&
-                              compare.data.getOrdersRecieved.filter(
-                                 x => x.year !== null
-                              )
-                           }
-                           setGraphTunnelData={setGraphTunnelData}
-                           openGraphTunnel={openGraphTunnel}
-                           graphTunnelTitle="Order Received"
-                        />
-                     </Tile.Chart>
-                  )}
-               </Tile.Body>
-            </Tile>
+            <OrderReceivedAnalytics />
             <Tile>
                <Tile.Head title="Total Accepted vs Rejected Orders"></Tile.Head>
                <Tile.Body>
@@ -1384,7 +1324,7 @@ export const SparkChart = ({
          )
          const hourBundlePast =
             !compare.isSkip &&
-            compare.data &&
+            compareInsightAnalyticsData &&
             hourBundler(
                moment(compare.from),
                moment(compare.to),
@@ -1455,7 +1395,7 @@ export const SparkChart = ({
          )
          const dayBundlePast =
             !compare.isSkip &&
-            compare.data &&
+            compareInsightAnalyticsData &&
             dayBundler(
                moment(compare.from),
                moment(compare.to),
@@ -1523,7 +1463,7 @@ export const SparkChart = ({
          )
          const weekBundlePast =
             !compare.isSkip &&
-            compare.data &&
+            compareInsightAnalyticsData &&
             weekBundler(
                moment(compare.from),
                moment(compare.to),
@@ -1593,7 +1533,7 @@ export const SparkChart = ({
          )
          const monthBundlePast =
             !compare.isSkip &&
-            compare.data &&
+            compareInsightAnalyticsData &&
             monthBundler(
                moment(compare.from),
                moment(compare.to),
@@ -1624,11 +1564,11 @@ export const SparkChart = ({
       if (compare.isSkip) {
          dataGeneratorBetweenToDates(moment(from), moment(to), groupBy)
       } else {
-         if (compare.data) {
+         if (compareInsightAnalyticsData) {
             dataGeneratorBetweenToDates(moment(from), moment(to), groupBy)
          }
       }
-   }, [from, to, groupBy, compare])
+   }, [from, to, groupBy, compare, compareInsightAnalyticsData])
    return (
       <>
          <AreaChart
@@ -1679,7 +1619,7 @@ export const SparkChart = ({
                   cursor: 'pointer',
                }}
             />
-            {!compare.isSkip && compare.data && (
+            {!compare.isSkip && compareInsightAnalyticsData && (
                <Area
                   type="monotone"
                   dataKey={dataOf + 'Compare'}
