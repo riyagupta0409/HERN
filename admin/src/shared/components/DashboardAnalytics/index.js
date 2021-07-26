@@ -38,6 +38,11 @@ import {
    TotalOrderRecTunnel,
 } from './Tunnels/DrillDownTunnel'
 import OrderRefTable from './Tunnels/OrderRefTunnel/orderRefTunnel'
+import {
+   AnalyticsApiArgsContext,
+   AnalyticsApiArgsProvider,
+} from './context/apiArgs'
+import { TotalEarningAnalytics } from './Analytics'
 const { RangePicker } = DatePicker
 
 //currencies
@@ -46,7 +51,13 @@ const currency = {
    INR: '₹',
    EUR: '€',
 }
-
+const DashboardAnalyticsProvider = () => {
+   return (
+      <AnalyticsApiArgsProvider>
+         <DashboardAnalytics />
+      </AnalyticsApiArgsProvider>
+   )
+}
 const DashboardAnalytics = () => {
    const [from, setFrom] = useState(
       localStorage.getItem('analyticsDateFrom') || moment().format('YYYY-MM-DD')
@@ -533,7 +544,7 @@ const DashboardAnalytics = () => {
    return (
       <>
          <Spacer size="10px" />
-         <Tunnels tunnels={tunnels}>
+         {/* <Tunnels tunnels={tunnels}>
             <Tunnel size="full" layer={1}>
                <TunnelHeader
                   title={tunnelTitle}
@@ -559,7 +570,7 @@ const DashboardAnalytics = () => {
                   currency={currency[window._env_.REACT_APP_CURRENCY]}
                />
             </Tunnel>
-         </Tunnels>
+         </Tunnels> */}
          <Tunnels tunnels={graphTunnels}>
             <Tunnel size="full" layer={1}>
                <TunnelHeader
@@ -585,6 +596,7 @@ const DashboardAnalytics = () => {
                setBrandShop={setBrandShop}
                setInsightSkip={setInsightSkip}
                brandShop={brandShop}
+               global
             />
             <Spacer size="10px" />
             <DateRangePicker
@@ -595,6 +607,7 @@ const DashboardAnalytics = () => {
                compare={compare}
                setCompare={setCompare}
                setGroupBy={setGroupBy}
+               global
             />
             <Spacer size="10px" />
             {insights_analytics.length > 0 ? (
@@ -618,13 +631,17 @@ const DashboardAnalytics = () => {
       </>
    )
 }
-export default DashboardAnalytics
+export default DashboardAnalyticsProvider
 export const BrandAndShop = ({
    brands,
    setBrandShop,
    setInsightSkip,
    brandShop,
+   global,
 }) => {
+   const { analyticsApiArgsDispatch } = React.useContext(
+      AnalyticsApiArgsContext
+   )
    const [shopSource] = useState([
       {
          id: 1,
@@ -644,12 +661,28 @@ export const BrandAndShop = ({
    ])
    const selectedOptionShop = option => {
       setBrandShop(prevState => ({ ...prevState, shopTitle: option.payload }))
+      if (global) {
+         analyticsApiArgsDispatch({
+            type: 'BRANDSHOP',
+            payload: {
+               shopTitle: option.payload,
+            },
+         })
+      }
       if (brandShop.brandId) {
          setInsightSkip(false)
       }
    }
    const selectedOptionBrand = option => {
       setBrandShop(prevState => ({ ...prevState, brandId: option.id }))
+      if (global) {
+         analyticsApiArgsDispatch({
+            type: 'BRANDSHOP',
+            payload: {
+               brandId: option.id,
+            },
+         })
+      }
       if (brandShop.shopTitle) {
          setInsightSkip(false)
       }
@@ -693,9 +726,12 @@ export const DateRangePicker = ({
    setGroupBy,
    setCompare,
    compare,
+   global,
 }) => {
    const [compareOptions, setCompareOptions] = useState(undefined)
-
+   const { analyticsApiArgsDispatch } = React.useContext(
+      AnalyticsApiArgsContext
+   )
    useEffect(() => {
       handleCompareClick()
    }, [from, to])
@@ -705,11 +741,25 @@ export const DateRangePicker = ({
       if (dates) {
          setFrom(dateStrings[0])
          setTo(dateStrings[1])
+         if (global) {
+            analyticsApiArgsDispatch({ type: 'FROM', payload: dateStrings[0] })
+            analyticsApiArgsDispatch({ type: 'TO', payload: dateStrings[1] })
+         }
          // localStorage.setItem('analyticsDateFrom', dateStrings[0])
          // localStorage.setItem('analyticsDateTo', dateStrings[1])
       } else {
          setFrom(moment().format('YYYY-MM-DD'))
          setTo(moment().add(1, 'd').format('YYYY-MM-DD'))
+         if (global) {
+            analyticsApiArgsDispatch({
+               type: 'FROM',
+               payload: moment().format('YYYY-MM-DD'),
+            })
+            analyticsApiArgsDispatch({
+               type: 'TO',
+               payload: moment().add(1, 'd').format('YYYY-MM-DD'),
+            })
+         }
       }
    }
 
@@ -796,6 +846,16 @@ export const DateRangePicker = ({
          from: option.payload.from,
          to: option.payload.to,
       }))
+      if (global) {
+         analyticsApiArgsDispatch({
+            type: 'COMPARE',
+            payload: {
+               isSkip: false,
+               from: option.payload.from,
+               to: option.payload.to,
+            },
+         })
+      }
    }
    const searchedOption = option => console.log(option)
    return (
@@ -845,6 +905,14 @@ export const DateRangePicker = ({
                               ...prevState,
                               isCompare: true,
                            }))
+                           if (global) {
+                              analyticsApiArgsDispatch({
+                                 type: 'COMPARE',
+                                 payload: {
+                                    isCompare: true,
+                                 },
+                              })
+                           }
                            handleCompareClick()
                         }}
                      >
@@ -875,6 +943,15 @@ export const DateRangePicker = ({
                                  isCompare: false,
                                  isSkip: true,
                               }))
+                              if (global) {
+                                 analyticsApiArgsDispatch({
+                                    type: 'COMPARE',
+                                    payload: {
+                                       compare: false,
+                                       isSkip: true,
+                                    },
+                                 })
+                              }
                               setCompareOptions(undefined)
                            }}
                         >
@@ -885,7 +962,12 @@ export const DateRangePicker = ({
                )}
             </Flex>
             <Flex>
-               <GroupByButtons from={from} to={to} setGroupBy={setGroupBy} />
+               <GroupByButtons
+                  from={from}
+                  to={to}
+                  setGroupBy={setGroupBy}
+                  global={global}
+               />
             </Flex>
          </Flex>
       </>
@@ -938,63 +1020,7 @@ const DashboardAnalyticsTiles = ({
    return (
       <>
          <Tiles>
-            <Tile>
-               <Tile.Head title="Total Earning">
-                  <Tile.Head.Actions>
-                     <Tile.Head.Action
-                        title="Expand"
-                        onClick={() => {
-                           setTunnelTitle('Total Earning')
-                           openTunnel(1)
-                        }}
-                     >
-                        <Expand />
-                     </Tile.Head.Action>
-                  </Tile.Head.Actions>
-               </Tile.Head>
-               <Tile.Body>
-                  <Tile.Counts>
-                     <Tile.Count
-                        currency={currency[window._env_.REACT_APP_CURRENCY]}
-                        subCount={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getTotalEarnings')[0]
-                        }
-                        subCountColor={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getTotalEarnings')[1]
-                        }
-                     >
-                        {insights_analytics.getTotalEarnings[0]['total'] || 0}
-                     </Tile.Count>
-                  </Tile.Counts>
-                  {insights_analytics.getTotalEarnings.length > 1 && (
-                     <Tile.Chart>
-                        <SparkChart
-                           from={from}
-                           to={to}
-                           groupBy={groupBy}
-                           dataOf="total"
-                           insightAnalyticsData={insights_analytics.getTotalEarnings.slice(
-                              1
-                           )}
-                           idName={['total_earning']}
-                           compare={compare}
-                           compareInsightAnalyticsData={
-                              !compare.isSkip &&
-                              compare.data &&
-                              compare.data.getTotalEarnings.slice(1)
-                           }
-                           setGraphTunnelData={setGraphTunnelData}
-                           openGraphTunnel={openGraphTunnel}
-                           graphTunnelTitle="Total Earning"
-                        />
-                     </Tile.Chart>
-                  )}
-               </Tile.Body>
-            </Tile>
+            <TotalEarningAnalytics />
             <Tile>
                <Tile.Head title="Order Recieved">
                   <Tile.Head.Actions>
@@ -1185,7 +1211,7 @@ const DashboardAnalyticsTiles = ({
    )
 }
 
-const SparkChart = ({
+export const SparkChart = ({
    insightAnalyticsData,
    from,
    to,
@@ -1506,7 +1532,6 @@ const SparkChart = ({
                'totalCompare',
                'past'
             )
-
          if (!weekBundlePast) {
             setDataForGraph(weekBundlePresent)
             return
@@ -1704,12 +1729,20 @@ const SparkChart = ({
    )
 }
 
-const GroupByButtons = ({ from, to, setGroupBy }) => {
+const GroupByButtons = ({ from, to, setGroupBy, global }) => {
    const [options, setOptions] = React.useState(null)
-
+   const { analyticsApiArgsDispatch } = React.useContext(
+      AnalyticsApiArgsContext
+   )
+   const groupByDispatcher = groupArr => {
+      if (global) {
+         analyticsApiArgsDispatch({ type: 'GROUPBY', payload: groupArr })
+      }
+   }
    const buttonMagic = () => {
       if (moment(to).diff(from, 'days') <= 7) {
          setGroupBy(['year', 'month', 'week', 'day', 'hour'])
+         groupByDispatcher(['year', 'month', 'week', 'day', 'hour'])
          return setOptions([
             {
                id: 1,
@@ -1725,7 +1758,7 @@ const GroupByButtons = ({ from, to, setGroupBy }) => {
          moment(to).diff(from, 'days') <= 28
       ) {
          setGroupBy(['year', 'month', 'week', 'day'])
-
+         groupByDispatcher(['year', 'month', 'week', 'day'])
          return setOptions([
             {
                id: 1,
@@ -1741,6 +1774,7 @@ const GroupByButtons = ({ from, to, setGroupBy }) => {
          moment(to).diff(from, 'days') <= 365
       ) {
          setGroupBy(['year', 'month', 'week'])
+         groupByDispatcher(['year', 'month', 'week'])
          return setOptions([
             {
                id: 1,
@@ -1753,6 +1787,7 @@ const GroupByButtons = ({ from, to, setGroupBy }) => {
          ])
       } else {
          setGroupBy(['year', 'month'])
+         groupByDispatcher(['year', 'month'])
          return setOptions([
             {
                id: 1,
@@ -1771,14 +1806,19 @@ const GroupByButtons = ({ from, to, setGroupBy }) => {
    const handleOnChangeRadio = option => {
       if (option == null) {
          setGroupBy(options.map(x => x.title))
+         groupByDispatcher(options.map(x => x.title))
       } else {
          if (option.title == 'Hour') {
+            groupByDispatcher(['year', 'month', 'week', 'day', 'hour'])
             return setGroupBy(['year', 'month', 'week', 'day', 'hour'])
          } else if (option.title == 'Day') {
+            groupByDispatcher(['year', 'month', 'week', 'day'])
             return setGroupBy(['year', 'month', 'week', 'day'])
          } else if (option.title == 'Week') {
+            groupByDispatcher(['year', 'month', 'week'])
             return setGroupBy(['year', 'month', 'week'])
          } else {
+            groupByDispatcher(['year', 'month'])
             return setGroupBy(['year', 'month'])
          }
       }
