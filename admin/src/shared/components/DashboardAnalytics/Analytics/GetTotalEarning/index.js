@@ -25,15 +25,17 @@ const TotalEarningAnalytics = () => {
       presentTime: undefined,
       pastTime: undefined,
    })
+   const [earningCompare, setEarningCompare] = useState({
+      data: undefined,
+      compareResult: undefined,
+   })
+
+   //subscription for shop type and brand
    const subCountHandler = keyName => {
-      const growth =
-         analyticsApiArgState.compare.compareResult[keyName]['growth']
-      const isGrowth =
-         analyticsApiArgState.compare.compareResult[keyName]['isGrowth']
+      const growth = earningCompare.compareResult[keyName]['growth']
+      const isGrowth = earningCompare.compareResult[keyName]['isGrowth']
       const growthInPercentage =
-         analyticsApiArgState.compare.compareResult[keyName][
-            'growthInPercentage'
-         ]
+         earningCompare.compareResult[keyName]['growthInPercentage']
       const toBeSubCount = growth
          ? isGrowth
             ? isFinite(growthInPercentage)
@@ -82,7 +84,7 @@ const TotalEarningAnalytics = () => {
    })
 
    //subscription for compare data
-   useSubscription(GET_TOTAL_EARNING, {
+   const { loading: compareLoading } = useSubscription(GET_TOTAL_EARNING, {
       variables: {
          //totalEarning
          args: {
@@ -115,21 +117,10 @@ const TotalEarningAnalytics = () => {
       },
       skip: analyticsApiArgState.compare.isSkip,
       onSubscriptionData: ({ subscriptionData }) => {
-         //  setCompare(prevState => ({
-         //     ...prevState,
-         //     data: subscriptionData.data.insights_analytics[0],
-         //  }))
-         console.log("global state I'm in subscription")
-         analyticsApiArgsDispatch({
-            type: 'COMPARE',
-            payload: {
-               ...analyticsApiArgState.compare,
-               data: {
-                  ...analyticsApiArgState.compare.data,
-                  ...subscriptionData.data.insights_analytics[0],
-               },
-            },
-         })
+         setEarningCompare(prevState => ({
+            ...prevState,
+            data: subscriptionData.data.insights_analytics[0],
+         }))
          dataCompareMachine(subscriptionData.data.insights_analytics[0])
       },
    })
@@ -150,26 +141,11 @@ const TotalEarningAnalytics = () => {
          100
       ).toFixed(2)
       result.getTotalEarnings = getTotalEarningsResult
-      analyticsApiArgsDispatch({
-         type: 'COMPARE',
-         payload: {
-            compareResult: {
-               ...analyticsApiArgState.compare.compareResult,
-               ...result,
-            },
-         },
-      })
-      //   setCompare(prevState => ({ ...prevState, compareResult: result }))
+
+      setEarningCompare(prevState => ({ ...prevState, compareResult: result }))
    }
-   console.log('global state', analyticsApiArgState.compare)
-   console.log(
-      'sparkCompareData',
-      !analyticsApiArgState.compare.isSkip &&
-         analyticsApiArgState.compare.data &&
-         analyticsApiArgState.compare.data.getTotalEarnings.slice(1)
-   )
    console.log('Loading', subsLoading, insights_analytics)
-   if (subsLoading) {
+   if (subsLoading || compareLoading) {
       return <InlineLoader />
    }
    if (subsError) {
@@ -229,12 +205,12 @@ const TotalEarningAnalytics = () => {
                      currency={analyticsApiArgState.currency}
                      subCount={
                         !analyticsApiArgState.compare.isSkip &&
-                        analyticsApiArgState.compare.compareResult &&
+                        earningCompare.compareResult &&
                         subCountHandler('getTotalEarnings')[0]
                      }
                      subCountColor={
                         !analyticsApiArgState.compare.isSkip &&
-                        analyticsApiArgState.compare.compareResult &&
+                        earningCompare.compareResult &&
                         subCountHandler('getTotalEarnings')[1]
                      }
                   >
@@ -255,10 +231,8 @@ const TotalEarningAnalytics = () => {
                         compare={analyticsApiArgState.compare}
                         compareInsightAnalyticsData={
                            !analyticsApiArgState.compare.isSkip &&
-                           analyticsApiArgState.compare.data &&
-                           analyticsApiArgState.compare.data.getTotalEarnings.slice(
-                              1
-                           )
+                           earningCompare.data &&
+                           earningCompare.data.getTotalEarnings.slice(1)
                         }
                         setGraphTunnelData={setOrderRefTunnelData}
                         openGraphTunnel={openTunnel}
