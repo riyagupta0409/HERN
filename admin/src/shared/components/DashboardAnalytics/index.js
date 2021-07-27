@@ -57,14 +57,14 @@ const currency = {
    INR: '₹',
    EUR: '€',
 }
-const DashboardAnalyticsProvider = () => {
+const DashboardAnalyticsProvider = ({ children }) => {
    return (
       <AnalyticsApiArgsProvider>
-         <DashboardAnalytics />
+         <DashboardAnalytics>{children}</DashboardAnalytics>
       </AnalyticsApiArgsProvider>
    )
 }
-const DashboardAnalytics = () => {
+const DashboardAnalytics = ({ children }) => {
    const [from, setFrom] = useState(
       localStorage.getItem('analyticsDateFrom') || moment().format('YYYY-MM-DD')
    )
@@ -133,7 +133,7 @@ const DashboardAnalytics = () => {
                global
             />
             <Spacer size="10px" />
-            <DashboardAnalyticsTiles />
+            <DashboardAnalyticsTiles>{children}</DashboardAnalyticsTiles>
          </Flex>
       </>
    )
@@ -474,16 +474,10 @@ export const DateRangePicker = ({
    )
 }
 
-const DashboardAnalyticsTiles = ({}) => {
+const DashboardAnalyticsTiles = ({ children }) => {
    return (
       <>
-         <Tiles>
-            <TotalEarningAnalytics />
-            <OrderReceivedAnalytics />
-            <AcceptedAndRejectedAnalytics />
-            <SubscribedCustomerAnalytics />
-            <RegisteredCustomerAnalytics />
-         </Tiles>
+         <Tiles>{children}</Tiles>
       </>
    )
 }

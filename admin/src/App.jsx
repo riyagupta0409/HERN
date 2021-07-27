@@ -18,6 +18,13 @@ import {
 } from './shared/components'
 import { AppItem, AppList, Layout, InsightDiv } from './styled'
 import BottomBar from './shared/components/BottomBar'
+import {
+   AcceptedAndRejectedAnalytics,
+   OrderReceivedAnalytics,
+   RegisteredCustomerAnalytics,
+   SubscribedCustomerAnalytics,
+   TotalEarningAnalytics,
+} from './shared/components/DashboardAnalytics/Analytics'
 
 const APPS = gql`
    subscription apps {
@@ -115,7 +122,13 @@ const App = () => {
                         </AppItem>
                      ))}
                   </AppList>
-                  <DashboardAnalytics />
+                  <DashboardAnalytics>
+                     <TotalEarningAnalytics />
+                     <OrderReceivedAnalytics />
+                     <AcceptedAndRejectedAnalytics />
+                     <SubscribedCustomerAnalytics />
+                     <RegisteredCustomerAnalytics />
+                  </DashboardAnalytics>
                   <InsightDiv>
                      <InsightDashboard
                         appTitle="global"
