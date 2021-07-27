@@ -93,514 +93,31 @@ const DashboardAnalytics = () => {
       shopTitle: false,
       brand: undefined,
    })
-   const [tunnels, openTunnel, closeTunnel] = useTunnel(2)
-   const [tunnelTitle, setTunnelTitle] = useState('')
-   const [graphTunnels, openGraphTunnel, closeGraphTunnel] = useTunnel(1)
-   const [graphTunnelData, setGraphTunnelData] = useState({
-      title: undefined,
-      orderRefData: undefined,
-      presentTime: undefined,
-      pastTime: undefined,
-   })
-   const [insightSkip, setInsightSkip] = useState(true)
-   const { data: { brands = [] } = {}, loading: brandLoading } =
-      useSubscription(BRANDS, {
-         onSubscriptionData: ({ subscriptionData }) => {
-            const defaultBrand = subscriptionData.data.brands.find(
-               x => x.isDefault == true
-            )
-            if (defaultBrand) {
-               setBrandShop({
-                  ...brands,
-                  brandId: defaultBrand.id,
-                  brand: defaultBrand,
-               })
-               setInsightSkip(false)
-            }
-         },
-      })
-
-   //subscription
-   const {
-      data: { insights_analytics = [] } = {},
-      loading: subsLoading,
-      error: subsError,
-   } = useSubscription(INSIGHT_ANALYTICS, {
-      variables: {
-         //totalEarning
-         args: {
-            params: {
-               where: `"isAccepted" = true AND COALESCE("isRejected", false) = false AND "paymentStatus" = \'SUCCEEDED\' ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at >= '${from}'`
-               } ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at < '${to}'`
-               } AND a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         //totalAcceptedVsRejectedOrders
-         args1: {
-            params: {
-               where: `${
-                  from !== moment('2017 - 01 - 01') &&
-                  `a.created_at >= '${from}' AND`
-               } ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `a.created_at < '${to}' AND`
-               } a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         args2: {
-            params: {
-               where: `${
-                  from !== moment('2017 - 01 - 01') &&
-                  `a.created_at >= '${from}' AND`
-               } ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `a.created_at < '${to}' AND`
-               } a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         args3: {
-            params: {
-               where: `"isAccepted" = true AND COALESCE("isRejected", false) = false AND "paymentStatus" = \'SUCCEEDED\' ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at >= '${from}'`
-               } ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at < '${to}'`
-               } AND a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         args4: {
-            params: {
-               where: `${
-                  from !== moment('2017 - 01 - 01') &&
-                  `a.created_at >= '${from}' AND`
-               } ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `a.created_at < '${to}' AND`
-               } a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         args5: {
-            params: {
-               where: `a.\"isSubscriber\" = true AND  a.\"isSubscriberTimeStamp\" IS NOT NULL ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at >= '${from}'`
-               } ${
-                  from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at < '${to}'`
-               } AND a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-      },
-      skip: insightSkip,
-   })
-   // subscription for for compare data
-   useSubscription(INSIGHT_ANALYTICS, {
-      variables: {
-         //totalEarning
-         args: {
-            params: {
-               where: `"isAccepted" = true AND COALESCE("isRejected", false) = false AND "paymentStatus" = \'SUCCEEDED\' ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at >= '${compare.from}'`
-               } ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at < '${compare.to}'`
-               } AND a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         //totalAcceptedVsRejectedOrders
-         args1: {
-            params: {
-               where: `${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `a.created_at >= '${compare.from}' AND`
-               } ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `a.created_at < '${compare.to}' AND`
-               } a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         args2: {
-            params: {
-               where: `${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `a.created_at >= '${compare.from}' AND`
-               } ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `a.created_at < '${compare.to}' AND`
-               } a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         args3: {
-            params: {
-               where: `"isAccepted" = true AND COALESCE("isRejected", false) = false AND "paymentStatus" = \'SUCCEEDED\' ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at >= '${compare.from}'`
-               } ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at < '${compare.to}'`
-               } AND a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         args4: {
-            params: {
-               where: `${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `a.created_at >= '${compare.from}' AND`
-               } ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `a.created_at < '${compare.to}' AND`
-               } a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-         args5: {
-            params: {
-               where: `a.\"isSubscriber\" = true AND  a.\"isSubscriberTimeStamp\" IS NOT NULL ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at >= '${compare.from}'`
-               } ${
-                  compare.from !== moment('2017 - 01 - 01') &&
-                  `AND a.created_at < '${compare.to}'`
-               } AND a."brandId" = ${brandShop.brandId} ${
-                  brandShop.shopTitle
-                     ? `AND b.source = \'${brandShop.shopTitle}\'`
-                     : ''
-               }`,
-               groupingSets: `(${groupBy.toString()})`,
-               columns: groupBy
-                  .map(group => {
-                     return `EXTRACT(${group.toUpperCase()} FROM a.created_at) AS \"${group.toLowerCase()}\"`
-                  })
-                  .join(','),
-            },
-         },
-      },
-      skip: compare.isSkip,
+   const [brands, setBrands] = useState([])
+   const { loading: brandLoading } = useSubscription(BRANDS, {
       onSubscriptionData: ({ subscriptionData }) => {
-         setCompare(prevState => ({
-            ...prevState,
-            data: subscriptionData.data.insights_analytics[0],
+         const brandData = [
+            { title: 'All', brandId: false },
+            ...subscriptionData.data.brands,
+         ]
+         const newBrandData = brandData.map((brand, index) => ({
+            ...brand,
+            id: index + 1,
          }))
-         dataCompareMachine(subscriptionData.data.insights_analytics[0])
+         setBrands(newBrandData)
       },
    })
-   const dataCompareMachine = data => {
-      const result = {}
-      const present = insights_analytics[0]
-      const past = data
-      //getTotalEarning
-      const getTotalEarningsResult = {}
-      const presentTotalEarnings = present.getTotalEarnings[0].total
-      const pastTotalEarnings = past.getTotalEarnings[0].total
-      const compareTotalEarnings = presentTotalEarnings - pastTotalEarnings
 
-      getTotalEarningsResult.isGrowth = compareTotalEarnings >= 0 ? true : false
-      getTotalEarningsResult.growth = compareTotalEarnings
-      getTotalEarningsResult.growthInPercentage = (
-         (Math.abs(compareTotalEarnings) / pastTotalEarnings) *
-         100
-      ).toFixed(2)
-      result.getTotalEarnings = getTotalEarningsResult
-
-      //getOrdersRecieved
-      const getOrdersRecievedResult = {}
-      const presentOrderRecieved = present.getOrdersRecieved.find(
-         x => x.year == null
-      ).count
-      const pastOrderRecieved = past.getOrdersRecieved.find(
-         x => x.year == null
-      ).count
-      const compareOrderRecieved = presentOrderRecieved - pastOrderRecieved
-
-      getOrdersRecievedResult.isGrowth =
-         compareOrderRecieved >= 0 ? true : false
-      getOrdersRecievedResult.growth = compareOrderRecieved
-      getOrdersRecievedResult.growthInPercentage = (
-         (Math.abs(compareOrderRecieved) / pastOrderRecieved) *
-         100
-      ).toFixed(2)
-      result.getOrdersRecieved = getOrdersRecievedResult
-
-      //getAcceptedVsRejectedOrders-->accepted
-      const getAcceptedOrdersResult = {}
-      const presentAccepted = present.getAcceptedVsRejectedOrders.acceptedCount
-      const pastAccepted = past.getAcceptedVsRejectedOrders.acceptedCount
-      const compareAccepted = presentAccepted - pastAccepted
-
-      getAcceptedOrdersResult.isGrowth = compareAccepted >= 0 ? true : false
-      getAcceptedOrdersResult.growth = compareAccepted
-      getAcceptedOrdersResult.growthInPercentage = (
-         (Math.abs(compareAccepted) / pastAccepted) *
-         100
-      ).toFixed(2)
-      result.getAcceptedOrders = getAcceptedOrdersResult
-
-      //getAcceptedVsRejectedOrders-->Rejected
-      const getRejectedOrdersResult = {}
-      const presentRejected = present.getAcceptedVsRejectedOrders.rejectedCount
-      const pastRejected = past.getAcceptedVsRejectedOrders.rejectedCount
-      const compareRejected = presentRejected - pastRejected
-
-      getRejectedOrdersResult.isGrowth = compareRejected >= 0 ? true : false
-      getRejectedOrdersResult.growth = compareRejected
-      getRejectedOrdersResult.growthInPercentage = (
-         (Math.abs(compareRejected) / pastRejected) *
-         100
-      ).toFixed(2)
-      result.getRejectedOrders = getRejectedOrdersResult
-
-      //getSubscribedCustomers
-      const getSubscribedCustomersResult = {}
-      const presentSubscribedCustomers = present.getSubscribedCustomers[0].count
-      const pastSubscribedCustomers = past.getSubscribedCustomers[0].count
-      const compareSubscribedCustomers =
-         presentSubscribedCustomers - pastSubscribedCustomers
-
-      getSubscribedCustomersResult.isGrowth =
-         compareSubscribedCustomers >= 0 ? true : false
-      getSubscribedCustomersResult.growth = compareSubscribedCustomers
-      getSubscribedCustomersResult.growthInPercentage = (
-         (Math.abs(compareSubscribedCustomers) / pastSubscribedCustomers) *
-         100
-      ).toFixed(2)
-      result.getSubscribedCustomers = getSubscribedCustomersResult
-
-      //getRegisteredCustomers--onDemand
-      const getRegisteredCustomersOnDemandResult = {}
-      const presentRegisteredCustomersOnDemand =
-         present.getRegisteredCustomers[0].onDemand
-      const pastRegisteredCustomersOnDemand =
-         past.getRegisteredCustomers[0].onDemand
-      const compareRegisteredCustomersOnDemand =
-         presentRegisteredCustomersOnDemand - pastRegisteredCustomersOnDemand
-
-      getRegisteredCustomersOnDemandResult.isGrowth =
-         compareRegisteredCustomersOnDemand >= 0 ? true : false
-      getRegisteredCustomersOnDemandResult.growth =
-         compareRegisteredCustomersOnDemand
-      getRegisteredCustomersOnDemandResult.growthInPercentage = (
-         (Math.abs(compareRegisteredCustomersOnDemand) /
-            pastRegisteredCustomersOnDemand) *
-         100
-      ).toFixed(2)
-      result.getRegisteredCustomersOnDemand =
-         getRegisteredCustomersOnDemandResult
-
-      //getRegisteredCustomers--subscription
-      const getRegisteredCustomersSubscriptionResult = {}
-      const presentRegisteredCustomersSubscription =
-         present.getRegisteredCustomers[0].subscription
-      const pastRegisteredCustomersSubscription =
-         past.getRegisteredCustomers[0].subscription
-      const compareRegisteredCustomersSubscription =
-         presentRegisteredCustomersSubscription -
-         pastRegisteredCustomersSubscription
-
-      getRegisteredCustomersSubscriptionResult.isGrowth =
-         compareRegisteredCustomersSubscription >= 0 ? true : false
-      getRegisteredCustomersSubscriptionResult.growth =
-         compareRegisteredCustomersSubscription
-      getRegisteredCustomersSubscriptionResult.growthInPercentage = (
-         (Math.abs(compareRegisteredCustomersSubscription) /
-            pastRegisteredCustomersSubscription) *
-         100
-      ).toFixed(2)
-      result.getRegisteredCustomersSubscription =
-         getRegisteredCustomersSubscriptionResult
-
-      //get registered customer
-      const getRegisteredCustomersResult = {}
-      const presentRegisteredCustomers =
-         presentRegisteredCustomersOnDemand +
-         presentRegisteredCustomersSubscription
-      const pastRegisteredCustomers =
-         pastRegisteredCustomersOnDemand + pastRegisteredCustomersSubscription
-      const compareRegisteredCustomer =
-         presentRegisteredCustomers - pastRegisteredCustomers
-
-      getRegisteredCustomersResult.isGrowth =
-         compareRegisteredCustomer >= 0 ? true : false
-      getRegisteredCustomersResult.growth = compareRegisteredCustomer
-      getRegisteredCustomersResult.growthInPercentage = (
-         (Math.abs(compareRegisteredCustomer) / pastRegisteredCustomers) *
-         100
-      ).toFixed(2)
-      result.getRegisteredCustomers = getRegisteredCustomersResult
-
-      setCompare(prevState => ({ ...prevState, compareResult: result }))
-   }
    if (brandLoading) {
-      return <div>loading</div>
+      return <InlineLoader />
    }
    return (
       <>
          <Spacer size="10px" />
-         {/* <Tunnels tunnels={tunnels}>
-            <Tunnel size="full" layer={1}>
-               <TunnelHeader
-                  title={tunnelTitle}
-                  close={() => {
-                     setTunnelTitle('')
-                     closeTunnel(1)
-                  }}
-                  description="This is a Tunnel"
-               />
-               <TotalEarningTunnel
-                  currency={currency[window._env_.REACT_APP_CURRENCY]}
-               />
-            </Tunnel>
-            <Tunnel size="full" layer={2}>
-               <TunnelHeader
-                  title="Total Order Received"
-                  close={() => {
-                     closeTunnel(2)
-                  }}
-                  description="This is a Tunnel"
-               />
-               <TotalOrderRecTunnel
-                  currency={currency[window._env_.REACT_APP_CURRENCY]}
-               />
-            </Tunnel>
-         </Tunnels> */}
-         <Tunnels tunnels={graphTunnels}>
-            <Tunnel size="full" layer={1}>
-               <TunnelHeader
-                  title={graphTunnelData.title}
-                  close={() => {
-                     setGraphTunnelData({
-                        title: undefined,
-                        orderRefData: undefined,
-                     })
-                     closeGraphTunnel(1)
-                  }}
-                  description="This is a graph Tunnel"
-               />
-               <OrderRefTable
-                  graphTunnelData={graphTunnelData}
-                  groupBy={groupBy}
-               />
-            </Tunnel>
-         </Tunnels>
          <Flex padding="0px 42px 0px 42px">
             <BrandAndShop
                brands={brands}
                setBrandShop={setBrandShop}
-               setInsightSkip={setInsightSkip}
                brandShop={brandShop}
                global
             />
@@ -616,35 +133,13 @@ const DashboardAnalytics = () => {
                global
             />
             <Spacer size="10px" />
-            {insights_analytics.length > 0 ? (
-               <DashboardAnalyticsTiles
-                  insights_analytics={insights_analytics[0]}
-                  loading={subsLoading}
-                  error={subsError}
-                  groupBy={groupBy}
-                  openTunnel={openTunnel}
-                  setTunnelTitle={setTunnelTitle}
-                  setGraphTunnelData={setGraphTunnelData}
-                  openGraphTunnel={openGraphTunnel}
-                  compare={compare}
-                  from={from}
-                  to={to}
-               />
-            ) : (
-               <InlineLoader />
-            )}
+            <DashboardAnalyticsTiles />
          </Flex>
       </>
    )
 }
 export default DashboardAnalyticsProvider
-export const BrandAndShop = ({
-   brands,
-   setBrandShop,
-   setInsightSkip,
-   brandShop,
-   global,
-}) => {
+export const BrandAndShop = ({ brands, setBrandShop, brandShop, global }) => {
    const { analyticsApiArgsDispatch } = React.useContext(
       AnalyticsApiArgsContext
    )
@@ -666,7 +161,6 @@ export const BrandAndShop = ({
       },
    ])
    const selectedOptionShop = option => {
-      setBrandShop(prevState => ({ ...prevState, shopTitle: option.payload }))
       if (global) {
          analyticsApiArgsDispatch({
             type: 'BRANDSHOP',
@@ -674,23 +168,23 @@ export const BrandAndShop = ({
                shopTitle: option.payload,
             },
          })
-      }
-      if (brandShop.brandId) {
-         setInsightSkip(false)
+      } else {
+         setBrandShop(prevState => ({
+            ...prevState,
+            shopTitle: option.payload,
+         }))
       }
    }
    const selectedOptionBrand = option => {
-      setBrandShop(prevState => ({ ...prevState, brandId: option.id }))
       if (global) {
          analyticsApiArgsDispatch({
             type: 'BRANDSHOP',
             payload: {
-               brandId: option.id,
+               brandId: option.brandId,
             },
          })
-      }
-      if (brandShop.shopTitle) {
-         setInsightSkip(false)
+      } else {
+         setBrandShop(prevState => ({ ...prevState, brandId: option.id }))
       }
    }
    const searchedOption = option => console.log(option)
@@ -715,7 +209,7 @@ export const BrandAndShop = ({
             <Dropdown
                type="single"
                options={brands}
-               defaultOption={brandShop.brand}
+               defaultValue={1}
                searchedOption={searchedOption}
                selectedOption={selectedOptionBrand}
                typeName="Brand"
@@ -980,49 +474,7 @@ export const DateRangePicker = ({
    )
 }
 
-const DashboardAnalyticsTiles = ({
-   insights_analytics,
-   loading,
-   error,
-   groupBy,
-   openTunnel,
-   setTunnelTitle,
-   compare,
-   openGraphTunnel,
-   setGraphTunnelData,
-   from,
-   to,
-}) => {
-   function capitalizeFirstLetter(string) {
-      return string.charAt(0).toUpperCase() + string.slice(1)
-   }
-   const subCountHandler = keyName => {
-      const growth = compare.compareResult[keyName]['growth']
-      const isGrowth = compare.compareResult[keyName]['isGrowth']
-      const growthInPercentage =
-         compare.compareResult[keyName]['growthInPercentage']
-      const toBeSubCount = growth
-         ? isGrowth
-            ? isFinite(growthInPercentage)
-               ? '+' + growthInPercentage + '%'
-               : '+100%'
-            : '-' + growthInPercentage + '%'
-         : '0.00%'
-
-      const toBeSubCountColor = isGrowth ? '#26A69A' : '#F44336'
-      return [toBeSubCount, toBeSubCountColor]
-   }
-   if (loading) {
-      return <InlineLoader />
-   }
-   if (error) {
-      logger(error)
-      toast.error('Could not get the Insight data')
-      return (
-         <ErrorState height="320px" message="Could not get the Insight data" />
-      )
-   }
-
+const DashboardAnalyticsTiles = ({}) => {
    return (
       <>
          <Tiles>

@@ -65,23 +65,20 @@ const TotalEarningTunnel = ({ currency }) => {
       shopTitle: false,
       brand: undefined,
    })
-   const [insightSkip, setInsightSkip] = useState(true)
-   const { data: { brands = [] } = {}, loading: brandLoading } =
-      useSubscription(BRANDS, {
-         onSubscriptionData: ({ subscriptionData }) => {
-            const defaultBrand = subscriptionData.data.brands.find(
-               x => x.isDefault == true
-            )
-            if (defaultBrand) {
-               setBrandShop({
-                  ...brands,
-                  brandId: defaultBrand.id,
-                  brand: defaultBrand,
-               })
-               setInsightSkip(false)
-            }
-         },
-      })
+   const [brands, setBrands] = useState([])
+   const { loading: brandLoading } = useSubscription(BRANDS, {
+      onSubscriptionData: ({ subscriptionData }) => {
+         const brandData = [
+            { title: 'All', brandId: false },
+            ...subscriptionData.data.brands,
+         ]
+         const newBrandData = brandData.map((brand, index) => ({
+            ...brand,
+            id: index + 1,
+         }))
+         setBrands(newBrandData)
+      },
+   })
 
    //initial data
    const {
@@ -100,7 +97,11 @@ const TotalEarningTunnel = ({ currency }) => {
                } ${
                   from !== moment('2017 - 01 - 01') &&
                   `AND a.created_at < '${to}'`
-               } AND a."brandId" = ${brandShop.brandId} ${
+               } ${
+                  brandShop.brandId
+                     ? `AND a."brandId" = ${brandShop.brandId}`
+                     : ''
+               } ${
                   brandShop.shopTitle
                      ? `AND b.source = \'${brandShop.shopTitle}\'`
                      : ''
@@ -114,7 +115,6 @@ const TotalEarningTunnel = ({ currency }) => {
             },
          },
       },
-      skip: insightSkip,
    })
    // subscription for compare data
    useSubscription(GET_TOTAL_EARNING, {
@@ -129,7 +129,11 @@ const TotalEarningTunnel = ({ currency }) => {
                } ${
                   compare.from !== moment('2017 - 01 - 01') &&
                   `AND a.created_at < '${compare.to}'`
-               } AND a."brandId" = ${brandShop.brandId} ${
+               } ${
+                  brandShop.brandId
+                     ? `AND a."brandId" = ${brandShop.brandId}`
+                     : ''
+               } ${
                   brandShop.shopTitle
                      ? `AND b.source = \'${brandShop.shopTitle}\'`
                      : ''
@@ -151,7 +155,9 @@ const TotalEarningTunnel = ({ currency }) => {
          }))
       },
    })
-
+   if (brandLoading) {
+      return <InlineLoader />
+   }
    return (
       <TunnelBody>
          <Tunnels tunnels={graphTunnels}>
@@ -176,7 +182,6 @@ const TotalEarningTunnel = ({ currency }) => {
          <BrandAndShop
             brands={brands}
             setBrandShop={setBrandShop}
-            setInsightSkip={setInsightSkip}
             brandShop={brandShop}
          />
          <Spacer size="10px" />

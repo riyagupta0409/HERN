@@ -27,7 +27,7 @@ export const BRANDS = gql`
       brands(where: { isArchived: { _eq: false } }, order_by: { title: asc }) {
          title
          isDefault
-         id
+         brandId: id
       }
    }
 `
