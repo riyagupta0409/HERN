@@ -49,3 +49,12 @@ export const SUBSCRIBED_CUSTOMER = gql`
       }
    }
 `
+export const GET_REGISTERED_CUSTOMER = gql`
+   subscription GET_REGISTERED_CUSTOMER(
+      $args: insights_getRegisteredCustomers_args!
+   ) {
+      insights_analytics {
+         getRegisteredCustomers(args: $args)
+      }
+   }
+`

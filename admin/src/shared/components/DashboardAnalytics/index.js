@@ -47,6 +47,7 @@ import {
    OrderReceivedAnalytics,
    TotalEarningAnalytics,
    SubscribedCustomerAnalytics,
+   RegisteredCustomerAnalytics,
 } from './Analytics'
 const { RangePicker } = DatePicker
 
@@ -1029,32 +1030,7 @@ const DashboardAnalyticsTiles = ({
             <OrderReceivedAnalytics />
             <AcceptedAndRejectedAnalytics />
             <SubscribedCustomerAnalytics />
-            <Tile>
-               <Tile.Head title="Registered Customers"></Tile.Head>
-               <Tile.Body>
-                  <Tile.Counts>
-                     <Tile.Count
-                        subCount={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getRegisteredCustomers')[0]
-                        }
-                        subCountColor={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getRegisteredCustomers')[1]
-                        }
-                     >
-                        {insights_analytics.getRegisteredCustomers[0][
-                           'onDemand'
-                        ] +
-                           insights_analytics.getRegisteredCustomers[0][
-                              'subscription'
-                           ]}
-                     </Tile.Count>
-                  </Tile.Counts>
-               </Tile.Body>
-            </Tile>
+            <RegisteredCustomerAnalytics />
          </Tiles>
       </>
    )
