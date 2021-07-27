@@ -40,3 +40,12 @@ export const ACCEPTED_AND_REJECTED_ORDERS = gql`
       }
    }
 `
+export const SUBSCRIBED_CUSTOMER = gql`
+   subscription SUBSCRIBED_CUSTOMER(
+      $args: insights_getSubscribedCustomers_args!
+   ) {
+      insights_analytics {
+         getSubscribedCustomers(args: $args)
+      }
+   }
+`

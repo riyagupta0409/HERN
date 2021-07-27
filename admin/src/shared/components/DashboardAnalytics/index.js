@@ -46,6 +46,7 @@ import {
    AcceptedAndRejectedAnalytics,
    OrderReceivedAnalytics,
    TotalEarningAnalytics,
+   SubscribedCustomerAnalytics,
 } from './Analytics'
 const { RangePicker } = DatePicker
 
@@ -1027,63 +1028,7 @@ const DashboardAnalyticsTiles = ({
             <TotalEarningAnalytics />
             <OrderReceivedAnalytics />
             <AcceptedAndRejectedAnalytics />
-            <Tile>
-               <Tile.Head title="Subscribed Customer">
-                  {/* <Tile.Head.Actions>
-                     <Tile.Head.Action
-                        title="Expand"
-                        onClick={() => {
-                           // setTunnelTitle('Subscribed Customer')
-                           // openTunnel(1)
-                           console.log('Tunnel')
-                        }}
-                     >
-                        <Expand />
-                     </Tile.Head.Action>
-                  </Tile.Head.Actions> */}
-               </Tile.Head>
-               <Tile.Body>
-                  <Tile.Counts>
-                     <Tile.Count
-                        subCount={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getSubscribedCustomers')[0]
-                        }
-                        subCountColor={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getSubscribedCustomers')[1]
-                        }
-                     >
-                        {insights_analytics.getSubscribedCustomers[0]['count']}
-                     </Tile.Count>
-                  </Tile.Counts>
-                  {insights_analytics.getSubscribedCustomers.length > 1 && (
-                     <Tile.Chart>
-                        <SparkChart
-                           from={from}
-                           to={to}
-                           groupBy={groupBy}
-                           idName="subscribed_customers"
-                           dataOf="total"
-                           insightAnalyticsData={insights_analytics.getSubscribedCustomers.slice(
-                              1
-                           )}
-                           compare={compare}
-                           compareInsightAnalyticsData={
-                              !compare.isSkip &&
-                              compare.data &&
-                              compare.data.getSubscribedCustomers.slice(1)
-                           }
-                           setGraphTunnelData={setGraphTunnelData}
-                           openGraphTunnel={openGraphTunnel}
-                           graphTunnelTitle="Subscribed Customer"
-                        />
-                     </Tile.Chart>
-                  )}
-               </Tile.Body>
-            </Tile>
+            <SubscribedCustomerAnalytics />
             <Tile>
                <Tile.Head title="Registered Customers"></Tile.Head>
                <Tile.Body>
