@@ -42,7 +42,11 @@ import {
    AnalyticsApiArgsContext,
    AnalyticsApiArgsProvider,
 } from './context/apiArgs'
-import { OrderReceivedAnalytics, TotalEarningAnalytics } from './Analytics'
+import {
+   AcceptedAndRejectedAnalytics,
+   OrderReceivedAnalytics,
+   TotalEarningAnalytics,
+} from './Analytics'
 const { RangePicker } = DatePicker
 
 //currencies
@@ -1022,47 +1026,7 @@ const DashboardAnalyticsTiles = ({
          <Tiles>
             <TotalEarningAnalytics />
             <OrderReceivedAnalytics />
-            <Tile>
-               <Tile.Head title="Total Accepted vs Rejected Orders"></Tile.Head>
-               <Tile.Body>
-                  <Tile.Counts>
-                     <Tile.Count
-                        subCount={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getAcceptedOrders')[0]
-                        }
-                        subCountColor={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getAcceptedOrders')[1]
-                        }
-                     >
-                        {
-                           insights_analytics.getAcceptedVsRejectedOrders
-                              .acceptedCount
-                        }
-                     </Tile.Count>
-                     <Tile.Count
-                        subCount={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getRejectedOrders')[0]
-                        }
-                        subCountColor={
-                           !compare.isSkip &&
-                           compare.compareResult &&
-                           subCountHandler('getRejectedOrders')[1]
-                        }
-                     >
-                        {
-                           insights_analytics.getAcceptedVsRejectedOrders
-                              .rejectedCount
-                        }
-                     </Tile.Count>
-                  </Tile.Counts>
-               </Tile.Body>
-            </Tile>
+            <AcceptedAndRejectedAnalytics />
             <Tile>
                <Tile.Head title="Subscribed Customer">
                   {/* <Tile.Head.Actions>

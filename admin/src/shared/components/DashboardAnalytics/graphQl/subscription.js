@@ -31,3 +31,12 @@ export const BRANDS = gql`
       }
    }
 `
+export const ACCEPTED_AND_REJECTED_ORDERS = gql`
+   subscription ACCEPTED_AND_REJECTED_ORDERS(
+      $args: insights_getAcceptedVsRejectedOrders_args!
+   ) {
+      insights_analytics {
+         getAcceptedVsRejectedOrders(args: $args)
+      }
+   }
+`

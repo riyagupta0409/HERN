@@ -1,3 +1,8 @@
 import TotalEarningAnalytics from './GetTotalEarning'
 import OrderReceivedAnalytics from './OrderReceived'
-export { TotalEarningAnalytics, OrderReceivedAnalytics }
+import AcceptedAndRejectedAnalytics from './Acc&RejOrders'
+export {
+   TotalEarningAnalytics,
+   OrderReceivedAnalytics,
+   AcceptedAndRejectedAnalytics,
+}
