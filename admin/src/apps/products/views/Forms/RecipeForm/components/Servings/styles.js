@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components'
 
 export const StyledCardEven = styled.div(
    ({ index, baseYieldId, nutritionIsInSync }) => css`
-      height: 85px;
+      height: 100px;
       width: 180px;
       padding: 5px 5px 5px 5px;
       margin-bottom: 40px;
@@ -138,7 +138,7 @@ export const StyledCardIngredient = styled.div(
       }
       div#calCountIngredient {
          display: inline-block;
-         width: 99px;
+         min-width: 36px;
          height: 18px;
          background: #f6c338;
          border-radius: 40px;
@@ -149,12 +149,13 @@ export const StyledCardIngredient = styled.div(
          line-height: 16px;
          margin: 0px 2px 0px 0px;
          letter-spacing: 0.32px;
-         padding: 0px 0px 2.5px 5px;
+         padding: 0px 5px 2.5px 5px;
          color: #ffffff;
+         cursor: help;
       }
       div#chefPay {
          display: inline-block;
-         width: 36px;
+         min-width: 36px;
          height: 16px;
          background: #ff5a52;
          border-radius: 40px;
@@ -165,7 +166,7 @@ export const StyledCardIngredient = styled.div(
          line-height: 16px;
          margin: 0px 2px 0px 0px;
          letter-spacing: 0.32px;
-         padding: 0px 0px 2.5px 5px;
+         padding: 0px 5px 2.5px 5px;
          color: #ffffff;
       }
    `

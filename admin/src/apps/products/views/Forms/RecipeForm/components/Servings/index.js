@@ -68,6 +68,7 @@ import {
    SACHETS,
    UPDATE_NUTRITIONINFO,
    UPDATE_SIMPLE_RECIPE_YIELD_USER_DEFINED_NUTRITION_INFO,
+   UPDATE_SIMPLE_RECIPE_YIELD,
 } from '../../../../../graphql'
 import { ServingsTunnel, IngredientsTunnel } from '../../tunnels'
 import { RecipeContext } from '../../../../../context/recipe'
@@ -178,7 +179,7 @@ const Servings = ({ state }) => {
 
    const options =
       state.simpleRecipeYields?.map((option, index) => {
-         console.log(option, 'option')
+         //console.log(option, 'option')
          const autoGenerate = recipeYield => {
             //console.log({ recipeYield })
             if (recipeYield.id && recipeYield.baseYieldId) {
@@ -196,6 +197,7 @@ const Servings = ({ state }) => {
                })
             }
          }
+
          return (
             <StyledCardEven
                baseYieldId={option.baseYieldId}
@@ -252,7 +254,7 @@ const Servings = ({ state }) => {
                   </ContextualMenu>
                </div>
 
-               <p> {option.yield.label} </p>
+               <Label option={option} />
                <div
                   id="calCount"
                   onClick={() => {
@@ -293,17 +295,23 @@ const Servings = ({ state }) => {
                </div>
                <div id="yield">
                   <Yield />{' '}
-                  {option.quantity === null
+                  {option.yield.quantity?.value === null ||
+                  option.yield.quantity?.value === undefined
                      ? 'N/A'
-                     : option.quantity + ' '+ option.unit}
+                     : option.yield.quantity?.value +
+                       ' ' +
+                       option.yield.quantity?.unit}
                </div>
             </StyledCardEven>
          )
       }) || []
-
+   const [showNutritionalInfoProcessing, setShowNutritionalInfoProcessing] =
+      React.useState(false)
+   const [selectedNutritionProcessing, setSelectedNutritionProcessing] =
+      React.useState(null)
    const ingredientsOptions =
       state.simpleRecipeIngredients?.map((option, index) => {
-         //console.log(option, 'Adrish option')
+         console.log(option, 'Adrish option')
          const deleteIngredientProcessing = id => {
             const isConfirmed = window.confirm(
                'Are you sure you want to delete this ingredient?'
@@ -373,11 +381,38 @@ const Servings = ({ state }) => {
                      <Processings state={state} option={option} />
                   </div>
 
-                  <div id="calCountIngredient">
-                     <CalCount /> 2% per saving
+                  <div
+                     id="calCountIngredient"
+                     onClick={() => {
+                        setShowNutritionalInfoProcessing(
+                           !showNutritionalInfoProcessing
+                        )
+                        if (
+                           option.processing?.nutritionalInfo !== null
+                        ) {
+                           setSelectedNutritionProcessing(
+                              option.processing?.nutritionalInfo
+                           )
+                        } else {
+                           setSelectedNutritionProcessing(null)
+                        }
+                     }}
+                  >
+                     <CalCount />{' '}
+                     {option.processing === null
+                        ? 'N/A'
+                        : option.processing?.nutritionalInfo === null
+                        ? 'N/A'
+                        : option.processing.nutritionalInfo.calories +
+                          ' cal per 100 gm'}
                   </div>
                   <div id="chefPay">
-                     <ChefPay /> 2$
+                     <ChefPay />{' '}
+                     {option.processing === null
+                        ? 'N/A'
+                        : option.processing?.cost === null
+                        ? 'N/A'
+                        : option.processing.cost + ' $'}
                   </div>
                </StyledCardIngredient>
 
@@ -590,7 +625,30 @@ const Servings = ({ state }) => {
                   )}
                </Popup.ConfirmText>
             </Popup>
-
+            <Popup
+               show={showNutritionalInfoProcessing}
+               clickOutsidePopup={() => setShowNutritionalInfoProcessing(false)}
+            >
+               <Popup.Actions>
+                  <Popup.Text type="NutritionalInfo">
+                     Nutritional Info
+                  </Popup.Text>
+                  <Popup.Close
+                     closePopup={() =>
+                        setShowNutritionalInfoProcessing(
+                           !showNutritionalInfoProcessing
+                        )
+                     }
+                  />
+               </Popup.Actions>
+               <Popup.ConfirmText>
+                  {selectedNutritionProcessing !== null ? (
+                     <Nutrition data={selectedNutritionProcessing} />
+                  ) : (
+                     <>No Nutritional Info!</>
+                  )}
+               </Popup.ConfirmText>
+            </Popup>
             <div
                style={{
                   display: 'grid',
@@ -656,7 +714,7 @@ const Servings = ({ state }) => {
                      style={{
                         padding: '12.5px 0px 31px 30px',
                         display: 'inline-block',
-                        marginLeft: '434px',
+                        marginLeft: '534px',
                      }}
                   >
                      <Form.Toggle
@@ -708,7 +766,7 @@ const Servings = ({ state }) => {
                                  background: '#FFFFFF',
                                  boxShadow: '-2px 2px 6px rgba(0, 0, 0, 0.15)',
                                  borderRadius: '50%',
-                                 marginTop: '25px',
+                                 marginTop: '40px',
                               }}
                               onClick={onButtonClickLeft}
                            >
@@ -741,7 +799,7 @@ const Servings = ({ state }) => {
                                  }}
                                  style={{
                                     width: '283px',
-                                    height: '85px',
+                                    height: '100px',
                                     marginTop: '0px',
                                     paddingTop: '0px',
                                     left: '0',
@@ -819,7 +877,7 @@ const Servings = ({ state }) => {
                                  background: '#FFFFFF',
                                  boxShadow: '-2px 2px 6px rgba(0, 0, 0, 0.15)',
                                  borderRadius: '50%',
-                                 marginTop: '25px',
+                                 marginTop: '40px',
                               }}
                               onClick={onButtonClickRight}
                            >
@@ -903,7 +961,7 @@ const SachetDetails = ({
             ingredientProcessingRecordId,
             yieldId,
             set: {
-               slipName: name,
+               slipName: name.trim(),
             },
          },
       })
@@ -1302,6 +1360,72 @@ const Sachets = ({ defaultslipName, option, object }) => {
          type="single"
          variant="revamp"
          typeName="sachet"
+      />
+   )
+}
+
+const Label = ({ option }) => {
+   const [label, setLabel] = React.useState(option.yield?.label)
+   const [isTouched, setIsTouched] = React.useState(false)
+
+   React.useEffect(() => {
+      setLabel(option.yield?.label)
+   }, [option])
+
+   const [updateSimpleRecipeYield] = useMutation(UPDATE_SIMPLE_RECIPE_YIELD, {
+      onCompleted: () => {
+         toast.success('label updated!')
+      },
+      onError: error => {
+         toast.error('Something went wrong!')
+         logger(error)
+      },
+   })
+
+   const handleLabelChange = value => {
+      setLabel(value)
+   }
+
+   const handlelabelBlur = () => {
+      updateSimpleRecipeYield({
+         variables: {
+            pk_columns: { id: option.id },
+            _set: {
+               yield: {
+                  label: label,
+                  serving: option.yield?.serving,
+                  quantity: {
+                     value:
+                        option.yield?.quantity?.value === undefined
+                           ? null
+                           : option.yield?.quantity?.value,
+                     unit:
+                        option.yield?.quantity?.unit === undefined
+                           ? null
+                           : option.yield?.quantity?.unit,
+                  },
+               },
+            },
+         },
+      })
+   }
+   return (
+      <Form.Text
+         id="label"
+         name="label"
+         variant="revamp-sm"
+         onChange={e => {
+            handleLabelChange(e.target.value)
+         }}
+         onFocus={() => {
+            setIsTouched(true)
+         }}
+         onBlur={e => {
+            setIsTouched(false)
+            handlelabelBlur()
+         }}
+         value={label}
+         placeholder="enter label"
       />
    )
 }

@@ -115,20 +115,25 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
          yield: {
             serving: +object.serving.value.trim(),
             label: object.label.value.trim(),
+            quantity: {
+               value:
+                  object.yield.value === ''
+                     ? null
+                     : +object.yield.value.substr(
+                          0,
+                          object.yield.value.indexOf(' ')
+                       ),
+               unit:
+                  object.yield.value === ''
+                     ? null
+                     : object.yield.value
+                          .substr(object.yield.value.indexOf(' '))
+                          .trim(),
+            },
          },
          nutritionInfo: {
             data: {},
          },
-         quantity:
-            object.yield.value === ''
-               ? null
-               : +object.yield.value.substr(0, object.yield.value.indexOf(' ')),
-         unit:
-            object.yield.value === ''
-               ? null
-               : object.yield.value
-                    .substr(object.yield.value.indexOf(' '))
-                    .trim(),
       }))
       createYields({
          variables: {
@@ -150,6 +155,23 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
       setServings([...newServings])
    }
 
+   const handleFocus = (field, index) => {
+      const newServings = [...servings]
+      newServings[index] = {
+         ...newServings[index],
+         [field]: {
+            ...newServings[index][field],
+            meta: {
+               isTouched: true,
+               isValid: true,
+               errors: [],
+            },
+         },
+      }
+      setServings([...newServings])
+      console.log(newServings)
+   }
+
    const validate = (field, index) => {
       const { isValid, errors } = validator[field](servings[index][field].value)
       const newServings = servings
@@ -158,7 +180,7 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
          [field]: {
             ...servings[index][field],
             meta: {
-               isTouched: true,
+               isTouched: false,
                isValid,
                errors,
             },
@@ -236,15 +258,20 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                         <Flex container alignItems="end">
                            <Flex container alignItems="start">
                               <Form.Group>
-                                 <Form.Label
-                                    htmlFor={`serving-${i}`}
-                                    title={`serving-${i}`}
-                                 >
-                                    Serving*
-                                 </Form.Label>
-                                 <Form.Number
+                                 {(servings[i].serving.value ||
+                                    servings[i].serving.meta.isTouched) && (
+                                    <Form.Label
+                                       htmlFor={`serving-${i}`}
+                                       title={`serving-${i}`}
+                                    >
+                                       Serving*
+                                    </Form.Label>
+                                 )}
+
+                                 <Form.Text
                                     id={`serving-${i}`}
                                     name={`serving-${i}`}
+                                    variant="revamp-sm"
                                     onChange={e =>
                                        handleChange(
                                           'serving',
@@ -252,6 +279,9 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                                           i
                                        )
                                     }
+                                    onFocus={() => {
+                                       handleFocus('serving', i)
+                                    }}
                                     onBlur={() => validate('serving', i)}
                                     value={object.serving.value}
                                     placeholder="Enter serving"
@@ -260,7 +290,7 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                                        !object.serving.meta.isValid
                                     }
                                  />
-                                 {object.serving.meta.isTouched &&
+                                 {!object.serving.meta.isTouched &&
                                     !object.serving.meta.isValid &&
                                     object.serving.meta.errors.map(
                                        (error, index) => (
@@ -272,18 +302,26 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                               </Form.Group>
                               <Spacer xAxis size="8px" />
                               <Form.Group>
-                                 <Form.Label
-                                    htmlFor={`label-${i}`}
-                                    title={`label-${i}`}
-                                 >
-                                    Label
-                                 </Form.Label>
+                                 {(servings[i].label.value ||
+                                    servings[i].label.meta.isTouched) && (
+                                    <Form.Label
+                                       htmlFor={`label-${i}`}
+                                       title={`label-${i}`}
+                                    >
+                                       Label
+                                    </Form.Label>
+                                 )}
+
                                  <Form.Text
                                     id={`label-${i}`}
                                     name={`label-${i}`}
                                     onChange={e =>
                                        handleChange('label', e.target.value, i)
                                     }
+                                    variant="revamp-sm"
+                                    onFocus={() => {
+                                       handleFocus('label', i)
+                                    }}
                                     onBlur={() => validate('label', i)}
                                     value={object.label.value}
                                     placeholder="Enter label"
@@ -292,7 +330,7 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                                        !object.label.meta.isValid
                                     }
                                  />
-                                 {object.label.meta.isTouched &&
+                                 {!object.label.meta.isTouched &&
                                     !object.label.meta.isValid &&
                                     object.label.meta.errors.map(
                                        (error, index) => (
@@ -315,6 +353,15 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                         <Flex container alignItems="end">
                            <Flex container alignItems="start">
                               <Form.Group>
+                                 {(servings[i].yield.value ||
+                                    servings[i].yield.meta.isTouched) && (
+                                    <Form.Label
+                                       htmlFor={`yield-${i}`}
+                                       title={`yield-${i}`}
+                                    >
+                                       Yield
+                                    </Form.Label>
+                                 )}
                                  <Form.Text
                                     id={`yield-${i}`}
                                     name={`yield-${i}`}
@@ -323,6 +370,9 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                                        handleChange('yield', e.target.value, i)
                                     }
                                     onBlur={() => validate('yield', i)}
+                                    onFocus={() => {
+                                       handleFocus('yield', i)
+                                    }}
                                     value={object.yield.value}
                                     placeholder="Enter yield"
                                     hasError={
@@ -330,7 +380,7 @@ const ServingsTunnel = ({ state, closeTunnel }) => {
                                        !object.yield.meta.isValid
                                     }
                                  />
-                                 {object.yield.meta.isTouched &&
+                                 {!object.yield.meta.isTouched &&
                                     !object.yield.meta.isValid &&
                                     object.yield.meta.errors.map(
                                        (error, index) => (
