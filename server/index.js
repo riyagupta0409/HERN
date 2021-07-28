@@ -24,9 +24,28 @@ import {
    authorizeRequest,
    handleImage,
    GetFullOccurenceRouter,
-   CustomerRouter,
    populate_env,
-   ActionsRouter
+   ActionsRouter,
+   LogRouter,
+   CardRouter,
+   RefundRouter,
+   CustomerRouter,
+   SetupIntentRouter,
+   PaymentMethodRouter,
+   PaymentIntentRouter,
+   PaymentRouter,
+   createStripeCustomer,
+   createStripeCustomer2,
+   sendStripeInvoice,
+   sendSMS,
+   getBalance,
+   getAccountId,
+   createCustomer,
+   createLoginLink,
+   createCustomerByClient,
+   createCustomerPaymentIntent,
+   updateDailyosStripeStatus,
+   getAccountDetails
 } from './entities'
 import { PrintRouter } from './entities/print'
 import {
@@ -46,6 +65,7 @@ const router = express.Router()
 router.get('/api/about', (req, res) => {
    res.json({ about: 'This is express server API!' })
 })
+router.use('/api/logs', LogRouter)
 router.use('/api/mof', MOFRouter)
 router.use('/api/menu', MenuRouter)
 router.use('/api/order', OrderRouter)
@@ -65,6 +85,30 @@ router.use('/api/parseur', ParseurRouter)
 router.use('/api/occurences', GetFullOccurenceRouter)
 router.use('/api/customer', CustomerRouter)
 router.use('/api/actions', ActionsRouter)
+
+// NEW
+router.use('/api/card', CardRouter)
+router.use('/api/refund', RefundRouter)
+router.use('/api/customer', CustomerRouter)
+router.use('/api/setup-intent', SetupIntentRouter)
+router.use('/api/payment-method', PaymentMethodRouter)
+router.use('/api/payment-intent', PaymentIntentRouter)
+router.use('/api/payment', PaymentRouter)
+
+router.get('/api/balance', getBalance)
+router.get('/api/account-id', getAccountId)
+router.get('/api/login-link', createLoginLink)
+router.get('/api/account-details/:id', getAccountDetails)
+router.post('/api/initiate-stripe-payment', createCustomerPaymentIntent)
+
+router.post('/api/webhooks/customer', createCustomer)
+router.post('/api/webhooks/customer-by-client', createCustomerByClient)
+router.post('/api/webhooks/dailyos-stripe-status', updateDailyosStripeStatus)
+router.post('/api/webhooks/stripe/customer', createStripeCustomer)
+router.post('/api/webhooks/stripe/customer/create', createStripeCustomer2)
+router.post('/api/webhooks/stripe/send-invoice', sendStripeInvoice)
+router.post('/api/webhooks/stripe/send-sms', sendSMS)
+// NEW
 
 router.use('/webhook/user', UserRouter)
 router.use('/webhook/devices', DeviceRouter)

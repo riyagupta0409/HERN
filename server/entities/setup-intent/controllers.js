@@ -1,31 +1,26 @@
-import axios from 'axios'
 import stripe from '../../lib/stripe'
-import { isObjectValid } from '../../utils'
-
-import { UPDATE_CONSUMER } from './graphql'
+import { isObjectValid, logger } from '../../utils'
 
 export const create = async (req, res) => {
    try {
-      const args = {
-         email: req.body.event.new.email,
-         phone: req.body.event.new.phone,
-         name: req.body.event.new.firstName + req.body.event.new.lastName
+      const { customer, stripeAccountId } = req.body
+      let response = null
+      if (stripeAccountId) {
+         response = await stripe.setupIntents.create(
+            { customer },
+            { stripeAccount: stripeAccountId }
+         )
+      } else {
+         response = await stripe.setupIntents.create({ customer })
       }
-      const response = await stripe.customers.create(args)
 
       if (isObjectValid(response)) {
-         await axios.post(process.env.HASURA_KEYCLOAK_URL, {
-            query: UPDATE_CONSUMER,
-            variables: {
-               keycloackId: req.body.event.new.keycloackId,
-               stripeCustomerId: response.id
-            }
-         })
          return res.json({ success: true, data: response })
       } else {
          throw Error('Didnt get any response from Stripe!')
       }
    } catch (error) {
+      logger('/api/setup-intent', error.message)
       return res.json({ success: false, error: error.message })
    }
 }
@@ -33,7 +28,7 @@ export const create = async (req, res) => {
 export const update = async (req, res) => {
    try {
       const { id } = req.params
-      const response = await stripe.customers.update(id, {
+      const response = await stripe.setupIntents.update(id, {
          ...req.body
       })
 
@@ -47,10 +42,10 @@ export const update = async (req, res) => {
    }
 }
 
-export const remove = async (req, res) => {
+export const cancel = async (req, res) => {
    try {
       const { id } = req.params
-      const response = await stripe.customers.del(id)
+      const response = await stripe.setupIntents.cancel(id)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -64,8 +59,10 @@ export const remove = async (req, res) => {
 
 export const get = async (req, res) => {
    try {
-      const { id } = req.params
-      const response = await stripe.customers.retrieve(id)
+      const { id } = req.body
+      const response = await stripe.setupIntents.retrieve({
+         id
+      })
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -79,7 +76,7 @@ export const get = async (req, res) => {
 
 export const list = async (req, res) => {
    try {
-      const response = await stripe.customers.list(req.query)
+      const response = await stripe.setupIntents.list(req.query)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
