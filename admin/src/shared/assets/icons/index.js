@@ -36,6 +36,7 @@ import MinimizeIcon from './Minimize'
 import PlayIcon from './Play'
 import ExternalLink from './ExternalLink'
 import SearchIcon from './Search'
+import Expand from './Expand'
 
 export {
    SearchIcon,
@@ -76,6 +77,7 @@ export {
    MinimizeIcon,
    PlayIcon,
    ExternalLink,
+   Expand,
 }
 
 export * from './Tick'

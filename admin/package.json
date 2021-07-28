@@ -6,7 +6,7 @@
    "dependencies": {
       "@apollo/react-hooks": "3.1.5",
       "@dailykit/react-tabulator": "0.13.6",
-      "@dailykit/ui": "^0.8.65",
+      "@dailykit/ui": "^0.8.67",
       "@dailykit/web-renderer": "1.0.7",
       "@monaco-editor/react": "^4.0.11",
       "@reach/tabs": "0.11.2",
@@ -67,6 +67,7 @@
       "react-toastify": "5.5.0",
       "react-tooltip": "^4.2.10",
       "react-useportal": "1.0.13",
+      "recharts": "^2.0.10",
       "rrule": "2.6.4",
       "styled-components": "5.1.0",
       "subscriptions-transport-ws": "0.9.16",
