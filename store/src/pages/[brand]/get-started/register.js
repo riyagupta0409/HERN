@@ -1,28 +1,25 @@
 import React from 'react'
 import axios from 'axios'
-import { isEmpty } from 'lodash'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 import tw, { styled } from 'twin.macro'
 import Countdown from 'react-countdown'
 import { useToasts } from 'react-toast-notifications'
-import { useMutation, useSubscription } from '@apollo/react-hooks'
+import { useLazyQuery, useMutation, useSubscription } from '@apollo/react-hooks'
 import { signIn, providers, getSession } from 'next-auth/client'
 
 import { useConfig } from '../../../lib'
 import { getRoute, getSettings, get_env, isClient } from '../../../utils'
 import { SEO, Layout, StepsNavbar } from '../../../components'
 import {
-   BRAND,
-   CUSTOMER,
    FORGOT_PASSWORD,
    INSERT_OTP_TRANSACTION,
    INSERT_PLATFORM_CUSTOMER,
    MUTATIONS,
    OTPS,
+   PLATFORM_CUSTOMERS,
    RESEND_OTP,
    SEND_SMS,
-   UPSERT_BRAND_CUSTOMER,
 } from '../../../graphql'
 import {
    deleteStoredReferralCode,
@@ -101,16 +98,25 @@ const Register = props => {
 export default Register
 
 const OTP = ({ setIsViaOtp }) => {
-   const router = useRouter()
    const [error, setError] = React.useState('')
    const [loading, setLoading] = React.useState(false)
    const [hasOtpSent, setHasOtpSent] = React.useState(false)
    const [sendingOtp, setSendingOtp] = React.useState(false)
-   const [form, setForm] = React.useState({ phone: '', otp: '' })
+   const [form, setForm] = React.useState({ phone: '', otp: '', email: '' })
    const [otpId, setOtpId] = React.useState(null)
    const [otp, setOtp] = React.useState(null)
    const [resending, setResending] = React.useState(false)
    const [time, setTime] = React.useState(null)
+   const [isNewUser, setIsNewUser] = React.useState(false)
+
+   const [checkCustomerExistence] = useLazyQuery(PLATFORM_CUSTOMERS, {
+      onCompleted: ({ customers = [] }) => {
+         if (customers.length === 0) {
+            setIsNewUser(true)
+         }
+      },
+      onError: () => {},
+   })
 
    const [resendOTP] = useMutation(RESEND_OTP, {
       onCompleted: () => {
@@ -140,7 +146,7 @@ const OTP = ({ setIsViaOtp }) => {
          } else {
             setOtp(null)
             setHasOtpSent(false)
-            setForm({ phone: '', otp: '' })
+            setForm({ phone: '', otp: '', email: '' })
             setSendingOtp(false)
             setError('')
             setLoading(false)
@@ -186,6 +192,9 @@ const OTP = ({ setIsViaOtp }) => {
 
    const onChange = e => {
       const { name, value } = e.target
+      if (name === 'email' && error) {
+         setError('')
+      }
       setForm(form => ({
          ...form,
          [name]: value,
@@ -198,18 +207,36 @@ const OTP = ({ setIsViaOtp }) => {
          setLoading(true)
          if (!form.otp) {
             setError('Please enter the OTP!')
+            setLoading(false)
             return
          }
-         setError('')
-         const response = await signIn('otp', { redirect: false, ...form })
-         if (response?.status === 200) {
-            router.push(getRoute('/get-started/select-plan'))
+         const emailRegex =
+            /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+         if (isNewUser && !emailRegex.test(form.email)) {
+            setError('Please enter a valid email!')
             setLoading(false)
+            return
+         }
+
+         setError('')
+         const response = await signIn('otp', {
+            redirect: false,
+            ...form,
+         })
+         if (response?.status === 200) {
+            const landedOn = localStorage.getItem('landed_on')
+            if (landedOn) {
+               localStorage.removeItem('landed_on')
+               window.location.href = landedOn
+            } else {
+               window.location.href = getRoute('/menu')
+            }
          } else {
             setLoading(false)
             setError('Entered OTP is incorrect, please try again!')
          }
       } catch (error) {
+         setLoading(false)
          console.error(error)
          setError('Failed to log in, please try again!')
       }
@@ -221,8 +248,12 @@ const OTP = ({ setIsViaOtp }) => {
             setError('Phone number is required!')
             return
          }
+
          setSendingOtp(true)
          setError('')
+         await checkCustomerExistence({
+            variables: { where: { phoneNumber: { _eq: form.phone } } },
+         })
          await insertOtpTransaction({
             variables: { object: { phoneNumber: form.phone } },
          })
@@ -278,6 +309,18 @@ const OTP = ({ setIsViaOtp }) => {
                </>
             ) : (
                <>
+                  {isNewUser && (
+                     <FieldSet>
+                        <Label htmlFor="email">Email*</Label>
+                        <Input
+                           name="email"
+                           type="text"
+                           onChange={onChange}
+                           value={form.email}
+                           placeholder="Enter your email"
+                        />
+                     </FieldSet>
+                  )}
                   <FieldSet>
                      <Label htmlFor="otp">OTP*</Label>
                      <Input
@@ -290,9 +333,11 @@ const OTP = ({ setIsViaOtp }) => {
                   </FieldSet>
                   <Submit
                      onClick={submit}
-                     disabled={resending || loading || !form.otp}
-                     className={
-                        resending || loading || !form.otp ? 'disabled' : ''
+                     disabled={
+                        resending ||
+                        loading ||
+                        !form.otp ||
+                        (isNewUser && !form.email)
                      }
                   >
                      Submit
@@ -340,27 +385,11 @@ const OTP = ({ setIsViaOtp }) => {
 
 const LoginPanel = () => {
    const router = useRouter()
-   const { brand } = useConfig()
    const [error, setError] = React.useState('')
    const [loading, setLoading] = React.useState(false)
    const [form, setForm] = React.useState({
       email: '',
       password: '',
-   })
-
-   const [createBrandCustomer] = useMutation(UPSERT_BRAND_CUSTOMER, {
-      onCompleted: () => {
-         const landedOn = isClient && localStorage.getItem('landed_on')
-         if (isClient && landedOn) {
-            localStorage.removeItem('landed_on')
-            window.location.href = landedOn
-         } else {
-            router.push(getRoute('/menu'))
-         }
-      },
-      onError: error => {
-         console.error(error)
-      },
    })
 
    const isValid = form.email && form.password
@@ -386,18 +415,12 @@ const LoginPanel = () => {
          if (response?.status !== 200) {
             setError('Email or password is incorrect!')
          } else if (response?.status === 200) {
-            const session = await getSession()
-            const { id: keycloakId = null } = session?.user
-            if (keycloakId) {
-               await createBrandCustomer({
-                  variables: {
-                     object: {
-                        keycloakId,
-                        brandId: brand.id,
-                        subscriptionOnboardStatus: 'SELECT_DELIVERY',
-                     },
-                  },
-               })
+            const landedOn = isClient && localStorage.getItem('landed_on')
+            if (isClient && landedOn) {
+               localStorage.removeItem('landed_on')
+               window.location.href = landedOn
+            } else {
+               router.push(getRoute('/menu'))
             }
          }
       } catch (error) {
@@ -470,29 +493,16 @@ const RegisterPanel = ({ setCurrent }) => {
       phone: '',
       code: '',
    })
-   const [create] = useMutation(MUTATIONS.CUSTOMER.CREATE, {
-      onCompleted: async ({ createCustomer }) => {
-         if (!isEmpty(createCustomer)) {
-            if (createCustomer?.keycloakId) {
-               const storedCode = getStoredReferralCode(null)
-               if (storedCode) {
-                  await applyReferralCode({
-                     variables: {
-                        brandId: brand.id,
-                        keycloakId: createCustomer.keycloakId,
-                        _set: {
-                           referredByCode: storedCode,
-                        },
-                     },
-                  })
-               }
-            }
-         }
+
+   const [applyReferralCode] = useMutation(MUTATIONS.CUSTOMER_REFERRAL.UPDATE, {
+      onCompleted: () => {
+         addToast('Referral code applied!', { appearance: 'success' })
+         deleteStoredReferralCode()
       },
-      onError: () =>
-         addToast('Something went wrong!', {
-            appearance: 'error',
-         }),
+      onError: error => {
+         console.log(error)
+         addToast('Referral code not applied!', { appearance: 'error' })
+      },
    })
 
    const [insertPlatformCustomer] = useMutation(INSERT_PLATFORM_CUSTOMER, {
@@ -506,35 +516,24 @@ const RegisterPanel = ({ setCurrent }) => {
                })
                if (response?.status === 200) {
                   const session = await getSession()
-                  if (session?.user?.id) {
-                     await create({
+                  const storedCode = getStoredReferralCode(null)
+                  if (storedCode && session?.user?.id) {
+                     await applyReferralCode({
                         variables: {
-                           object: {
-                              ...(session?.user?.email && {
-                                 email: session.user.email,
-                              }),
-                              keycloakId: session?.user?.id,
-                              source: 'subscription',
-                              sourceBrandId: brand.id,
-                              brandCustomers: {
-                                 data: {
-                                    brandId: brand.id,
-                                    subscriptionOnboardStatus:
-                                       'SELECT_DELIVERY',
-                                 },
-                              },
+                           brandId: brand.id,
+                           keycloakId: session?.user?.id,
+                           _set: {
+                              referredByCode: storedCode,
                            },
                         },
                      })
-                     window.location.href =
-                        window.location.origin +
-                        getRoute('/get-started/select-plan')
-
-                     setLoading(false)
-                  } else {
-                     setLoading(false)
-                     setError('Failed to register, please try again!')
                   }
+
+                  window.location.href =
+                     window.location.origin +
+                     getRoute('/get-started/select-plan')
+
+                  setLoading(false)
                } else {
                   setLoading(false)
                   setError('Failed to register, please try again!')
@@ -573,16 +572,6 @@ const RegisterPanel = ({ setCurrent }) => {
          },
       }
    )
-   const [applyReferralCode] = useMutation(MUTATIONS.CUSTOMER_REFERRAL.UPDATE, {
-      onCompleted: () => {
-         addToast('Referral code applied!', { appearance: 'success' })
-         deleteStoredReferralCode()
-      },
-      onError: error => {
-         console.log(error)
-         addToast('Referral code not applied!', { appearance: 'error' })
-      },
-   })
 
    const isValid =
       validateEmail(form.email) &&
@@ -868,7 +857,7 @@ const Input = styled.input`
 
 const Submit = styled.button`
    ${tw`bg-green-500 rounded w-full h-10 text-white uppercase tracking-wider`}
-   &.disabled {
+   &[disabled] {
       ${tw`cursor-not-allowed bg-gray-300 text-gray-700`}
    }
 `

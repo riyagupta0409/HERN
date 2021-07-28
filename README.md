@@ -40,7 +40,7 @@ yarn dev:server
 curl -XPOST 'http://localhost:4000/server/api/envs'
 ```
 
-7. To work in admin, switch to admin folder and do following and the your app will start running on port 3000:
+7. To work in admin, switch to admin folder and do following and the your app will start running on port 8000:
 
 ```bash
 cd admin && yarn start
