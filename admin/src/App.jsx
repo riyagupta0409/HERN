@@ -9,9 +9,7 @@ import { isKeycloakSupported } from './shared/utils'
 
 import {
    TabBar,
-   Lang,
    RedirectBanner,
-   Sidebar,
    InsightDashboard,
    AddressTunnel,
    Banner,
@@ -142,7 +140,6 @@ const App = () => {
             </Switch>
          </main>
          {/* {!isKeycloakSupported() && <RedirectBanner />} */}
-         <Lang />
          <BottomBar />
       </Layout>
    )
