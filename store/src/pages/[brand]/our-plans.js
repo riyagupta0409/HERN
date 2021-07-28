@@ -57,7 +57,9 @@ const SelectPlan = props => {
                   const { data } = response
                   if (data.success) {
                      /*TODO: target should be made with data attribute */
-                     const targetDiv = document.getElementById(fold.id)
+                     const targetDiv = document.querySelector(
+                        `[data-fold-id=${fold.id}]`
+                     )
                      targetDiv.innerHTML = data.data
                   } else {
                      console.error(data.message)
@@ -73,7 +75,12 @@ const SelectPlan = props => {
 
    const renderPageContent = folds => {
       return folds.map(fold => (
-         <div key={fold.id} id={fold.id}>
+         <div
+            key={fold.id}
+            data-fold-id={fold.id}
+            data-fold-position={fold.position}
+            data-fold-type={fold.moduleType}
+         >
             {renderComponent(fold)}
          </div>
       ))
@@ -82,8 +89,9 @@ const SelectPlan = props => {
    return (
       <Layout settings={settings} navigationMenus={navigationMenus}>
          <SEO title="Plans" />
-         <main className="our-plans__main">{renderPageContent(folds)}</main>
-         THIS IS A COMPONENT
+         <main className="hern-our-plans__main">
+            {renderPageContent(folds)}
+         </main>
       </Layout>
    )
 }

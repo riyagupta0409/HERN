@@ -2,7 +2,12 @@ import fs from 'fs'
 import { get_env } from './get_env'
 
 const axios = require('axios')
-
+/*
+There could be two type of fold[module] 
+1. system defined (These are mainly components exists in  our code base)
+2. Plugin or third party plugin 
+ - This could be either html file or JS file
+*/
 const resolveComponent = fold => {
    return new Promise(async (resolve, reject) => {
       try {
@@ -10,7 +15,12 @@ const resolveComponent = fold => {
 
          if (fold.moduleType === 'system-defined') {
             // component exists in our codebase
-            return resolve({ id: fold.id, component: fold.name })
+            return resolve({
+               id: fold.id,
+               component: fold.name,
+               moduleType: fold.moduleType,
+               position: fold.position,
+            })
          }
 
          // else this is plugin/3rd party module
@@ -25,6 +35,8 @@ const resolveComponent = fold => {
             process.cwd() + '/public/env-config.js',
             'utf-8'
          )
+
+         /* config file */
          const config = JSON.parse(content.replace('window._env_ = ', ''))
 
          // script urls
@@ -34,7 +46,12 @@ const resolveComponent = fold => {
          )
 
          if (extension !== 'html') {
-            return resolve({ id: fold.id, scripts })
+            return resolve({
+               id: fold.id,
+               scripts,
+               moduleType: fold.moduleType,
+               position: fold.position,
+            })
          }
 
          const { data } = await axios.get(
@@ -66,6 +83,8 @@ const resolveComponent = fold => {
                id: fold.id,
                content: parsedData,
                scripts,
+               moduleType: fold.moduleType,
+               position: fold.position,
             })
          } else {
             return reject('Failed to load file')
