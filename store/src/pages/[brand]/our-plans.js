@@ -7,6 +7,7 @@ import { getSettings, foldsResolver } from '../../utils'
 import dynamic from 'next/dynamic'
 import 'regenerator-runtime'
 
+/*FIXME: Navigation menu item is not visible due to <span> and <a>*/
 const Plans = dynamic(() =>
    import('../../sections/select-plan').then(promise => promise.Plans)
 )
