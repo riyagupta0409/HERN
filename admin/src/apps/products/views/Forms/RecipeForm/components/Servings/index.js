@@ -42,6 +42,15 @@ import {
    StyledCardIngredient,
    SatchetCard,
    StyledButton,
+   IngredientRow,
+   ParentWrapper,
+   ToggleWrapper1,
+   ToggleWrapper2,
+   TableAndButtonWrapper,
+   RecipeTable,
+   ServingRow,
+   StyledNavigationButton,
+   NutritionAndCostSachetWrapper,
 } from './styles'
 import {
    Tooltip,
@@ -311,7 +320,7 @@ const Servings = ({ state }) => {
       React.useState(null)
    const ingredientsOptions =
       state.simpleRecipeIngredients?.map((option, index) => {
-         console.log(option, 'Adrish option')
+         //console.log(option, 'ingredients option')
          const deleteIngredientProcessing = id => {
             const isConfirmed = window.confirm(
                'Are you sure you want to delete this ingredient?'
@@ -327,18 +336,11 @@ const Servings = ({ state }) => {
          }
          //console.log(option, 'option outside Processing')
          return (
-            <div
-               key={index}
-               style={{
-                  display: 'grid',
-                  gridTemplateColumns: `238px repeat(${state.simpleRecipeYields?.length}, 180px)`,
-                  gridTemplateRows: `170px`,
-               }}
-            >
+            <IngredientRow length={state.simpleRecipeYields?.length}>
                <StyledCardIngredient
                   buttonClickLeftRender={buttonClickLeftRender}
                >
-                  <div id="ingredientName" style={{ display: 'inline-block' }}>
+                  <div id="ingredientName">
                      <Link
                         title={option.ingredient.name}
                         style={{
@@ -387,9 +389,7 @@ const Servings = ({ state }) => {
                         setShowNutritionalInfoProcessing(
                            !showNutritionalInfoProcessing
                         )
-                        if (
-                           option.processing?.nutritionalInfo !== null
-                        ) {
+                        if (option.processing?.nutritionalInfo !== null) {
                            setSelectedNutritionProcessing(
                               option.processing?.nutritionalInfo
                            )
@@ -468,7 +468,7 @@ const Servings = ({ state }) => {
                      </React.Fragment>
                   )
                })}
-            </div>
+            </IngredientRow>
          )
       }) || []
    const recipeForm = useRef(null)
@@ -649,35 +649,19 @@ const Servings = ({ state }) => {
                   )}
                </Popup.ConfirmText>
             </Popup>
-            <div
-               style={{
-                  display: 'grid',
-                  gridTemplateColumns: `auto auto auto`,
-               }}
-            >
+            <ParentWrapper>
                <div></div>
                <div>
-                  <div
+                  <Text
+                     as="h2"
                      style={{
                         padding: '18px 0px 12.5px 30px',
-                        fontFamily: 'Roboto',
-                        fontStyle: 'normal',
-                        fontWeight: '500',
-                        fontSize: '28px',
-                        lineHeight: '36px',
-                        letterSpacing: '0.32px',
-                        color: '#202020',
                      }}
                   >
                      Servings & Ingredients
                      <Tooltip identifier="recipe_servings" />
-                  </div>
-                  <div
-                     style={{
-                        padding: '12.5px 0px 31px 30px',
-                        display: 'inline-block',
-                     }}
-                  >
+                  </Text>
+                  <ToggleWrapper1>
                      <Form.Toggle
                         name="showIngredients"
                         onChange={() =>
@@ -694,29 +678,11 @@ const Servings = ({ state }) => {
                         value={state.showIngredients}
                         size={48}
                      >
-                        <div
-                           style={{
-                              fontFamily: 'Roboto',
-                              fontStyle: 'normal',
-                              fontWeight: '500',
-                              fontSize: '16px',
-                              lineHeight: '16px',
-                              letterSpacing: '0.32px',
-                              color: '#202020',
-                           }}
-                        >
-                           Show Ingredients on Store
-                        </div>
+                        <Text as="text1">Show Ingredients on Store</Text>
                      </Form.Toggle>
-                  </div>
+                  </ToggleWrapper1>
 
-                  <div
-                     style={{
-                        padding: '12.5px 0px 31px 30px',
-                        display: 'inline-block',
-                        marginLeft: '534px',
-                     }}
-                  >
+                  <ToggleWrapper2>
                      <Form.Toggle
                         name="showIngredientsQuantity"
                         onChange={() =>
@@ -734,63 +700,25 @@ const Servings = ({ state }) => {
                         value={state.showIngredientsQuantity}
                         size={48}
                      >
-                        <div
-                           style={{
-                              fontFamily: 'Roboto',
-                              fontStyle: 'normal',
-                              fontWeight: '500',
-                              fontSize: '16px',
-                              lineHeight: '16px',
-                              letterSpacing: '0.32px',
-                              color: '#202020',
-                           }}
-                        >
+                        <Text as="text1">
                            Show Ingredient Quantity on Store
-                        </div>
+                        </Text>
                      </Form.Toggle>
-                  </div>
+                  </ToggleWrapper2>
 
                   {options.length ? (
-                     <div
-                        style={{
-                           display: 'grid',
-                           gridTemplateColumns: '30px 1183px 30px',
-                        }}
-                     >
+                     <TableAndButtonWrapper>
                         {buttonClickLeftRender ? (
-                           <button
-                              style={{
-                                 width: '30px',
-                                 height: '30px',
-                                 border: 'none',
-                                 background: '#FFFFFF',
-                                 boxShadow: '-2px 2px 6px rgba(0, 0, 0, 0.15)',
-                                 borderRadius: '50%',
-                                 marginTop: '40px',
-                              }}
-                              onClick={onButtonClickLeft}
-                           >
+                           <StyledNavigationButton onClick={onButtonClickLeft}>
                               <PreviousArrow />
-                           </button>
+                           </StyledNavigationButton>
                         ) : (
                            <div></div>
                         )}
 
-                        <div
-                           ref={recipeForm}
-                           style={{
-                              overflow: 'auto',
-                              whiteSpace: 'nowrap',
-                              overflowY: 'hidden',
-                              overflowX: 'hidden',
-                              scrollBehavior: 'smooth',
-                           }}
-                        >
-                           <div
-                              style={{
-                                 display: 'grid',
-                                 gridTemplateColumns: `283px repeat(${state.simpleRecipeYields?.length}, 180px)`,
-                              }}
+                        <RecipeTable ref={recipeForm}>
+                           <ServingRow
+                              length={state.simpleRecipeYields?.length}
                            >
                               <IconButton
                                  variant="secondary"
@@ -813,7 +741,7 @@ const Servings = ({ state }) => {
                               </IconButton>
 
                               {options}
-                           </div>
+                           </ServingRow>
                            {
                               <>
                                  <Spacer size="40px" />
@@ -867,24 +795,13 @@ const Servings = ({ state }) => {
                               <PlusIcon color="#367BF5" />
                               Add Ingredient
                            </ComboButton>
-                        </div>
+                        </RecipeTable>
                         {buttonClickRightRender && (
-                           <button
-                              style={{
-                                 width: '30px',
-                                 height: '30px',
-                                 border: 'none',
-                                 background: '#FFFFFF',
-                                 boxShadow: '-2px 2px 6px rgba(0, 0, 0, 0.15)',
-                                 borderRadius: '50%',
-                                 marginTop: '40px',
-                              }}
-                              onClick={onButtonClickRight}
-                           >
+                           <StyledNavigationButton onClick={onButtonClickRight}>
                               <NextArrow />
-                           </button>
+                           </StyledNavigationButton>
                         )}
-                     </div>
+                     </TableAndButtonWrapper>
                   ) : (
                      <ComboButton
                         style={{
@@ -901,7 +818,7 @@ const Servings = ({ state }) => {
                   )}
                </div>
                <div></div>
-            </div>
+            </ParentWrapper>
          </>
       </>
    )
@@ -1002,38 +919,22 @@ const SachetDetails = ({
                )}
             </Popup.ConfirmText>
          </Popup>
-         <div style={{ width: '150px' }}>
-            <Form.Text
-               id={`slipName-${yieldId}`}
-               name={`slipName-${yieldId}`}
-               onBlur={updateSlipName}
-               onChange={e => setName(e.target.value)}
-               variant="revamp-sm"
-               value={name}
-               placeholder="enter slip name"
-               hasError={!name}
-               disabled={disabled}
-            />
-         </div>
-         <div style={{ display: 'inline-block', width: '150px' }}>
+
+         <Form.Text
+            id={`slipName-${yieldId}`}
+            name={`slipName-${yieldId}`}
+            onBlur={updateSlipName}
+            onChange={e => setName(e.target.value)}
+            variant="revamp-sm"
+            value={name}
+            placeholder="enter slip name"
+            hasError={!name}
+            disabled={disabled}
+         />
+
+         <NutritionAndCostSachetWrapper>
             <div
-               style={{
-                  display: 'inline-block',
-                  minWidth: '36px',
-                  height: '16px',
-                  background: '#F6C338',
-                  cursor: 'help',
-                  borderRadius: '40px',
-                  fontFamily: 'Roboto',
-                  fontStyle: 'normal',
-                  fontWeight: 'bold',
-                  fontSize: '11px',
-                  lineHeight: '16px',
-                  margin: '0px 2px 0px 0px',
-                  letterSpacing: '0.32px',
-                  padding: '1px 5px 2.5px 5px',
-                  color: '#FFFFFF',
-               }}
+            id='calCount'
                onClick={() => {
                   setShowNutritionalInfoSachet(!showNutritionalInfoSachet)
                   if (Object.keys(nutritionalInfo).length !== 0) {
@@ -1049,26 +950,11 @@ const SachetDetails = ({
                   : `${nutritionalInfo.calories} cal`}
             </div>
             <div
-               style={{
-                  display: 'inline-block',
-                  minWidth: '36px',
-                  height: '16px',
-                  background: '#8AC03B',
-                  borderRadius: '40px',
-                  fontFamily: 'Roboto',
-                  fontStyle: 'normal',
-                  fontWeight: 'bold',
-                  fontSize: '11px',
-                  lineHeight: '16px',
-                  margin: '0px 0px 0px 2px',
-                  letterSpacing: '0.32px',
-                  padding: '1px 5px 2.5px 5px',
-                  color: '#FFFFFF',
-               }}
+            id='foodCost'
             >
                <FoodCost /> {cost === null ? 'N/A' : `${cost} $`}
             </div>
-         </div>
+         </NutritionAndCostSachetWrapper>
 
          {disabled ? (
             <></>

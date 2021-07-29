@@ -31,7 +31,7 @@ import {
 import validator from '../../validators'
 
 const Information = ({ state }) => {
-   console.log(state, 'state')
+   //console.log(state, 'state')
    // State
    const [_state, _dispatch] = React.useReducer(reducer, initialState)
    const options = [
@@ -258,7 +258,7 @@ const Information = ({ state }) => {
       })
    }, [state])
 
-   console.log(state, 'state')
+   //console.log(state, 'state')
 
    let search = ''
 
@@ -461,7 +461,7 @@ const Information = ({ state }) => {
                            </Flex>
                         </Form.Label>
                      )}
-
+                    
                      <Form.Text
                         id="author"
                         name="author"
