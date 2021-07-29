@@ -29,20 +29,13 @@ import {
    LogRouter,
    CardRouter,
    RefundRouter,
-   CustomerRouter,
    SetupIntentRouter,
    PaymentMethodRouter,
    PaymentIntentRouter,
    PaymentRouter,
    createStripeCustomer,
-   createStripeCustomer2,
    sendStripeInvoice,
    sendSMS,
-   getBalance,
-   getAccountId,
-   createCustomer,
-   createLoginLink,
-   createCustomerByClient,
    createCustomerPaymentIntent,
    updateDailyosStripeStatus,
    getAccountDetails
@@ -83,29 +76,21 @@ router.get('/api/kot-urls', getKOTUrls)
 router.use('/api/modifier', ModifierRouter)
 router.use('/api/parseur', ParseurRouter)
 router.use('/api/occurences', GetFullOccurenceRouter)
-router.use('/api/customer', CustomerRouter)
 router.use('/api/actions', ActionsRouter)
 
 // NEW
 router.use('/api/card', CardRouter)
 router.use('/api/refund', RefundRouter)
-router.use('/api/customer', CustomerRouter)
 router.use('/api/setup-intent', SetupIntentRouter)
 router.use('/api/payment-method', PaymentMethodRouter)
 router.use('/api/payment-intent', PaymentIntentRouter)
 router.use('/api/payment', PaymentRouter)
 
-router.get('/api/balance', getBalance)
-router.get('/api/account-id', getAccountId)
-router.get('/api/login-link', createLoginLink)
 router.get('/api/account-details/:id', getAccountDetails)
 router.post('/api/initiate-stripe-payment', createCustomerPaymentIntent)
 
-router.post('/api/webhooks/customer', createCustomer)
-router.post('/api/webhooks/customer-by-client', createCustomerByClient)
 router.post('/api/webhooks/dailyos-stripe-status', updateDailyosStripeStatus)
 router.post('/api/webhooks/stripe/customer', createStripeCustomer)
-router.post('/api/webhooks/stripe/customer/create', createStripeCustomer2)
 router.post('/api/webhooks/stripe/send-invoice', sendStripeInvoice)
 router.post('/api/webhooks/stripe/send-sms', sendSMS)
 // NEW

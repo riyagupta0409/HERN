@@ -1,27 +1,17 @@
-import { GraphQLClient } from 'graphql-request'
+import get from 'lodash/get'
 
 import { logger } from '../../utils'
-
-const dailycloak = new GraphQLClient(process.env.DAILYCLOAK_URL, {
-   headers: {
-      'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET
-   }
-})
-
-const dailykey = new GraphQLClient(process.env.HASURA_KEYCLOAK_URL, {
-   headers: {
-      'x-hasura-admin-secret': process.env.KEYCLOAK_ADMIN_SECRET
-   }
-})
+import { client } from '../../lib/graphql'
+import get_env from '../../../get_env'
 
 export const sendSMS = async (req, res) => {
    try {
-      const { paymentMethod, transactionRemark = {} } = req.body.event.data.new
-      const { paymentMethod: method = {} } = await dailykey.request(
+      const { paymentMethod = '', transactionRemark = {} } =
+         req.body.event.data.new
+
+      const { paymentMethod: method = {} } = await client.request(
          PAYMENT_METHOD,
-         {
-            stripePaymentMethodId: paymentMethod
-         }
+         { stripePaymentMethodId: paymentMethod }
       )
 
       const customer = {
@@ -43,35 +33,15 @@ export const sendSMS = async (req, res) => {
       if (!customer.phoneNo) throw Error('Phone number is required!')
 
       const organization = {
-         id: null,
-         name: '',
-         adminSecret: null,
-         datahubUrl: null
+         name: ''
       }
 
-      if (
-         method.customerByClient &&
-         'organizationId' in method.customerByClient &&
-         method.customerByClient.organizationId
-      ) {
-         organization.id = method.customerByClient.organizationId
-      }
+      const ORGANIZATION_ID = await get_env('ORGANIZATION_ID')
 
-      if (organization.id) {
-         const { organization: org = {} } = await dailycloak.request(
-            ORGANIZATION,
-            {
-               id: organization.id
-            }
-         )
-         if ('name' in org && org.name) {
-            organization.name = org.name
-         }
-         if ('adminSecret' in org && org.adminSecret) {
-            organization.adminSecret = org.adminSecret
-         }
-         if ('datahubUrl' in org && org.datahubUrl) {
-            organization.datahubUrl = org.datahubUrl
+      if (ORGANIZATION_ID) {
+         const { organization: orgs = [] } = await client.request(ORGANIZATIONS)
+         if (get(orgs, '[0].name')) {
+            organization.name = get(orgs, '[0].name')
          }
       }
 
@@ -95,12 +65,8 @@ export const sendSMS = async (req, res) => {
       }
 
       let orderId = null
-      if (
-         transactionRemark.id &&
-         organization.datahubUrl &&
-         organization.adminSecret
-      ) {
-         const { customerPaymentIntents = [] } = await dailycloak.request(
+      if (transactionRemark.id) {
+         const { customerPaymentIntents = [] } = await client.request(
             CUSTOMER_PAYMENT_INTENTS,
             {
                where: {
@@ -115,12 +81,7 @@ export const sendSMS = async (req, res) => {
          if (customerPaymentIntents.length > 0) {
             const [intent] = customerPaymentIntents
             if ('cartId' in intent && intent.cartId) {
-               const datahub = new GraphQLClient(organization.datahubUrl, {
-                  headers: {
-                     'x-hasura-admin-secret': organization.adminSecret
-                  }
-               })
-               const { cart = {} } = await datahub.request(CART, {
+               const { cart = {} } = await client.request(CART, {
                   id: intent.cartId
                })
                if ('orderId' in cart && cart.orderId) {
@@ -130,7 +91,7 @@ export const sendSMS = async (req, res) => {
          }
       }
 
-      const sms = await dailycloak.request(SEND_SMS, {
+      const sms = await client.request(SEND_SMS, {
          phone: `+91${customer.phoneNo}`,
          message: `Dear ${
             customer.name.trim() ? customer.name : 'customer'
@@ -166,38 +127,24 @@ const SEND_SMS = `
 
 const PAYMENT_METHOD = `
    query paymentMethod($stripePaymentMethodId: String!) {
-      paymentMethod: platform_stripePaymentMethod(
+      paymentMethod: platform_stripePaymentMethod__by_pk(
          stripePaymentMethodId: $stripePaymentMethodId
       ) {
          stripePaymentMethodId
-         customer {
+         customer: customer_ {
             phoneNumber
             firstName
             lastName
          }
-         customerByClient {
-            organizationId
-         }
-      }
-   }
-`
-
-const ORGANIZATION = `
-   query organization($id: Int!) {
-      organization(id: $id) {
-         id
-         datahubUrl
-         adminSecret
-         name: organizationName
       }
    }
 `
 
 const CUSTOMER_PAYMENT_INTENTS = `
    query customerPaymentIntents(
-      $where: stripe_customerPaymentIntent_bool_exp = {}
+      $where: stripe_customerPaymentIntent__bool_exp = {}
    ) {
-      customerPaymentIntents(where: $where) {
+      customerPaymentIntents: customerPaymentIntents_(where: $where) {
          id
          cartId: transferGroup
       }

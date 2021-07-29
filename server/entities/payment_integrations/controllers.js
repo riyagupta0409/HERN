@@ -10,12 +10,7 @@ import {
 } from './graphql'
 import { logger } from '../../utils'
 import * as razorpay from './razorpay'
-
-const client = new GraphQLClient(process.env.DAILYCLOAK_URL, {
-   headers: {
-      'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET
-   }
-})
+import { client } from '../../lib/graphql'
 
 export const initiate = async (req, res) => {
    try {
@@ -63,7 +58,7 @@ export const initiate = async (req, res) => {
 
 export const processRequest = async (req, res) => {
    try {
-      const { id, paymentPartnershipId, orderCartId } = req.body.event.data.new
+      const { paymentPartnershipId } = req.body.event.data.new
 
       const { partnership = null } = await client.request(PAYMENT_PARTNERSHIP, {
          id: paymentPartnershipId
@@ -171,16 +166,7 @@ export const handleCart = async (req, res) => {
       )
          throw Error('Missing admin secret!')
 
-      const datahubClient = new GraphQLClient(
-         partnership.organization.datahubUrl,
-         {
-            headers: {
-               'x-hasura-admin-secret': partnership.organization.adminSecret
-            }
-         }
-      )
-
-      await datahubClient.request(UPDATE_CART, {
+      await client.request(UPDATE_CART, {
          id: orderCartId,
          _set: {
             ...(paymentStatus === 'DISCARDED'

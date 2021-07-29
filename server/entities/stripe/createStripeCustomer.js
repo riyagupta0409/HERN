@@ -1,52 +1,24 @@
-import { GraphQLClient } from 'graphql-request'
-
 import stripe from '../../lib/stripe'
-
-const dailykey = new GraphQLClient(process.env.HASURA_KEYCLOAK_URL, {
-   headers: {
-      'x-hasura-admin-secret': process.env.KEYCLOAK_ADMIN_SECRET
-   }
-})
-
-const dailycloak = new GraphQLClient(process.env.DAILYCLOAK_URL, {
-   headers: {
-      'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET
-   }
-})
+import { client } from '../../lib/graphql'
 
 export const createStripeCustomer = async (req, res) => {
    try {
-      const { clientId, keycloakId, organizationId } = req.body.event.data.new
+      const { keycloakId } = req.body.event.data.new
 
-      const { customer = {} } = await dailykey.request(CUSTOMER, { keycloakId })
-      const { organization = {} } = await dailycloak.request(ORGANIZATION, {
-         id: organizationId
+      const { customer = {} } = await client.request(CUSTOMER, { keycloakId })
+
+      const name = `${customer.firstName || ''} ${
+         customer.lastName || ''
+      }`.trim()
+
+      const response = await stripe.customers.create({
+         name,
+         email: customer.email
       })
 
-      if (organization.stripeAccountType === 'express') {
-         return res.status(200).json({
-            success: true,
-            message: 'Skipped due to customer being of express parent account.'
-         })
-      }
-
-      const response = await stripe.customers.create(
-         {
-            email: customer.email,
-            name: `${customer.firstName || ''}${
-               customer.lastName
-                  ? (customer.firstName ? ' ' : '') + customer.lastName
-                  : ''
-            }`
-         },
-         {
-            stripeAccount: organization.stripeAccountId
-         }
-      )
-
-      await dailykey.request(UPDATE_CUSTOMER_BY_CLIENT, {
-         pk_columns: { clientId, keycloakId },
-         _set: { organizationStripeCustomerId: response.id }
+      await client.request(UPDATE_PLATFORM_CUSTOMER, {
+         keycloakId,
+         _set: { stripeCustomerId: response.id }
       })
 
       return res.status(200).json({
@@ -61,7 +33,7 @@ export const createStripeCustomer = async (req, res) => {
 
 const CUSTOMER = `
    query customer($keycloakId: String!) {
-      customer: platform_customer(keycloakId: $keycloakId) {
+      customer: platform_customer__by_pk(keycloakId: $keycloakId) {
          email
          firstName
          lastName
@@ -69,27 +41,16 @@ const CUSTOMER = `
    }
 `
 
-const ORGANIZATION = `
-   query organization($id: Int!) {
-      organization(id: $id) {
-         id
-         stripeAccountId
-         stripeAccountType
-      }
-   }
-`
-
-const UPDATE_CUSTOMER_BY_CLIENT = `
-   mutation updateCustomerByClient(
-      $pk_columns: platform_customerByClient_pk_columns_input!
-      $_set: platform_customerByClient_set_input = {}
+const UPDATE_PLATFORM_CUSTOMER = `
+   mutation update_platform_customer(
+      $keycloakId: String!
+      $_set: platform_customer__set_input = {}
    ) {
-      updateCustomerByClient: platform_updateCustomerByClient(
-         pk_columns: $pk_columns
+      update_platform_customer: update_platform_customer__by_pk(
+         pk_columns: { keycloakId: $keycloakId }
          _set: $_set
       ) {
-         clientId
-         keycloakId
+         id: keycloakId
       }
    }
 `

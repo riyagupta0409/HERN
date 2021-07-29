@@ -1,13 +1,6 @@
-import { GraphQLClient } from 'graphql-request'
-
 import stripe from '../../lib/stripe'
+import { client } from '../../lib/graphql'
 import { isObjectValid, logger } from '../../utils'
-
-const client = new GraphQLClient(process.env.DAILYCLOAK_URL, {
-   headers: {
-      'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET
-   }
-})
 
 const STATUS = {
    requires_payment_method: 'REQUIRES_PAYMENT_METHOD',
@@ -17,27 +10,14 @@ const STATUS = {
    succeeded: 'SUCCEEDED'
 }
 
-const ORGANIZATION = `
-   query organization($id: Int!) {
-      organization(id: $id) {
+const ORGANIZATIONS = `
+   query organizations {
+      organizations {
          id
-         adminSecret
          organizationUrl
          stripeAccountId
          organizationName
          stripeAccountType
-      }
-   }
-`
-
-const DAILYCLOAK_INSERT_STRIPE_PAYMENT_HISTORY = `
-   mutation insertStripePaymentHistory(
-      $objects: [stripe_stripePaymentHistory_insert_input!]!
-   ) {
-      insertStripePaymentHistory: insert_stripe_stripePaymentHistory(
-         objects: $objects
-      ) {
-         affected_rows
       }
    }
 `
@@ -57,9 +37,12 @@ const DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY = `
 const UPDATE_CUSTOMER_PAYMENT_INTENT = `
    mutation updateCustomerPaymentIntent(
       $id: uuid!
-      $_set: stripe_customerPaymentIntent_set_input = {}
+      $_set: stripe_customerPaymentIntent__set_input = {}
    ) {
-      updateCustomerPaymentIntent(pk_columns: { id: $id }, _set: $_set) {
+      updateCustomerPaymentIntent: updateCustomerPaymentIntent_(
+         pk_columns: { id: $id }
+         _set: $_set
+      ) {
          id
       }
    }
@@ -90,19 +73,11 @@ export const create = async (req, res) => {
          requires3dSecure,
          stripeCustomerId,
          stripeAccountType,
-         statementDescriptor,
-         paymentRetryAttempt,
-         stripePaymentIntentId
+         statementDescriptor
       } = req.body.event.data.new
 
-      const { organization } = await client.request(ORGANIZATION, {
-         id: organizationId
-      })
-
-      const datahub = new GraphQLClient(
-         `https://${organization.organizationUrl}/datahub/v1/graphql`,
-         { headers: { 'x-hasura-admin-secret': organization.adminSecret } }
-      )
+      const { organizations = [] } = await client.request(ORGANIZATIONS)
+      const [organization] = organizations
 
       if (stripeAccountType === 'standard') {
          // RE ATTEMPT
@@ -124,7 +99,7 @@ export const create = async (req, res) => {
                   { stripeAccount: organization.stripeAccountId }
                )
                console.log('invoice', invoice.id)
-               await handleInvoice({ invoice, datahub })
+               await handleInvoice({ invoice })
 
                if (invoice.payment_intent) {
                   const intent = await stripe.paymentIntents.retrieve(
@@ -134,7 +109,6 @@ export const create = async (req, res) => {
                   console.log('intent', intent.id)
                   await handlePaymentIntent({
                      intent,
-                     datahub,
                      stripeAccountId: organization.stripeAccountId
                   })
                }
@@ -193,20 +167,20 @@ export const create = async (req, res) => {
             { stripeAccount: organization.stripeAccountId }
          )
          console.log('invoice', invoice.id)
-         await handleInvoice({ invoice, datahub })
+         await handleInvoice({ invoice })
 
          const finalizedInvoice = await stripe.invoices.finalizeInvoice(
             invoice.id,
             { stripeAccount: organization.stripeAccountId }
          )
          console.log('finalizedInvoice', finalizedInvoice.id)
-         await handleInvoice({ invoice: finalizedInvoice, datahub })
+         await handleInvoice({ invoice: finalizedInvoice })
 
          const result = await stripe.invoices.pay(finalizedInvoice.id, {
             stripeAccount: organization.stripeAccountId
          })
          console.log('result', result.id)
-         await handleInvoice({ invoice: result, datahub })
+         await handleInvoice({ invoice: result })
 
          if (result.payment_intent) {
             const paymentIntent = await stripe.paymentIntents.retrieve(
@@ -215,7 +189,6 @@ export const create = async (req, res) => {
             )
             console.log('paymentIntent', paymentIntent.id)
             await handlePaymentIntent({
-               datahub,
                intent: paymentIntent,
                stripeAccountId: organization.stripeAccountId
             })
@@ -248,19 +221,7 @@ export const create = async (req, res) => {
                }
             })
 
-            await client.request(DAILYCLOAK_INSERT_STRIPE_PAYMENT_HISTORY, {
-               objects: [
-                  {
-                     status: intent.status,
-                     type: 'PAYMENT_INTENT',
-                     stripePaymentIntentId: intent.id,
-                     transactionRemark: intent,
-                     customerPaymentIntentId: id
-                  }
-               ]
-            })
-
-            await datahub.request(UPDATE_CART, {
+            await client.request(UPDATE_CART, {
                pk_columns: { id: transferGroup },
                _set: {
                   transactionId: intent.id,
@@ -269,7 +230,7 @@ export const create = async (req, res) => {
                }
             })
 
-            await datahub.request(DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY, {
+            await client.request(DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY, {
                objects: [
                   {
                      cartId: transferGroup,
@@ -306,20 +267,13 @@ export const retry = async (req, res) => {
          stripeAccount
       })
 
-      const { organization } = await client.request(ORGANIZATION, {
-         id: invoice.metadata.organizationId
-      })
-
-      const datahub = new GraphQLClient(
-         `https://${organization.organizationUrl}/datahub/v1/graphql`,
-         { headers: { 'x-hasura-admin-secret': organization.adminSecret } }
-      )
+      const { organizations } = await client.request(ORGANIZATIONS)
 
       const paidInvoice = await stripe.invoices.pay(invoiceId, {
          stripeAccount
       })
       console.log('paidInvoice', paidInvoice.id)
-      await handleInvoice({ invoice: paidInvoice, datahub })
+      await handleInvoice({ invoice: paidInvoice })
 
       const intent = await stripe.paymentIntents.retrieve(
          invoice.payment_intent,
@@ -328,7 +282,6 @@ export const retry = async (req, res) => {
       console.log('intent', intent.id)
       await handlePaymentIntent({
          intent,
-         datahub,
          stripeAccountId
       })
    } catch (error) {
@@ -336,7 +289,7 @@ export const retry = async (req, res) => {
    }
 }
 
-const handleInvoice = async ({ invoice, datahub }) => {
+const handleInvoice = async ({ invoice }) => {
    try {
       let intent = null
       if (invoice.payment_intent) {
@@ -358,30 +311,7 @@ const handleInvoice = async ({ invoice, datahub }) => {
          }
       })
 
-      const dailycloak_history_objects = [
-         {
-            customerPaymentIntentId: invoice.metadata.customerPaymentIntentId,
-            stripeInvoiceDetails: invoice,
-            stripeInvoiceId: invoice.id,
-            type: 'INVOICE',
-            status: invoice.status
-         }
-      ]
-      if (intent) {
-         dailycloak_history_objects.push({
-            status: intent.status,
-            type: 'PAYMENT_INTENT',
-            transactionRemark: intent,
-            stripePaymentIntentId: intent.id,
-            customerPaymentIntentId: invoice.metadata.customerPaymentIntentId
-         })
-      }
-
-      await client.request(DAILYCLOAK_INSERT_STRIPE_PAYMENT_HISTORY, {
-         objects: dailycloak_history_objects
-      })
-
-      await datahub.request(UPDATE_CART, {
+      await client.request(UPDATE_CART, {
          pk_columns: { id: invoice.metadata.cartId },
          _set: {
             stripeInvoiceId: invoice.id,
@@ -414,7 +344,7 @@ const handleInvoice = async ({ invoice, datahub }) => {
          })
       }
 
-      await datahub.request(DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY, {
+      await client.request(DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY, {
          objects: datahub_history_objects
       })
    } catch (error) {
@@ -422,7 +352,7 @@ const handleInvoice = async ({ invoice, datahub }) => {
    }
 }
 
-const handlePaymentIntent = async ({ intent, datahub, stripeAccountId }) => {
+const handlePaymentIntent = async ({ intent, stripeAccountId }) => {
    try {
       const invoice = await stripe.invoices.retrieve(intent.invoice, {
          stripeAccount: stripeAccountId
@@ -438,28 +368,8 @@ const handlePaymentIntent = async ({ intent, datahub, stripeAccountId }) => {
             stripePaymentIntentId: intent.id
          }
       })
-
-      await client.request(DAILYCLOAK_INSERT_STRIPE_PAYMENT_HISTORY, {
-         objects: [
-            {
-               customerPaymentIntentId:
-                  invoice.metadata.customerPaymentIntentId,
-               stripeInvoiceDetails: invoice,
-               stripeInvoiceId: invoice.id,
-               type: 'INVOICE',
-               status: invoice.status
-            },
-            {
-               status: intent.status,
-               type: 'PAYMENT_INTENT',
-               transactionRemark: intent,
-               stripePaymentIntentId: intent.id,
-               customerPaymentIntentId: invoice.metadata.customerPaymentIntentId
-            }
-         ]
-      })
-      await datahub.request(UPDATE_CART, {
-         pk_columns: { id: invoice.metadata.cartId },
+      await client.request(UPDATE_CART, {
+         client: { id: invoice.metadata.cartId },
          _set: {
             stripeInvoiceId: invoice.id,
             stripeInvoiceDetails: invoice,
@@ -486,7 +396,7 @@ const handlePaymentIntent = async ({ intent, datahub, stripeAccountId }) => {
             cartId: invoice.metadata.cartId
          })
       }
-      await datahub.request(DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY, {
+      await client.request(DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY, {
          objects: datahub_history_objects
       })
    } catch (error) {

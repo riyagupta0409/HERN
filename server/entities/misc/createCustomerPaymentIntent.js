@@ -1,12 +1,6 @@
-import { GraphQLClient } from 'graphql-request'
-
 import { logger } from '../../utils'
-
-const client = new GraphQLClient(process.env.DAILYCLOAK_URL, {
-   headers: {
-      'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET
-   }
-})
+import get_env from '../../../get_env'
+import { client } from '../../lib/graphql'
 
 export const createCustomerPaymentIntent = async (req, res) => {
    try {
@@ -17,17 +11,15 @@ export const createCustomerPaymentIntent = async (req, res) => {
          statementDescriptor = ''
       } = req.body
 
-      const { organization } = await client.request(FETCH_ORG_CA_ID, {
-         id: organizationId
-      })
-      const { customerPaymentIntents } = await client.request(
+      const CURRENCY = await get_env('CURRENCY')
+
+      const { organizations = [] } = await client.request(ORGANIZATIONS)
+
+      const [organization] = organizations
+
+      const { customerPaymentIntents = [] } = await client.request(
          FETCH_CUSTOMER_PAYMENT_INTENT,
-         {
-            where: {
-               transferGroup: { _eq: `${cart.id}` },
-               organizationId: { _eq: organizationId }
-            }
-         }
+         { where: { transferGroup: { _eq: `${cart.id}` } } }
       )
 
       if (customerPaymentIntents.length > 0) {
@@ -67,17 +59,8 @@ export const createCustomerPaymentIntent = async (req, res) => {
                      paymentMethod: customer.paymentMethod,
                      onBehalfOf: organization.stripeAccountId,
                      stripeCustomerId: customer.stripeCustomerId,
-                     currency: organization.currency.toLowerCase(),
-                     stripeAccountType: organization.stripeAccountType,
-                     ...(organization.stripeAccountType === 'express' && {
-                        organizationTransfers: {
-                           data: {
-                              amount: transferAmount,
-                              transferGroup: `${cart.id}`,
-                              destination: organization.stripeAccountId
-                           }
-                        }
-                     })
+                     currency: CURRENCY.toLowerCase(),
+                     stripeAccountType: organization.stripeAccountType
                   }
                }
             )
@@ -89,7 +72,7 @@ export const createCustomerPaymentIntent = async (req, res) => {
             })
          } else {
             logger(
-               '/api/initiate-payment',
+               '/server/api/initiate-payment',
                "Your account doesn't have stripe linked!"
             )
             return res.status(403).json({
@@ -104,32 +87,35 @@ export const createCustomerPaymentIntent = async (req, res) => {
    }
 }
 
-const FETCH_ORG_CA_ID = `
-   query organization($id: Int!) {
-      organization(id: $id) {
-         currency
+const ORGANIZATIONS = `
+   query organizations {
+      organizations {
          chargeFixed
          chargeCurrency
          stripeAccountId
          chargePercentage
          stripeAccountType
       }
-   } 
+   }
 `
 
 const FETCH_CUSTOMER_PAYMENT_INTENT = `
    query customerPaymentIntents(
-      $where: stripe_customerPaymentIntent_bool_exp!
+      $where: stripe_customerPaymentIntent__bool_exp = {}
    ) {
-      customerPaymentIntents(where: $where) {
+      customerPaymentIntents: customerPaymentIntents_(where: $where) {
          id
       }
    }
 `
 
 const CREATE_CUSTOMER_PAYMENT_INTENT = `
-   mutation createCustomerPaymentIntent($object: stripe_customerPaymentIntent_insert_input!) {
-      createCustomerPaymentIntent(object: $object) {
+   mutation createCustomerPaymentIntent(
+      $object: stripe_customerPaymentIntent__insert_input!
+   ) {
+      createCustomerPaymentIntent: createCustomerPaymentIntent_(
+         object: $object
+      ) {
          id
       }
    }
@@ -137,30 +123,30 @@ const CREATE_CUSTOMER_PAYMENT_INTENT = `
 const RETRY_CUSTOMER_PAYMENT_INTENT = `
    mutation updateCustomerPaymentIntent(
       $id: uuid!
-      $_set: stripe_customerPaymentIntent_set_input!
-      $_inc: stripe_customerPaymentIntent_inc_input!
+      $_set: stripe_customerPaymentIntent__set_input!
+      $_inc: stripe_customerPaymentIntent__inc_input!
    ) {
-      updateCustomerPaymentIntent(
+      updateCustomerPaymentIntent: updateCustomerPaymentIntent_(
          pk_columns: { id: $id }
          _inc: $_inc
          _set: $_set
       ) {
          id
          amount
-         invoiceSendAttempt
          amount
-         created_at
+         status
          currency
+         created_at
          onBehalfOf
+         transferGroup
          paymentMethod
+         stripeInvoiceId
+         stripeCustomerId
+         stripeAccountType
+         invoiceSendAttempt
          paymentRetryAttempt
          statementDescriptor
-         status
-         stripeAccountType
-         stripeCustomerId
-         stripeInvoiceId
          stripePaymentIntentId
-         transferGroup
       }
    }
 `

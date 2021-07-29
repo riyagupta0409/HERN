@@ -1,6 +1,4 @@
-import stripe from '../../lib/stripe'
-
-import { GraphQLClient } from 'graphql-request'
+import { client } from '../../lib/graphql'
 
 const STORE_SETTINGS = `
    query settings($identifier: String_comparison_exp!) {
@@ -45,11 +43,6 @@ export const updateDailyosStripeStatus = async (req, res) => {
       if (!datahubUrl) throw Error('Datahub is not configured yet!')
       if (!adminSecret) throw Error('Missing admin secret!')
 
-      const client = new GraphQLClient(datahubUrl, {
-         headers: {
-            'x-hasura-admin-secret': adminSecret
-         }
-      })
       const { settings } = await client.request(STORE_SETTINGS, {
          identifier: { _eq: 'Store Live' }
       })

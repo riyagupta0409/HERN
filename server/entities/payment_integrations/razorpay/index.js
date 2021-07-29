@@ -1,13 +1,7 @@
 import Razorpay from 'razorpay'
-import { GraphQLClient } from 'graphql-request'
 
+import { client } from '../../../lib/graphql'
 import { UPDATE_PAYMENT_RECORD } from '../graphql'
-
-const client = new GraphQLClient(process.env.DAILYCLOAK_URL, {
-   headers: {
-      'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET
-   }
-})
 
 export const request = async ({ data = {}, keys = {} }) => {
    try {
