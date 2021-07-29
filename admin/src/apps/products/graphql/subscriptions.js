@@ -233,6 +233,9 @@ export const S_RECIPE = gql`
          cookingTime
          notIncluded
          cuisine
+         cuisineNameId {
+            id
+         }
          utensils
          showIngredients
          showIngredientsQuantity
@@ -263,6 +266,8 @@ export const S_RECIPE = gql`
             processing: ingredientProcessing {
                id
                name: processingName
+               nutritionalInfo
+               cost
             }
             linkedSachets: simpleRecipeYield_ingredientSachets(
                where: { isArchived: { _eq: false } }
@@ -286,7 +291,7 @@ export const S_RECIPE = gql`
          }
          simpleRecipeYields(
             where: { isArchived: { _eq: false } }
-            order_by: { yield: asc }
+            order_by: { serving: asc }
          ) {
             id
             yield

@@ -50,6 +50,7 @@ export const Image = styled.img`
 
 export const Wrapper = styled.div`
    display: flex;
+   justify-content: center;
    flex-direction: row;
 `
 

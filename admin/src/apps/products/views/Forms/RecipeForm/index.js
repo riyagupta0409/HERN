@@ -42,7 +42,6 @@ import {
 } from '../../../graphql'
 import {
    Information,
-   Ingredients,
    Photo,
    Procedures,
    RecipeCard,
@@ -315,14 +314,12 @@ const RecipeForm = () => {
                style={{ borderBottom: '1px solid #f3f3f3' }}
             >
                <Form.Group>
-                  <Form.Label htmlFor="title" title="title">
-                     Recipe Name*
-                  </Form.Label>
                   <Form.Text
                      id="title"
                      name="title"
                      value={title.value}
-                     placeholder="Enter recipe name"
+                     variant="revamp"
+                     placeholder="Enter recipe title"
                      onChange={e =>
                         setTitle({ ...title, value: e.target.value })
                      }
@@ -414,7 +411,7 @@ const RecipeForm = () => {
                   <HorizontalTabPanels>
                      <HorizontalTabPanel>
                         <Flex maxWidth="1280px" margin="0 auto">
-                           <StyledFlex container alignItems="center">
+                           <StyledFlex container >
                               <Information state={state} />
                               <Spacer xAxis size="32px" />
                               <Photo state={state} />
@@ -424,7 +421,6 @@ const RecipeForm = () => {
                      <HorizontalTabPanel>
                         <Servings state={state} />
                         <Spacer size="32px" />
-                        <Ingredients state={state} />
                         <Banner id="products-app-single-ingredient-ingredient-tab-bottom" />
                      </HorizontalTabPanel>
                      <HorizontalTabPanel>

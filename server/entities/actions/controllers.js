@@ -21,45 +21,11 @@ export const nutritionInfo = async (req, res) => {
       let filtered = {}
       await simpleRecipeYields.map((item, index) => {
          const nutritionalInfo = item.nutritionalInfo
-         //console.log(nutritionalInfo.excludes)
-         const allowed = [
-            'iron',
-            'sodium',
-            'sugars',
-            'calcium',
-            'protein',
-            'calories',
-            'totalFat',
-            'transFat',
-            'vitaminA',
-            'vitaminC',
-            'cholesterol',
-            'dietaryFibre',
-            'saturatedFat',
-            'totalCarbohydrates',
-            'excludes'
-         ]
-         if (nutritionalInfo !== null) {
-            if (nutritionalInfo.excludes === null) {
-               nutritionalInfo.excludes = []
-            }
-            filtered = Object.keys(nutritionalInfo)
-               .filter(key => allowed.includes(key))
-               .reduce((obj, key) => {
-                  obj[key] = nutritionalInfo[key]
-                  return obj
-               }, {})
-         } else {
-            filtered = {}
-         }
-
-         //console.log(filtered)
-         //console.log(item.nutritionId)
          const { update_products_nutritionInfo } = client.request(
             UPDATE_NUTRITION_INFO,
             {
                _eq: item.nutritionId,
-               _set: filtered
+               _set: nutritionalInfo
             }
          )
          //console.log(update_products_nutritionInfo)
