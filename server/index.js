@@ -52,6 +52,8 @@ import {
    handleSubscriptionCancelled
 } from './entities/emails'
 
+import './lib/stripe'
+
 const router = express.Router()
 
 // Routes
@@ -79,7 +81,7 @@ router.use('/api/occurences', GetFullOccurenceRouter)
 router.use('/api/actions', ActionsRouter)
 
 // NEW
-router.use('/api/card', CardRouter)
+router.use('/api/cards', CardRouter)
 router.use('/api/refund', RefundRouter)
 router.use('/api/setup-intent', SetupIntentRouter)
 router.use('/api/payment-method', PaymentMethodRouter)

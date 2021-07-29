@@ -5,13 +5,14 @@ export const get = async (req, res) => {
    try {
       const { id } = req.params
       const { accountId } = req.query
+      const _stripe = await stripe()
       let response = null
       if (accountId) {
-         response = await stripe.paymentMethods.retrieve(id, {
+         response = await _stripe.paymentMethods.retrieve(id, {
             stripeAccount: accountId
          })
       } else {
-         response = await stripe.paymentMethods.retrieve(id)
+         response = await _stripe.paymentMethods.retrieve(id)
       }
 
       if (isObjectValid(response)) {
@@ -27,7 +28,8 @@ export const get = async (req, res) => {
 export const list = async (req, res) => {
    try {
       const { customer } = req.query
-      const response = await stripe.paymentMethods.list({
+      const _stripe = await stripe()
+      const response = await _stripe.paymentMethods.list({
          customer,
          type: 'card'
       })

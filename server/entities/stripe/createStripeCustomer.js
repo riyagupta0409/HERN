@@ -5,13 +5,14 @@ export const createStripeCustomer = async (req, res) => {
    try {
       const { keycloakId } = req.body.event.data.new
 
+      const _stripe = await stripe()
       const { customer = {} } = await client.request(CUSTOMER, { keycloakId })
 
       const name = `${customer.firstName || ''} ${
          customer.lastName || ''
       }`.trim()
 
-      const response = await stripe.customers.create({
+      const response = await _stripe.customers.create({
          name,
          email: customer.email
       })

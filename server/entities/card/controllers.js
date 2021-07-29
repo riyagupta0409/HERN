@@ -4,7 +4,8 @@ import { isObjectValid } from '../../utils'
 export const create = async (req, res) => {
    try {
       const { id } = req.body
-      const response = await stripe.customers.createSource(
+      const _stripe = await stripe()
+      const response = await _stripe.customers.createSource(
          id,
          ...(req.body.source && { source: req.body.source })
       )
@@ -22,7 +23,11 @@ export const create = async (req, res) => {
 export const get = async (req, res) => {
    try {
       const { customerId, cardId } = req.query
-      const response = await stripe.customers.retrieveSource(customerId, cardId)
+      const _stripe = await stripe()
+      const response = await _stripe.customers.retrieveSource(
+         customerId,
+         cardId
+      )
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -37,7 +42,8 @@ export const get = async (req, res) => {
 export const update = async (req, res) => {
    try {
       const { customerId, cardId, update } = req.body
-      const response = await stripe.customers.updateSource(
+      const _stripe = await stripe()
+      const response = await _stripe.customers.updateSource(
          customerId,
          cardId,
          update
@@ -56,7 +62,8 @@ export const update = async (req, res) => {
 export const remove = async (req, res) => {
    try {
       const { customerId, cardId } = req.query
-      const response = await stripe.customers.deleteSource(customerId, cardId)
+      const _stripe = await stripe()
+      const response = await _stripe.customers.deleteSource(customerId, cardId)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -70,8 +77,9 @@ export const remove = async (req, res) => {
 
 export const list = async (req, res) => {
    try {
-      const { customerId, limit } = req.query
-      const response = await stripe.customers.listSources(customerId, {
+      const _stripe = await stripe()
+      const { customerId, limit = 10 } = req.query
+      const response = await _stripe.customers.listSources(customerId, {
          limit,
          object: 'card'
       })

@@ -4,14 +4,15 @@ import { isObjectValid, logger } from '../../utils'
 export const create = async (req, res) => {
    try {
       const { customer, stripeAccountId } = req.body
+      const _stripe = await stripe()
       let response = null
       if (stripeAccountId) {
-         response = await stripe.setupIntents.create(
+         response = await _stripe.setupIntents.create(
             { customer },
             { stripeAccount: stripeAccountId }
          )
       } else {
-         response = await stripe.setupIntents.create({ customer })
+         response = await _stripe.setupIntents.create({ customer })
       }
 
       if (isObjectValid(response)) {
@@ -28,7 +29,8 @@ export const create = async (req, res) => {
 export const update = async (req, res) => {
    try {
       const { id } = req.params
-      const response = await stripe.setupIntents.update(id, {
+      const _stripe = await stripe()
+      const response = await _stripe.setupIntents.update(id, {
          ...req.body
       })
 
@@ -45,7 +47,8 @@ export const update = async (req, res) => {
 export const cancel = async (req, res) => {
    try {
       const { id } = req.params
-      const response = await stripe.setupIntents.cancel(id)
+      const _stripe = await stripe()
+      const response = await _stripe.setupIntents.cancel(id)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -60,7 +63,8 @@ export const cancel = async (req, res) => {
 export const get = async (req, res) => {
    try {
       const { id } = req.body
-      const response = await stripe.setupIntents.retrieve({
+      const _stripe = await stripe()
+      const response = await _stripe.setupIntents.retrieve({
          id
       })
 
@@ -76,7 +80,8 @@ export const get = async (req, res) => {
 
 export const list = async (req, res) => {
    try {
-      const response = await stripe.setupIntents.list(req.query)
+      const _stripe = await stripe()
+      const response = await _stripe.setupIntents.list(req.query)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })

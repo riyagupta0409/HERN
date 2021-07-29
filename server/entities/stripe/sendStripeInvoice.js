@@ -4,8 +4,9 @@ import stripe from '../../lib/stripe'
 export const sendStripeInvoice = async (req, res) => {
    try {
       const { id } = req.body.input
+      const _stripe = await stripe()
 
-      await stripe.invoices.sendInvoice(id)
+      await _stripe.invoices.sendInvoice(id)
 
       return res.status(200).json({
          success: true,

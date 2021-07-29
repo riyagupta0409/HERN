@@ -76,6 +76,8 @@ export const create = async (req, res) => {
          statementDescriptor
       } = req.body.event.data.new
 
+      const _stripe = await stripe()
+
       const { organizations = [] } = await client.request(ORGANIZATIONS)
       const [organization] = organizations
 
@@ -83,7 +85,7 @@ export const create = async (req, res) => {
          // RE ATTEMPT
          let previousInvoice = null
          if (stripeInvoiceId) {
-            previousInvoice = await stripe.invoices.retrieve(stripeInvoiceId, {
+            previousInvoice = await _stripe.invoices.retrieve(stripeInvoiceId, {
                stripeAccount: organization.stripeAccountId
             })
             const isValidForReattempt = [
@@ -93,7 +95,7 @@ export const create = async (req, res) => {
             ].every(node => node)
 
             if (!requires3dSecure && isValidForReattempt) {
-               const invoice = await stripe.invoices.pay(
+               const invoice = await _stripe.invoices.pay(
                   stripeInvoiceId,
                   { payment_method: paymentMethod },
                   { stripeAccount: organization.stripeAccountId }
@@ -102,7 +104,7 @@ export const create = async (req, res) => {
                await handleInvoice({ invoice })
 
                if (invoice.payment_intent) {
-                  const intent = await stripe.paymentIntents.retrieve(
+                  const intent = await _stripe.paymentIntents.retrieve(
                      invoice.payment_intent,
                      { stripeAccount: organization.stripeAccountId }
                   )
@@ -121,12 +123,12 @@ export const create = async (req, res) => {
          }
 
          if (previousInvoice && stripeInvoiceId) {
-            await stripe.invoices.voidInvoice(stripeInvoiceId, {
+            await _stripe.invoices.voidInvoice(stripeInvoiceId, {
                stripeAccount: organization.stripeAccountId
             })
          }
          // CREATE NEW INVOICE
-         const item = await stripe.invoiceItems.create(
+         const item = await _stripe.invoiceItems.create(
             {
                amount,
                currency,
@@ -140,7 +142,7 @@ export const create = async (req, res) => {
          if (requires3dSecure) {
             console.log('REQUIRES 3D SECURE')
          }
-         const invoice = await stripe.invoices.create(
+         const invoice = await _stripe.invoices.create(
             {
                customer: stripeCustomerId,
                default_payment_method: paymentMethod,
@@ -169,21 +171,21 @@ export const create = async (req, res) => {
          console.log('invoice', invoice.id)
          await handleInvoice({ invoice })
 
-         const finalizedInvoice = await stripe.invoices.finalizeInvoice(
+         const finalizedInvoice = await _stripe.invoices.finalizeInvoice(
             invoice.id,
             { stripeAccount: organization.stripeAccountId }
          )
          console.log('finalizedInvoice', finalizedInvoice.id)
          await handleInvoice({ invoice: finalizedInvoice })
 
-         const result = await stripe.invoices.pay(finalizedInvoice.id, {
+         const result = await _stripe.invoices.pay(finalizedInvoice.id, {
             stripeAccount: organization.stripeAccountId
          })
          console.log('result', result.id)
          await handleInvoice({ invoice: result })
 
          if (result.payment_intent) {
-            const paymentIntent = await stripe.paymentIntents.retrieve(
+            const paymentIntent = await _stripe.paymentIntents.retrieve(
                result.payment_intent,
                { stripeAccount: organization.stripeAccountId }
             )
@@ -199,7 +201,7 @@ export const create = async (req, res) => {
             message: 'New invoice payment has been made'
          })
       } else {
-         const intent = await stripe.paymentIntents.create({
+         const intent = await _stripe.paymentIntents.create({
             amount,
             currency,
             confirm: true,
@@ -260,22 +262,23 @@ export const retry = async (req, res) => {
    try {
       const { invoiceId, stripeAccountId } = req.body
       if (!invoiceId) throw Error('Invoice ID is required!')
+      const _stripe = await stripe()
 
       const stripeAccount = stripeAccountId
 
-      const invoice = await stripe.invoices.retrieve(invoiceId, {
+      const invoice = await _stripe.invoices.retrieve(invoiceId, {
          stripeAccount
       })
 
       const { organizations } = await client.request(ORGANIZATIONS)
 
-      const paidInvoice = await stripe.invoices.pay(invoiceId, {
+      const paidInvoice = await _stripe.invoices.pay(invoiceId, {
          stripeAccount
       })
       console.log('paidInvoice', paidInvoice.id)
       await handleInvoice({ invoice: paidInvoice })
 
-      const intent = await stripe.paymentIntents.retrieve(
+      const intent = await _stripe.paymentIntents.retrieve(
          invoice.payment_intent,
          { stripeAccount }
       )
@@ -292,10 +295,14 @@ export const retry = async (req, res) => {
 const handleInvoice = async ({ invoice }) => {
    try {
       let intent = null
+      const _stripe = await stripe()
       if (invoice.payment_intent) {
-         intent = await stripe.paymentIntents.retrieve(invoice.payment_intent, {
-            stripeAccount: invoice.metadata.stripeAccountId
-         })
+         intent = await _stripe.paymentIntents.retrieve(
+            invoice.payment_intent,
+            {
+               stripeAccount: invoice.metadata.stripeAccountId
+            }
+         )
       }
 
       await client.request(UPDATE_CUSTOMER_PAYMENT_INTENT, {
@@ -354,7 +361,8 @@ const handleInvoice = async ({ invoice }) => {
 
 const handlePaymentIntent = async ({ intent, stripeAccountId }) => {
    try {
-      const invoice = await stripe.invoices.retrieve(intent.invoice, {
+      const _stripe = await stripe()
+      const invoice = await _stripe.invoices.retrieve(intent.invoice, {
          stripeAccount: stripeAccountId
       })
 
@@ -407,7 +415,8 @@ const handlePaymentIntent = async ({ intent, stripeAccountId }) => {
 export const update = async (req, res) => {
    try {
       const { id } = req.params
-      const response = await stripe.paymentIntents.update(id, {
+      const _stripe = await stripe()
+      const response = await _stripe.paymentIntents.update(id, {
          ...req.body
       })
 
@@ -424,7 +433,8 @@ export const update = async (req, res) => {
 export const cancel = async (req, res) => {
    try {
       const { id } = req.params
-      const response = await stripe.paymentIntents.cancel(id)
+      const _stripe = await stripe()
+      const response = await _stripe.paymentIntents.cancel(id)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -439,7 +449,8 @@ export const cancel = async (req, res) => {
 export const get = async (req, res) => {
    try {
       const { id } = req.params
-      const response = await stripe.paymentIntents.retrieve(id)
+      const _stripe = await stripe()
+      const response = await _stripe.paymentIntents.retrieve(id)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -453,7 +464,8 @@ export const get = async (req, res) => {
 
 export const list = async (req, res) => {
    try {
-      const response = await stripe.paymentIntents.list(req.query)
+      const _stripe = await stripe()
+      const response = await _stripe.paymentIntents.list(req.query)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })

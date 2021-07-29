@@ -4,7 +4,8 @@ import { isObjectValid } from '../../utils'
 export const create = async (req, res) => {
    try {
       const { payment_intent } = req.body
-      const response = await stripe.refunds.create({
+      const _stripe = await stripe()
+      const response = await _stripe.refunds.create({
          payment_intent
       })
 
@@ -21,7 +22,8 @@ export const create = async (req, res) => {
 export const get = async (req, res) => {
    try {
       const { id } = req.params
-      const response = await stripe.refunds.retrieve(id)
+      const _stripe = await stripe()
+      const response = await _stripe.refunds.retrieve(id)
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -36,7 +38,8 @@ export const get = async (req, res) => {
 export const update = async (req, res) => {
    try {
       const { id, metadata } = req.body
-      const response = await stripe.refunds.update(id, { metadata })
+      const _stripe = await stripe()
+      const response = await _stripe.refunds.update(id, { metadata })
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
@@ -51,8 +54,9 @@ export const update = async (req, res) => {
 export const list = async (req, res) => {
    try {
       const { limit } = req.query
+      const _stripe = await stripe()
 
-      const response = await stripe.refunds.list({ limit })
+      const response = await _stripe.refunds.list({ limit })
 
       if (isObjectValid(response)) {
          return res.json({ success: true, data: response })
