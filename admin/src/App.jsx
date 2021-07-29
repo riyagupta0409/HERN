@@ -6,7 +6,7 @@ import { useSubscription } from '@apollo/react-hooks'
 import { Switch, Route, Link } from 'react-router-dom'
 import FullOccurrenceReport from './shared/components/FullOccurrenceReport'
 import { isKeycloakSupported } from './shared/utils'
-
+import DashboardAnalytics from './shared/components/DashboardAnalytics'
 import {
    TabBar,
    RedirectBanner,
@@ -16,6 +16,13 @@ import {
 } from './shared/components'
 import { AppItem, AppList, Layout, InsightDiv } from './styled'
 import BottomBar from './shared/components/BottomBar'
+import {
+   AcceptedAndRejectedAnalytics,
+   OrderReceivedAnalytics,
+   RegisteredCustomerAnalytics,
+   SubscribedCustomerAnalytics,
+   TotalEarningAnalytics,
+} from './shared/components/DashboardAnalytics/Analytics'
 
 const APPS = gql`
    subscription apps {
@@ -113,6 +120,13 @@ const App = () => {
                         </AppItem>
                      ))}
                   </AppList>
+                  <DashboardAnalytics>
+                     <TotalEarningAnalytics />
+                     <OrderReceivedAnalytics />
+                     <AcceptedAndRejectedAnalytics />
+                     <SubscribedCustomerAnalytics />
+                     <RegisteredCustomerAnalytics />
+                  </DashboardAnalytics>
                   <InsightDiv>
                      <InsightDashboard
                         appTitle="global"

@@ -19,9 +19,9 @@ export const MUTATIONS = {
       PAYMENT_METHOD: {
          CREATE: gql`
             mutation paymentMethod(
-               $object: platform_stripePaymentMethod_insert_input!
+               $object: platform_stripePaymentMethod__insert_input!
             ) {
-               paymentMethod: platform_createStripePaymentMethod(
+               paymentMethod: insert_platform_stripePaymentMethod__one(
                   object: $object
                ) {
                   keycloakId
@@ -71,15 +71,40 @@ export const MUTATIONS = {
    UPDATE_PLATFORM_CUSTOMER: gql`
       mutation platform_updateCustomer(
          $keycloakId: String!
-         $_set: platform_customer_set_input = {}
+         $_set: platform_customer__set_input = {}
       ) {
-         platform_updateCustomer(
+         platform_updateCustomer: update_platform_customer__by_pk(
             pk_columns: { keycloakId: $keycloakId }
             _set: $_set
          ) {
             firstName
             lastName
             phoneNumber
+         }
+      }
+   `,
+   INSERT_PLATFORM_PROVIDER_CUSTOMER: gql`
+      mutation createPlatformCustomer(
+         $object: platform_provider_customer_insert_input!
+      ) {
+         createPlatformCustomer: insert_platform_provider_customer_one(
+            object: $object
+         ) {
+            id
+            customerId
+         }
+      }
+   `,
+   INSERT_CUSTOMER: gql`
+      mutation createCustomer(
+         $object: crm_customer_insert_input!
+         $where: crm_brand_customer_bool_exp = {}
+      ) {
+         createCustomer(object: $object) {
+            id
+            brandCustomers(where: $where) {
+               id
+            }
          }
       }
    `,
@@ -114,18 +139,13 @@ export const QUERIES = {
                   id
                   email
                   isTest
-                  platform_customer {
+                  platform_customer: platform_customer_ {
                      id: keycloakId
                      firstName
                      lastName
                      phoneNumber
                      fullName
                      stripeCustomerId
-                     customerByClients: CustomerByClients {
-                        id: keycloakId
-                        clientId
-                        organizationStripeCustomerId
-                     }
                   }
                }
             }
@@ -144,18 +164,13 @@ export const QUERIES = {
                   id
                   email
                   isTest
-                  platform_customer {
+                  platform_customer: platform_customer_ {
                      id: keycloakId
                      firstName
                      lastName
                      phoneNumber
                      fullName
                      stripeCustomerId
-                     customerByClients: CustomerByClients {
-                        id: keycloakId
-                        clientId
-                        organizationStripeCustomerId
-                     }
                   }
                }
             }
