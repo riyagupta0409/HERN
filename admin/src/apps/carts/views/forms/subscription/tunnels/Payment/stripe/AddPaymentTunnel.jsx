@@ -70,15 +70,15 @@ const FormWrapper = ({ intent, onSave, closeTunnel }) => {
    const handleResult = async ({ setupIntent }) => {
       try {
          if (setupIntent.status === 'succeeded') {
-            const ORIGIN = get_env('REACT_APP_DAILYKEY_URL')
-            let URL = `${ORIGIN}/api/payment-method/${setupIntent.payment_method}`
+            const DATAHUB = get_env('REACT_APP_DATA_HUB_URI')
+            let url = `${new URL(DATAHUB).origin}/api/payment-method/${setupIntent.payment_method}`
             if (
                organization.stripeAccountType === 'standard' &&
                organization.stripeAccountId
             ) {
-               URL += `?accountId=${organization.stripeAccountId}`
+               url += `?accountId=${organization.stripeAccountId}`
             }
-            const { data: { success, data = {} } = {} } = await axios.get(URL)
+            const { data: { success, data = {} } = {} } = await axios.get(url)
 
             if (success) {
                await createPaymentMethod({
@@ -144,8 +144,10 @@ const createSetupIntent = async (customer, organization = {}) => {
       ) {
          stripeAccountId = organization?.stripeAccountId
       }
-      const URL = `${get_env('REACT_APP_DAILYKEY_URL')}/api/setup-intent`
-      const { data } = await axios.post(URL, { customer, stripeAccountId })
+
+      const DATAHUB = get_env('REACT_APP_DATA_HUB_URI')
+      const url = `${new URL(DATAHUB).origin}/api/setup-intent`
+      const { data } = await axios.post(url, { customer, stripeAccountId })
       return data.data
    } catch (error) {
       return error
