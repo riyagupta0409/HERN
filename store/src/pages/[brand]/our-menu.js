@@ -10,9 +10,10 @@ import ReactImageFallback from 'react-image-fallback'
 import { isEmpty, uniqBy } from 'lodash'
 import { useLazyQuery, useQuery } from '@apollo/react-hooks'
 import { webRenderer } from '@dailykit/web-renderer'
+import ReactHtmlParser from 'react-html-parser'
 
 import { useConfig } from '../../lib'
-import { formatDate, getRoute, isClient } from '../../utils'
+import { foldsResolver, formatDate, getRoute, isClient } from '../../utils'
 import { ArrowLeftIcon, ArrowRightIcon } from '../../assets/icons'
 import { Layout, SEO, Form, HelperBar, Loader, Spacer } from '../../components'
 import {
@@ -28,12 +29,58 @@ import 'regenerator-runtime'
 import { fileParser, getSettings } from '../../utils'
 
 const OurMenu = props => {
-   const { data, settings, navigationMenus } = props
+   const { folds, settings, navigationMenus } = props
+
+   const renderComponent = fold => {
+      try {
+         if (fold.component) {
+            return <Content />
+         } else if (fold.content) {
+            return ReactHtmlParser(fold.content)
+         } else {
+            // const url = get_env('EXPRESS_URL') + `/template/hydrate-fold`
+            const url = 'http://localhost:4000' + `/template/hydrate-fold`
+            axios
+               .post(url, {
+                  id: fold.id,
+                  brandId: settings['brand']['id'],
+               })
+               .then(response => {
+                  const { data } = response
+                  if (data.success) {
+                     const targetDiv = document.querySelector(
+                        `[data-fold-id=${fold.id}]`
+                     )
+                     targetDiv.innerHTML = data.data
+                  } else {
+                     console.error(data.message)
+                  }
+               })
+            return 'Loading...'
+            // make request to template service
+         }
+      } catch (err) {
+         console.log(err)
+      }
+   }
+
+   const renderPageContent = folds => {
+      return folds.map(fold => (
+         <div
+            key={fold.id}
+            data-fold-id={fold.id}
+            data-fold-position={fold.position}
+            data-fold-type={fold.moduleType}
+         >
+            {renderComponent(fold)}
+         </div>
+      ))
+   }
 
    return (
       <Layout settings={settings} navigationMenus={navigationMenus}>
          <SEO title="Our Menu" />
-         <Content data={data} />
+         <main className="hern-our-menu__main">{renderPageContent(folds)}</main>
       </Layout>
    )
 }
@@ -442,6 +489,7 @@ const Content = ({ data }) => {
                                     key={node.id}
                                     buildImageUrl={buildImageUrl}
                                     noProductImage={noProductImage}
+                                    imageRatio={imageRatio}
                                  />
                               ))}
                            </Products>
@@ -457,22 +505,17 @@ const Content = ({ data }) => {
                </main>
             </>
          )}
-         {/* {contentLoading ? (
-            <Loader inline />
-         ) : (
-            <div id="our-menu-bottom-01"></div>
-         )} */}
-         <div id="our-menu-bottom-01">
-            {Boolean(data.length) &&
-               ReactHtmlParser(
-                  data.find(fold => fold.id === 'Our Menu')?.content
-               )}
-         </div>
       </Main>
    )
 }
 
-const Product = ({ node, theme, noProductImage, buildImageUrl }) => {
+const Product = ({
+   node,
+   theme,
+   noProductImage,
+   buildImageUrl,
+   imageRatio,
+}) => {
    const router = useRouter()
 
    const product = {
@@ -677,9 +720,7 @@ const Label = styled.span`
 `
 export async function getStaticProps({ params }) {
    const client = await graphQLClient()
-   const data = await client.request(GET_FILES, {
-      divId: ['our-menu-bottom-01'],
-   })
+
    const dataByRoute = await client.request(WEBSITE_PAGE, {
       domain: params.brand,
       route: '/our-menu',
@@ -697,11 +738,14 @@ export async function getStaticProps({ params }) {
          dataByRoute.website_websitePage[0]['website']['navigationMenuId'],
    })
 
-   const parsedData = await fileParser(data.content_subscriptionDivIds)
+   //const parsedData = await fileParser(data.content_subscriptionDivIds)
+   const parsedData = await foldsResolver(
+      dataByRoute.website_websitePage[0]['websitePageModules']
+   )
    const navigationMenus = navigationMenu.website_navigationMenuItem
 
    return {
-      props: { data: parsedData, seo, settings, navigationMenus },
+      props: { folds: parsedData, seo, settings, navigationMenus },
       revalidate: 60, // will be passed to the page component as props
    }
 }
