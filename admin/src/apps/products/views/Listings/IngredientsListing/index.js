@@ -281,20 +281,12 @@ class DataTable extends React.Component {
          formatter: reactFormatter(<Count />),
          width: 150,
       },
-      // {
-      //    title: 'Published',
-      //    field: 'isPublished',
-      //    formatter: 'tickCross',
-      //    hozAlign: 'center',
-      //    headerHozAlign: 'center',
-      //    width: 150,
-      // },
       
    ]
 
    groupByOptions = [
-      { id: 1, title: 'isPublished' },
-      { id: 2, title: 'category' },
+      { id: 1, title: 'Published' },
+      { id: 2, title: 'Category' },
    ]
    handleRowSelection = ({ _row }) => {
       this.props.setSelectedRows(prevState => [...prevState, _row.getData()])
