@@ -31,6 +31,27 @@ import { fileParser, getSettings } from '../../utils'
 const OurMenu = props => {
    const { folds, settings, navigationMenus } = props
 
+   React.useEffect(() => {
+      try {
+         if (folds.length && typeof document !== 'undefined') {
+            /*Filter undefined scripts*/
+            const scripts = folds.flatMap(fold => fold.scripts)
+            const filterScripts = scripts.filter(Boolean)
+            if (Boolean(filterScripts.length)) {
+               const fragment = document.createDocumentFragment()
+               filterScripts.forEach(script => {
+                  const s = document.createElement('script')
+                  s.setAttribute('type', 'text/javascript')
+                  s.setAttribute('src', script)
+                  fragment.appendChild(s)
+               })
+               document.body.appendChild(fragment)
+            }
+         }
+      } catch (err) {
+         console.log('Failed to render page: ', err)
+      }
+   }, [folds])
    const renderComponent = fold => {
       try {
          if (fold.component) {
@@ -49,7 +70,7 @@ const OurMenu = props => {
                   const { data } = response
                   if (data.success) {
                      const targetDiv = document.querySelector(
-                        `[data-fold-id=${fold.id}]`
+                        `[data-fold-id='${fold.id}']`
                      )
                      targetDiv.innerHTML = data.data
                   } else {
@@ -80,7 +101,7 @@ const OurMenu = props => {
    return (
       <Layout settings={settings} navigationMenus={navigationMenus}>
          <SEO title="Our Menu" />
-         <main className="hern-our-menu__main">{renderPageContent(folds)}</main>
+         <main className="hern-our-menu">{renderPageContent(folds)}</main>
       </Layout>
    )
 }
@@ -221,26 +242,6 @@ const Content = ({ data }) => {
       }
    }, [fetchTitles, brand.id])
 
-   React.useEffect(() => {
-      try {
-         if (data.length && typeof document !== 'undefined') {
-            const scripts = data.flatMap(fold => fold.scripts)
-            const fragment = document.createDocumentFragment()
-
-            scripts.forEach(script => {
-               const s = document.createElement('script')
-               s.setAttribute('type', 'text/javascript')
-               s.setAttribute('src', script)
-               fragment.appendChild(s)
-            })
-
-            document.body.appendChild(fragment)
-         }
-      } catch (err) {
-         console.log('Failed to render page: ', err)
-      }
-   }, [data])
-
    const next = () => {
       if (current === occurences.length - 1) return
       const nextOne = current + 1
@@ -279,19 +280,20 @@ const Content = ({ data }) => {
    }
    if (isEmpty(titles))
       return (
-         <Main>
+         <>
             <Spacer size="sm" />
+            {/*TODO: Should be changed to plain css  */}
             <HelperBar type="info">
                <HelperBar.SubTitle>No Menu Available!</HelperBar.SubTitle>
             </HelperBar>
-         </Main>
+         </>
       )
    return (
-      <Main>
-         <Header>
+      <>
+         <div className="hern-our-menu__header">
             <div>
                {!loading && titles.length > 0 && (
-                  <SelectSection>
+                  <section className="hern-our-menu__select-section__plans">
                      <Form.Label htmlFor="plans">Plans</Form.Label>
                      <select
                         id="plans"
@@ -307,12 +309,11 @@ const Content = ({ data }) => {
                            </option>
                         ))}
                      </select>
-                  </SelectSection>
+                  </section>
                )}
-
                {[!loading, !loadingTitle].every(node => node) &&
                   title?.servings?.length > 0 && (
-                     <SelectSection>
+                     <section className="hern-our-menu__select-section__serving">
                         <Form.Label htmlFor="serving">
                            {yieldLabel.plural}
                         </Form.Label>
@@ -332,14 +333,14 @@ const Content = ({ data }) => {
                               </option>
                            ))}
                         </select>
-                     </SelectSection>
+                     </section>
                   )}
 
                {[!loading, !loadingTitle, !loadingServing].every(
                   node => node
                ) &&
                   serving?.counts?.length > 0 && (
-                     <SelectSection>
+                     <section className="hern-our-menu__select-section__counts">
                         <Form.Label htmlFor="counts">
                            {itemCountLabel.plural}
                         </Form.Label>
@@ -359,7 +360,7 @@ const Content = ({ data }) => {
                               </option>
                            ))}
                         </select>
-                     </SelectSection>
+                     </section>
                   )}
                {[
                   !loading,
@@ -368,7 +369,7 @@ const Content = ({ data }) => {
                   !loadingItemCount,
                ].every(node => node) &&
                   itemCount?.subscriptions?.length > 0 && (
-                     <SelectSection>
+                     <section className="hern-our-menu__select-section__subscriptions">
                         <Form.Label htmlFor="subscriptions">
                            Delivery Day
                         </Form.Label>
@@ -388,10 +389,10 @@ const Content = ({ data }) => {
                               </option>
                            ))}
                         </select>
-                     </SelectSection>
+                     </section>
                   )}
             </div>
-         </Header>
+         </div>
          {isOccurencesLoading || isCategoriesLoading ? (
             <Loader inline />
          ) : (
@@ -403,22 +404,23 @@ const Content = ({ data }) => {
                      </HelperBar.SubTitle>
                   </HelperBar>
                ) : (
-                  <Occurence>
-                     <SliderButton onClick={previous} disabled={current === 0}>
+                  <div className="hern-our-menu__occurences">
+                     <button
+                        className="hern-our-menu__occurences___btn--left"
+                        onClick={previous}
+                        disabled={current === 0}
+                     >
                         <span>
                            <ArrowLeftIcon
-                              css={[
-                                 tw`stroke-current`,
-                                 current === 0
-                                    ? tw`text-green-300`
-                                    : tw`text-green-800`,
-                              ]}
+                              className={`hern-our-menu__occurences___btn__icon${
+                                 current === 0 ? '--disabled' : ''
+                              }`}
                            />
                         </span>
                         Past week
-                     </SliderButton>
+                     </button>
                      {current in occurences && (
-                        <span tw="flex items-center justify-center text-base text-center md:text-lg text-indigo-800">
+                        <span className="hern-our-menu__occurences__current-date-range">
                            Showing menu of:&nbsp;
                            {formatDate(
                               moment(occurences[current]?.fulfillmentDate)
@@ -439,32 +441,32 @@ const Content = ({ data }) => {
                         </span>
                      )}
 
-                     <SliderButton
-                        hasRightIcon
+                     <button
+                        className="hern-our-menu__occurences___btn--right"
                         onClick={next}
                         disabled={current === occurences.length - 1}
                      >
                         Upcoming Week
                         <span>
                            <ArrowRightIcon
-                              css={[
-                                 tw`stroke-current`,
+                              className={`hern-our-menu__occurences___btn__icon${
                                  current === occurences.length - 1
-                                    ? tw`text-green-300`
-                                    : tw`text-green-800`,
-                              ]}
+                                    ? '--disabled'
+                                    : ''
+                              }`}
                            />
                         </span>
-                     </SliderButton>
-                  </Occurence>
+                     </button>
+                  </div>
                )}
-               <main tw="mt-3">
+               <main className="hern-our-menu__products">
                   {categories.length > 0 ? (
                      categories.map(category => (
-                        <section key={category.name} css={tw`mb-8`}>
-                           <h4
-                              css={tw`text-lg text-gray-700 my-3 pb-1 border-b`}
-                           >
+                        <section
+                           key={category.name}
+                           className="hern-our-menu__products__wrapper"
+                        >
+                           <h4 className="hern-our-menu__products__category-title">
                               {category.name} (
                               {
                                  uniqBy(category.productsAggregate.nodes, v =>
@@ -476,13 +478,13 @@ const Content = ({ data }) => {
                               }
                               )
                            </h4>
-                           <Products>
+                           <ul className="hern-our-menu__product-list">
                               {uniqBy(category.productsAggregate.nodes, v =>
                                  [
                                     v?.cartItem?.productId,
                                     v?.cartItem?.option?.productOptionId,
                                  ].join()
-                              ).map((node, index) => (
+                              ).map(node => (
                                  <Product
                                     node={node}
                                     theme={theme}
@@ -492,7 +494,7 @@ const Content = ({ data }) => {
                                     imageRatio={imageRatio}
                                  />
                               ))}
-                           </Products>
+                           </ul>
                         </section>
                      ))
                   ) : (
@@ -505,7 +507,7 @@ const Content = ({ data }) => {
                </main>
             </>
          )}
-      </Main>
+      </>
    )
 }
 
@@ -534,9 +536,9 @@ const Product = ({
       router.push(getRoute(`/recipes/${node?.productOption?.id}`))
 
    return (
-      <Styles.Product>
+      <li className="hern-our-menu__product-list__item">
          {!!product.type && (
-            <Styles.Type>
+            <span className="hern-our-menu__product-type-indicator">
                <img
                   alt="Non-Veg Icon"
                   src={
@@ -545,9 +547,8 @@ const Product = ({
                         : '/imgs/veg.png'
                   }
                   title={product.type}
-                  tw="h-6 w-6"
                />
-            </Styles.Type>
+            </span>
          )}
          <ImageWrapper imageRatio={imageRatio} onClick={openRecipe}>
             {product.image ? (
@@ -562,56 +563,35 @@ const Product = ({
                <img src={noProductImage} alt={product.name} />
             )}
          </ImageWrapper>
-         {node?.addOnLabel && <Label>{node?.addOnLabel}</Label>}
+         {node?.addOnLabel && (
+            <span className="hern-our-menu__product-label">
+               {node?.addOnLabel}
+            </span>
+         )}
          <section>
-            <Styles.GhostLink theme={theme} onClick={openRecipe}>
+            <a
+               className="hern-our-menu__product-link "
+               theme={theme}
+               onClick={openRecipe}
+            >
                {product.name} - {product.label}
-            </Styles.GhostLink>
+            </a>
          </section>
          <p>{product?.additionalText}</p>
          {product.tags.length > 0 && (
-            <Styles.TagsList>
+            <ul className="hern-our-menu__product-tag-list">
                {product.tags.map(tag => (
-                  <Styles.Tags>{tag}</Styles.Tags>
+                  <li className="hern-our-menu__product-tag-list__item">
+                     {tag}
+                  </li>
                ))}
-            </Styles.TagsList>
+            </ul>
          )}
-      </Styles.Product>
+      </li>
    )
 }
 
-const Styles = {
-   Product: styled.li`
-      ${tw`relative border flex flex-col bg-white p-2 rounded overflow-hidden`}
-      &.active {
-         ${tw`border border-2 border-red-400`}
-      }
-      &:hover {
-         ${tw`transition-all shadow-md -top-1 border-2 border-solid border-gray-200`}
-      }
-   `,
-   Type: styled.span`
-      position: absolute;
-      top: 8px;
-      right: 8px;
-      z-index: 1;
-   `,
-   GhostLink: styled.a(
-      ({ theme }) => css`
-         ${tw`text-gray-700 cursor-pointer`}
-         &:hover {
-            color: ${theme?.accent || 'teal'};
-         }
-      `
-   ),
-   TagsList: styled.ul`
-      ${tw`list-none text-xs leading-6 text-gray-500 mb-3`}
-   `,
-   Tags: styled.li`
-      ${tw` m-2 bg-red-50 text-gray-500 inline-block text-xs uppercase p-1`}
-   `,
-}
-
+/*TODO: Image aspect  ration div (can't pass ratio to the file)*/
 const ImageWrapper = styled.div(
    ({ imageRatio }) => css`
       ${tw`flex items-center justify-center bg-gray-200 mb-2 rounded overflow-hidden cursor-pointer `}
@@ -621,103 +601,6 @@ const ImageWrapper = styled.div(
    `
 )
 
-const Main = styled.main`
-   max-width: 1180px;
-   margin: 0 auto;
-   width: calc(100% - 40px);
-   min-height: calc(100vh - 128px);
-`
-
-const SelectSection = styled.section`
-   ${tw`flex flex-col px-3`}
-`
-
-const Header = styled.header`
-   ${tw`w-full border-b flex justify-center`}
-   div {
-      ${tw`flex items-center space-x-3 divide-x py-3`}
-      @media screen and (max-width: 768px) {
-         ${tw`grid w-full divide-x-0 space-x-0`};
-         grid-gap: 16px;
-         grid-template-areas:
-            'header header'
-            'aside1 aside2'
-            'footer footer';
-         select {
-            ${tw`border h-10 rounded px-2`}
-         }
-         > section {
-            ${tw`px-0`}
-         }
-         > section:nth-of-type(1) {
-            grid-area: header;
-         }
-         > section:nth-of-type(2) {
-            grid-area: aside1;
-         }
-         > section:nth-of-type(3) {
-            grid-area: aside2;
-         }
-         > section:nth-of-type(4) {
-            grid-area: footer;
-         }
-      }
-   }
-`
-
-const Occurence = styled.div`
-   width: 100%;
-   height: 64px;
-   display: grid;
-   margin: auto;
-   grid-template-columns: auto 1fr auto;
-   @media (max-width: 567px) {
-      height: auto;
-      grid-gap: 14px;
-      padding-top: 14px;
-      grid-template-rows: 48px;
-      grid-template-columns: 1fr;
-   }
-`
-
-const SliderButton = styled.button`
-   ${tw`
-      h-12
-      mx-2
-      self-center
-      rounded-full
-      hover:bg-gray-100
-      border border-green-800 
-      flex items-center justify-center 
-   `}
-   ${({ hasRightIcon }) =>
-      hasRightIcon
-         ? tw`pl-3`
-         : tw`
-      pr-3`}
-   span {
-      ${tw`h-12 w-12 flex items-center justify-center`}
-   }
-   :disabled {
-      ${tw`cursor-not-allowed border-gray-300 text-gray-300 hover:bg-white`}
-   }
-`
-
-const Products = styled.ul`
-   ${tw`grid gap-3`}
-   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-`
-
-const Label = styled.span`
-   top: 16px;
-   ${tw`
-      px-2
-      absolute 
-      rounded-r
-      bg-green-500 
-      text-sm uppercase font-medium tracking-wider text-white 
-   `}
-`
 export async function getStaticProps({ params }) {
    const client = await graphQLClient()
 
