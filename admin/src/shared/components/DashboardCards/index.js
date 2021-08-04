@@ -11,7 +11,7 @@ export const CardContainer = ({ children, bgColor, borderColor }) => {
 
 export const Card = ({ children, bgColor, borderColor, onClick }) => {
    return (
-      <Styles.Card onClick={onClick}>
+      <Styles.Card onClick={onClick} title={onClick && 'Click to view details'}>
          <div>
             <svg
                width="220"
