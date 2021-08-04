@@ -36,6 +36,17 @@ export const Home = () => {
                conf=""
                onClick={() => addTab('Add On Menu', '/subscription/addon-menu')}
             />
+            <DashboardTile
+               title="Subscription Occurrences"
+               count="0"
+               conf=""
+               onClick={() =>
+                  addTab(
+                     'Subs. Occurrences',
+                     '/subscription/subscription-occurrences'
+                  )
+               }
+            />
          </StyledCardList>
          <Banner id="subscription-app-home-bottom" />
       </StyledHome>
