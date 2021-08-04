@@ -7,27 +7,29 @@ import { getSettings, foldsResolver } from '../../utils'
 import dynamic from 'next/dynamic'
 import 'regenerator-runtime'
 
-/*FIXME: Navigation menu item is not visible due to <span> and <a>*/
 const Plans = dynamic(() =>
    import('../../sections/select-plan').then(promise => promise.Plans)
 )
 
 const SelectPlan = props => {
    const { folds, settings, navigationMenus } = props
-   /* FIXME: Most Probably SyntaxError: Unexpected token '<' is coming from this effect*/
+
    React.useEffect(() => {
       try {
          if (folds.length && typeof document !== 'undefined') {
             const scripts = folds.flatMap(fold => fold.scripts)
-            const fragment = document.createDocumentFragment()
-
-            scripts.forEach(script => {
-               const s = document.createElement('script')
-               s.setAttribute('type', 'text/javascript')
-               s.setAttribute('src', script)
-               fragment.appendChild(s)
-            })
-            document.body.appendChild(fragment)
+            /*Filter undefined scripts*/
+            const filterScripts = scripts.filter(Boolean)
+            if (Boolean(filterScripts.length)) {
+               const fragment = document.createDocumentFragment()
+               filterScripts.forEach(script => {
+                  const s = document.createElement('script')
+                  s.setAttribute('type', 'text/javascript')
+                  s.setAttribute('src', script)
+                  fragment.appendChild(s)
+               })
+               document.body.appendChild(fragment)
+            }
          }
       } catch (err) {
          console.log('Failed to render page: ', err)
@@ -57,7 +59,6 @@ const SelectPlan = props => {
                .then(response => {
                   const { data } = response
                   if (data.success) {
-                     /*TODO: target should be made with data attribute */
                      const targetDiv = document.querySelector(
                         `[data-fold-id=${fold.id}]`
                      )
