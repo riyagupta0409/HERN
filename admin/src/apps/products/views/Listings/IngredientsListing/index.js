@@ -197,7 +197,7 @@ class DataTable extends React.Component {
       this.setState(
          {
             checked: !this.state.checked,
-         },
+         }, 
          () => {
             if (this.state.checked) {
                this.tableRef.current.table.selectRow('active')
@@ -221,13 +221,6 @@ class DataTable extends React.Component {
       )
    }
    columns = [
-      // {
-      //    formatter: 'rowSelection',
-      //    titleFormatter: 'rowSelection',
-      //    hozAlign: 'center',
-      //    headerSort: false,
-      //    width: 15,
-      // },
       {
          title: 'Name',
          field: 'name',
@@ -285,8 +278,8 @@ class DataTable extends React.Component {
    ]
 
    groupByOptions = [
-      { id: 1, title: 'Published' },
-      { id: 2, title: 'Category' },
+      { id: 1, title: 'Published', payload: 'isPublished' },
+      { id: 2, title: 'Category', payload: 'category' }
    ]
    handleRowSelection = ({ _row }) => {
       this.props.setSelectedRows(prevState => [...prevState, _row.getData()])
@@ -344,11 +337,12 @@ class DataTable extends React.Component {
          group
       ) {
          let newHeader
+         console.log('group header', group._group.field)
          switch (group._group.field) {
             case 'isPublished':
                newHeader = 'Publish'
                break
-            case 'Category':
+            case 'category':
                newHeader = 'Category'
                break
             default:
@@ -510,8 +504,26 @@ const ActionBar = ({
    handleGroupBy,
    clearHeaderFilter,
 }) => {
+   const defaultIDs = () => {
+      let arr = []
+      const recipeGroup = localStorage.getItem('tabulator-ingredients_table-group')
+      const recipeGroupParse =
+         recipeGroup !== undefined &&
+         recipeGroup !== null &&
+         recipeGroup.length !== 0
+            ? JSON.parse(recipeGroup)
+            : null
+      if (recipeGroupParse !== null) {
+         recipeGroupParse.forEach(x => {
+            const foundGroup = groupByOptions.find(y => y.payload == x)
+            arr.push(foundGroup.id)
+         })
+      }
+      return arr.length == 0 ? [] : arr
+   }
+
    const selectedOption = option => {
-      const newOptions = option.map(x => x.title)
+      const newOptions = option.map(x => x.payload)
       handleGroupBy(newOptions)
    }
    const searchedOption = option => console.log(option)
@@ -581,6 +593,7 @@ const ActionBar = ({
                      options={groupByOptions}
                      searchedOption={searchedOption}
                      selectedOption={selectedOption}
+                     defaultIds={defaultIDs()}
                      typeName="cuisine"
                   />
                </Flex>
