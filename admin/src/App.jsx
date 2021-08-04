@@ -23,6 +23,7 @@ import {
    SubscribedCustomerAnalytics,
    TotalEarningAnalytics,
 } from './shared/components/DashboardAnalytics/Analytics'
+import DashboardCards from './shared/components/DashboardCardAnalytics'
 
 const APPS = gql`
    subscription apps {
@@ -120,6 +121,7 @@ const App = () => {
                         </AppItem>
                      ))}
                   </AppList>
+                  <DashboardCards />
                   <DashboardAnalytics>
                      <TotalEarningAnalytics />
                      <OrderReceivedAnalytics />
@@ -127,14 +129,14 @@ const App = () => {
                      <SubscribedCustomerAnalytics />
                      <RegisteredCustomerAnalytics />
                   </DashboardAnalytics>
-                  <InsightDiv>
+                  {/* <InsightDiv>
                      <InsightDashboard
                         appTitle="global"
                         moduleTitle="dashboard"
                         includeChart
                         showInTunnel={false}
                      />
-                  </InsightDiv>
+                  </InsightDiv> */}
                   <Banner id="app-home-bottom" />
                </Route>
                <Route path="/inventory" component={Inventory} />
