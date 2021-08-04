@@ -6,6 +6,7 @@ import { ToastProvider } from 'react-toast-notifications'
 
 import GlobalStyles from '../styles/global'
 import '../styles/globals.css'
+import '../styles/main.scss'
 
 const AppWrapper = ({ Component, pageProps }) => {
    return (
