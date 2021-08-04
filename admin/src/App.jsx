@@ -135,7 +135,6 @@ const App = () => {
                         showInTunnel={false}
                      />
                   </InsightDiv>
-                  <FullOccurrenceReport />
                   <Banner id="app-home-bottom" />
                </Route>
                <Route path="/inventory" component={Inventory} />
