@@ -9,7 +9,7 @@ export const CardContainer = styled.div(
       box-sizing: border-box;
       border-radius: 20px;
       padding: 21px;
-      width: 1030px;
+      width: 100%;
       @media (max-width: 768px) {
          padding: 15px;
          align-items: center;
