@@ -14,7 +14,16 @@ import {
    AddressTunnel,
    Banner,
 } from './shared/components'
-import { AppItem, AppList, Layout, InsightDiv } from './styled'
+import {
+   AppItem,
+   AppList,
+   Layout,
+   InsightDiv,
+   DashboardPanel,
+   NavMenuPanel,
+   HomeContainer,
+   WelcomeNote,
+} from './styled'
 import BottomBar from './shared/components/BottomBar'
 import {
    AcceptedAndRejectedAnalytics,
@@ -24,6 +33,7 @@ import {
    TotalEarningAnalytics,
 } from './shared/components/DashboardAnalytics/Analytics'
 import DashboardCards from './shared/components/DashboardCardAnalytics'
+import { useAuth } from './shared/providers'
 
 const APPS = gql`
    subscription apps {
@@ -100,7 +110,7 @@ const App = () => {
 
    const [open, toggle] = React.useState(false)
    const { loading, data: { apps = [] } = {} } = useSubscription(APPS)
-
+   const { user } = useAuth()
    if (loading) return <Loader />
    return (
       <Layout>
@@ -109,27 +119,37 @@ const App = () => {
             <Switch>
                <Route path="/" exact>
                   <Banner id="app-home-top" />
-                  <AppList open={open}>
-                     {apps.map(app => (
-                        <AppItem key={app.id}>
-                           <Link to={app.route}>
-                              {app.icon && (
-                                 <img src={app.icon} alt={app.title} />
-                              )}
-                              <span>{app.title}</span>
-                           </Link>
-                        </AppItem>
-                     ))}
-                  </AppList>
-                  <DashboardCards />
-                  <DashboardAnalytics>
-                     <TotalEarningAnalytics />
-                     <OrderReceivedAnalytics />
-                     <AcceptedAndRejectedAnalytics />
-                     <SubscribedCustomerAnalytics />
-                     <RegisteredCustomerAnalytics />
-                  </DashboardAnalytics>
-                  {/* <InsightDiv>
+                  <HomeContainer>
+                     <NavMenuPanel>
+                        <AppList open={open}>
+                           {apps.map(app => (
+                              <AppItem key={app.id}>
+                                 <Link to={app.route}>
+                                    {app.icon && (
+                                       <img src={app.icon} alt={app.title} />
+                                    )}
+                                    <span>{app.title}</span>
+                                 </Link>
+                              </AppItem>
+                           ))}
+                        </AppList>
+                     </NavMenuPanel>
+                     <DashboardPanel>
+                        <WelcomeNote>
+                           <p>
+                              Welcome Back {user?.name || 'user'}
+                              <span>👋</span>
+                           </p>
+                        </WelcomeNote>
+                        <DashboardCards />
+                        <DashboardAnalytics>
+                           <TotalEarningAnalytics />
+                           <OrderReceivedAnalytics />
+                           <AcceptedAndRejectedAnalytics />
+                           <SubscribedCustomerAnalytics />
+                           <RegisteredCustomerAnalytics />
+                        </DashboardAnalytics>
+                        {/* <InsightDiv>
                      <InsightDashboard
                         appTitle="global"
                         moduleTitle="dashboard"
@@ -137,6 +157,8 @@ const App = () => {
                         showInTunnel={false}
                      />
                   </InsightDiv> */}
+                     </DashboardPanel>
+                  </HomeContainer>
                   <Banner id="app-home-bottom" />
                </Route>
                <Route path="/inventory" component={Inventory} />
