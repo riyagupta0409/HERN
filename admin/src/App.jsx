@@ -93,6 +93,12 @@ const Carts = Loadable({
    loading: Loader,
 })
 
+// changes for webhooks 
+const Webhooks = Loadable({
+   loader: () => import('./apps/webhook'),
+   loading: Loader,
+})
+
 const App = () => {
    // const location = useLocation()
    // const { routes, setRoutes } = useTabs()
@@ -119,6 +125,14 @@ const App = () => {
                            </Link>
                         </AppItem>
                      ))}
+                     {/* added webhook app temporarily */}
+                     <AppItem >
+                        <Link to='/webhook'>
+                           <span>Webhook</span>
+                        </Link>
+                     </AppItem>
+                     {/* added webhook app temporarily */}
+
                   </AppList>
                   <DashboardAnalytics>
                      <TotalEarningAnalytics />
@@ -150,6 +164,7 @@ const App = () => {
                <Route path="/content" component={Content} />
                <Route path="/editor" component={Editor} />
                <Route path="/carts" component={Carts} />
+               <Route path="/webhook" component={Webhooks} />
             </Switch>
          </main>
          {/* {!isKeycloakSupported() && <RedirectBanner />} */}
