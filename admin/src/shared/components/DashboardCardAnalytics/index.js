@@ -1,4 +1,5 @@
 import { useSubscription } from '@apollo/react-hooks'
+import { Text } from '@dailykit/ui'
 import React, { useState } from 'react'
 import { toast } from 'react-toastify'
 import { logger } from '../../utils'
@@ -11,7 +12,7 @@ import {
    OrderIcon,
    ProductIcon,
 } from './assets/icons'
-import { GET_TOTAL_EARNING_ORDER_CUSTOMER } from './graphql/subscription'
+import { GET_TOTAL_EARNING_ORDER_CUSTOMER_TOP_PRODUCT } from './graphql/subscription'
 //currencies
 const currency = {
    USD: '$',
@@ -24,8 +25,13 @@ const DashboardCards = () => {
       loading: true,
    })
    const { loading: subsLoading, error: subsError } = useSubscription(
-      GET_TOTAL_EARNING_ORDER_CUSTOMER,
+      GET_TOTAL_EARNING_ORDER_CUSTOMER_TOP_PRODUCT,
       {
+         variables: {
+            topProductArgs: {
+               params: { where: '"paymentStatus"=\'SUCCEEDED\'' },
+            },
+         },
          onSubscriptionData: ({ subscriptionData }) => {
             console.log('subscription data', subscriptionData)
             const total = {}
@@ -35,6 +41,8 @@ const DashboardCards = () => {
                subscriptionData.data.ordersAggregate.aggregate.count
             total.totalCustomers =
                subscriptionData.data.customers_aggregate.aggregate.count
+            total.topProduct =
+               subscriptionData.data.insights_analytics[0]['getTopProducts'][0]
             setAnalyticsData(total)
             setStatus({ ...status, loading: false })
          },
@@ -84,8 +92,11 @@ const DashboardCards = () => {
             <Card bgColor="#EDFCD8" borderColor="#8AC03B">
                <Card.AdditionalBox justifyContent="space-between">
                   <ProductIcon />
+                  <Text as="text2">
+                     {analyticsData.topProduct.orderCount} Times
+                  </Text>
                </Card.AdditionalBox>
-               <Card.Value>Spicy Prawn Pasta with Red Pepper Sauce</Card.Value>
+               <Card.Value string>{analyticsData.topProduct.name}</Card.Value>
                <Card.Text>Most Sold Product</Card.Text>
             </Card>
          </Cards>

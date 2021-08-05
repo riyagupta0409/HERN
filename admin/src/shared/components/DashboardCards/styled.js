@@ -63,7 +63,7 @@ export const Text = styled.div(
    `
 )
 export const Value = styled.div(
-   () => css`
+   ({ string }) => css`
       margin: 0px 4px 3px 8px;
       padding: 0px 4px 0px 8px;
       p {
@@ -72,12 +72,10 @@ export const Value = styled.div(
          font-family: Roboto;
          font-style: normal;
          font-weight: 500;
-         font-size: 35px;
+         font-size: ${string ? '17px' : '35px'};
          width: 100%;
-         line-height: 41px;
-         white-space: nowrap;
+         line-height: ${string ? '20px' : '41px'};
          overflow: hidden;
-         text-overflow: ellipsis;
       }
    `
 )

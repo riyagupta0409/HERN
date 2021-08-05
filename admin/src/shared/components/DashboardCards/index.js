@@ -73,7 +73,7 @@ Card.Text = ({ children }) => {
    )
 }
 //card value
-Card.Value = ({ children, currency, append }) => {
+Card.Value = ({ children, currency, append, string }) => {
    let newChildren = children
    const nFormatter = num => {
       if (num >= 1000000) {
@@ -93,7 +93,7 @@ Card.Value = ({ children, currency, append }) => {
          : nFormatter(newChildren)
    }
    return (
-      <Styles.Value title={children}>
+      <Styles.Value title={children} string={string}>
          <p>{newChildren}</p>
       </Styles.Value>
    )
