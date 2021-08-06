@@ -30,6 +30,7 @@
       "graphql-request": "^3.4.0",
       "graphql-tools": "^4.0.6",
       "http-proxy-middleware": "^2.0.0",
+      "ics": "^2.31.0",
       "isomorphic-git": "0.75.0",
       "jsonwebtoken": "^8.5.1",
       "lodash": "^4.17.20",
