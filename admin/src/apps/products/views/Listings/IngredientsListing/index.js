@@ -13,6 +13,8 @@ import {
    Tunnel,
    Tunnels,
    useTunnel,
+   Checkbox,
+
 } from '@dailykit/ui'
 import * as moment from 'moment'
 import { useTranslation } from 'react-i18next'
@@ -28,7 +30,7 @@ import FilterIcon from '../../../assets/icons/Filter'
 
 import { useTooltip, useTabs } from '../../../../../shared/providers'
 import { logger, randomSuffix } from '../../../../../shared/utils'
-import { AddIcon, DeleteIcon } from '../../../assets/icons'
+import { AddIcon, DeleteIcon, PublishIcon, UnPublishIcon } from '../../../assets/icons'
 import {
    CREATE_INGREDIENT,
    DELETE_INGREDIENTS,
@@ -156,34 +158,106 @@ const IngredientsListing = () => {
       </ResponsiveFlex>
    )
 }
+const CheckBox = ({ handleMultipleRowSelection, checked }) => {
+   return (
+      <Checkbox
+         id="label"
+         checked={checked}
+         onChange={() => {
+            handleMultipleRowSelection()
+         }}
+         isAllSelected={null}
+      />
+   )
+}
+const CrossBox = ({ removeSelectedIngredients }) => {
+   return (
+      <Checkbox
+         id="label"
+         checked={false}
+         onChange={removeSelectedIngredients}
+         isAllSelected={false}
+      />
+   )
+}
 class DataTable extends React.Component {
    constructor(props) {
       super(props)
       this.state = {
-         groups: [],
+         checked: false,
+         groups: [localStorage.getItem('tabulator-ingredients_table-group')],
       }
+      this.handleMultipleRowSelection =
+         this.handleMultipleRowSelection.bind(this)
       this.tableRef = React.createRef()
       this.handleRowSelection = this.handleRowSelection.bind(this)
    }
+
+   handleMultipleRowSelection = () => {
+      this.setState(
+         {
+            checked: !this.state.checked,
+         }, 
+         () => {
+            if (this.state.checked) {
+               this.tableRef.current.table.selectRow('active')
+               let multipleRowData =
+                  this.tableRef.current.table.getSelectedData()
+               this.props.setSelectedRows(multipleRowData)
+               localStorage.setItem(
+                  'selected-rows-id_ingredients_table',
+                  JSON.stringify(multipleRowData.map(row => row.id))
+               )
+            } else {
+               this.tableRef.current.table.deselectRow()
+               this.props.setSelectedRows([])
+
+               localStorage.setItem(
+                  'selected-rows-id_ingredients_table',
+                  JSON.stringify([])
+               )
+            }
+         }
+      )
+   }
    columns = [
-      {
-         formatter: 'rowSelection',
-         titleFormatter: 'rowSelection',
-         hozAlign: 'center',
-         headerSort: false,
-         width: 15,
-      },
       {
          title: 'Name',
          field: 'name',
+         width: 400,
+         frozen: true,
          headerFilter: true,
+         formatter: reactFormatter(<IngredientName />),
          cellClick: (e, cell) => {
             const { name, id } = cell._cell.row.data
             this.props.addTab(name, `/products/ingredients/${id}`)
          },
          cssClass: 'colHover',
+         resizable: 'true',
+         minWidth: 100,
+         maxWidth: 500,
       },
-      { title: 'Category', field: 'category', headerFilter: true },
+      {
+         title: 'Actions',
+         headerFilter: false,
+         headerSort: false,
+         hozAlign: 'center',
+         download: false,
+         frozen: true,
+         headerHozAlign: 'center',
+         formatter: reactFormatter(
+            <DeleteIngredient onDelete={this.props.deleteIngredientHandler} />
+         ),
+         width: 80,
+      },
+      { title: 'Category',
+        field: 'category',
+        headerFilter: true,
+         hozAlign: 'left',
+         headerHozAlign: 'right',
+         minWidth: 100,
+         width: 200,
+       },
       {
          title: 'Processings',
          field: 'ingredientProcessings',
@@ -200,31 +274,31 @@ class DataTable extends React.Component {
          formatter: reactFormatter(<Count />),
          width: 150,
       },
-      {
-         title: 'Published',
-         field: 'isPublished',
-         formatter: 'tickCross',
-         hozAlign: 'center',
-         headerHozAlign: 'center',
-         width: 150,
-      },
-      {
-         title: 'Actions',
-         headerFilter: false,
-         headerSort: false,
-         hozAlign: 'center',
-         formatter: reactFormatter(
-            <DeleteIngredient onDelete={this.props.deleteIngredientHandler} />
-         ),
-         width: 150,
-      },
+      
    ]
+
    groupByOptions = [
-      { id: 1, title: 'isPublished' },
-      { id: 2, title: 'category' },
+      { id: 1, title: 'Published', payload: 'isPublished' },
+      { id: 2, title: 'Category', payload: 'category' }
    ]
-   handleRowSelection = rows => {
-      this.props.setSelectedRows(rows)
+   handleRowSelection = ({ _row }) => {
+      this.props.setSelectedRows(prevState => [...prevState, _row.getData()])
+
+      let newData = [...this.props.selectedRows.map(row => row.id)]
+      localStorage.setItem(
+         'selected-rows-id_ingredients_table',
+         JSON.stringify(newData)
+      )
+   }
+   handleDeSelection = ({ _row }) => {
+      const data = _row.getData()
+      this.props.setSelectedRows(prevState =>
+         prevState.filter(row => row.id != data.id)
+      )
+      localStorage.setItem(
+         'selected-rows-id_recipe_table',
+         JSON.stringify(this.props.selectedRows.map(row => row.id))
+      )
    }
    removeSelectedRow = id => {
       this.tableRef.current.table.deselectRow(id)
@@ -242,7 +316,93 @@ class DataTable extends React.Component {
    clearHeaderFilter = () => {
       this.tableRef.current.table.clearHeaderFilter()
    }
+   selectRows = () => {
+      const ingredientsGroup = localStorage.getItem('tabulator-ingredients_table-group')
+      const ingredientsGroupParse =
+         ingredientsGroup !== undefined &&
+         ingredientsGroup !== null &&
+         ingredientsGroup.length !== 0
+            ? JSON.parse(ingredientsGroup)
+            : null
+      this.tableRef.current.table.setGroupBy(
+         ingredientsGroupParse !== null && ingredientsGroupParse.length > 0
+            ? ingredientsGroupParse
+            : []
+      )
+
+      this.tableRef.current.table.setGroupHeader(function (
+         value,
+         count,
+         data1,
+         group
+      ) {
+         let newHeader
+         console.log('group header', group._group.field)
+         switch (group._group.field) {
+            case 'isPublished':
+               newHeader = 'Publish'
+               break
+            case 'category':
+               newHeader = 'Category'
+               break
+            default:
+               break
+         }
+         return `${newHeader} - ${value} || ${count} Ingredients`
+      })
+
+      const selectedRowsId =
+         localStorage.getItem('selected-rows-id_ingredients_table') || '[]'
+      this.tableRef.current.table.selectRow(JSON.parse(selectedRowsId))
+      if (JSON.parse(selectedRowsId).length > 0) {
+         let newArr = []
+         JSON.parse(selectedRowsId).forEach(x => {
+            const newFind = this.props.data.find(y => y.id == x)
+            newArr = [...newArr, newFind]
+         })
+         this.props.setSelectedRows(newArr)
+      }
+   }
+   removeSelectedIngredients = () => {
+      this.setState({ checked: false })
+      this.props.setSelectedRows([])
+      this.tableRef.current.table.deselectRow()
+      localStorage.setItem('selected-rows-id_ingredients_table', JSON.stringify([]))
+   }
+
    render() {
+      const selectionColumn =
+         this.props.selectedRows.length > 0 &&
+         this.props.selectedRows.length < this.props.data.length
+            ? {
+                 formatter: 'rowSelection',
+                 titleFormatter: reactFormatter(
+                    <CrossBox
+                       removeSelectedIngredients={this.removeSelectedIngredients}
+                    />
+                 ),
+                 align: 'center',
+                 hozAlign: 'center',
+                 width: 10,
+                 headerSort: false,
+                 frozen: true,
+              }
+            : {
+                 formatter: 'rowSelection',
+                 titleFormatter: reactFormatter(
+                    <CheckBox
+                       checked={this.state.checked}
+                       handleMultipleRowSelection={
+                          this.handleMultipleRowSelection
+                       }
+                    />
+                 ),
+                 align: 'center',
+                 hozAlign: 'center',
+                 width: 20,
+                 headerSort: false,
+                 frozen: true,
+              }
       return (
          <>
             <Spacer size="5px" />
@@ -257,13 +417,13 @@ class DataTable extends React.Component {
             <Spacer size="30px" />
             <ReactTabulator
                ref={this.tableRef}
-               columns={this.columns}
+               dataLoaded={this.selectRows}
+               columns={[selectionColumn, ...this.columns]}
                data={this.props.data}
-               options={tableOptions}
                selectableCheck={() => true}
-               rowSelectionChanged={(data, components) => {
-                  this.handleRowSelection(data)
-               }}
+               rowSelected={this.handleRowSelection}
+               rowDeselected={this.handleDeSelection}
+               options={{ ...tableOptions, reactiveData: true }}
                data-custom-attr="test-custom-attribute"
                className="custom-css-class"
             />
@@ -286,7 +446,48 @@ function DeleteIngredient({ cell, onDelete }) {
       </IconButton>
    )
 }
+function IngredientName({ cell, addTab }) {
+   const data = cell.getData()
+   return (
+      <>
+         <Flex
+            container
+            width="100%"
+            justifyContent="space-between"
+            alignItems="center"
+         >
+            <Flex
+               container
+               width="100%"
+               justifyContent="flex-end"
+               alignItems="center"
+            >
+               <p
+                  style={{
+                     width: '230px',
+                     whiteSpace: 'nowrap',
+                     overflow: 'hidden',
+                     textOverflow: 'ellipsis',
+                  }}
+               >
+                  {cell._cell.value}
+               </p>
+            </Flex>
 
+            <Flex
+               container
+               width="100%"
+               justifyContent="flex-end"
+               alignItems="center"
+            >
+               <IconButton type="ghost">
+                  {data.isPublished ? <PublishIcon /> : <UnPublishIcon />}
+               </IconButton>
+            </Flex>
+         </Flex>
+      </>
+   )
+}
 function FormatDate({
    cell: {
       _cell: { value },
@@ -303,8 +504,26 @@ const ActionBar = ({
    handleGroupBy,
    clearHeaderFilter,
 }) => {
+   const defaultIDs = () => {
+      let arr = []
+      const recipeGroup = localStorage.getItem('tabulator-ingredients_table-group')
+      const recipeGroupParse =
+         recipeGroup !== undefined &&
+         recipeGroup !== null &&
+         recipeGroup.length !== 0
+            ? JSON.parse(recipeGroup)
+            : null
+      if (recipeGroupParse !== null) {
+         recipeGroupParse.forEach(x => {
+            const foundGroup = groupByOptions.find(y => y.payload == x)
+            arr.push(foundGroup.id)
+         })
+      }
+      return arr.length == 0 ? [] : arr
+   }
+
    const selectedOption = option => {
-      const newOptions = option.map(x => x.title)
+      const newOptions = option.map(x => x.payload)
       handleGroupBy(newOptions)
    }
    const searchedOption = option => console.log(option)
@@ -356,8 +575,17 @@ const ActionBar = ({
                   alignItems="center"
                   justifyContent="flex-end"
                >
+                  <TextButton
+                     onClick={() => {
+                        localStorage.clear()
+                     }}
+                     type="ghost"
+                     size="sm"
+                  >
+                     Clear Persistence
+                  </TextButton>
                   <Text as="text1">Group By:</Text>
-                  <Spacer size="5px" xAxis />
+                  <Spacer size="30px" xAxis />
                   <Dropdown
                      type="multi"
                      variant="revamp"
@@ -365,6 +593,7 @@ const ActionBar = ({
                      options={groupByOptions}
                      searchedOption={searchedOption}
                      selectedOption={selectedOption}
+                     defaultIds={defaultIDs()}
                      typeName="cuisine"
                   />
                </Flex>
