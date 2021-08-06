@@ -34,9 +34,20 @@ const TopCustomer = () => {
             },
          },
          onSubscriptionData: ({ subscriptionData }) => {
-            setTopCustomerList(
-               subscriptionData.data.insights_analytics[0].getTopCustomers
-            )
+            const newTopCustomerData =
+               subscriptionData.data.insights_analytics[0].getTopCustomers.map(
+                  customer => {
+                     const newCustomer = {}
+                     newCustomer.email = customer.email || 'N/A'
+                     newCustomer.fullName = `${customer.firstName || 'N/A'} ${
+                        customer.lastName || ''
+                     }`
+                     newCustomer.phoneNumber = customer.phoneNumber || 'N/A'
+                     newCustomer.totalAmountPaid = customer.totalAmountPaid || 0
+                     return newCustomer
+                  }
+               )
+            setTopCustomerList(newTopCustomerData)
             setStatus({ ...status, loading: false })
          },
       }
@@ -49,10 +60,24 @@ const TopCustomer = () => {
          title: `Revenue Generated (${dashboardTableState.currency})`,
          field: 'totalAmountPaid',
          formatter: reactFormatter(<RevenueFormatter />),
+         width: 70,
+         headerTooltip: true,
+      },
+      {
+         title: 'Customer Name',
+         field: 'fullName',
+         width: 120,
+         headerTooltip: true,
       },
       {
          title: 'Email',
          field: 'email',
+         width: 170,
+      },
+      {
+         title: 'Phone',
+         field: 'phoneNumber',
+         width: 90,
       },
    ]
    if (subsLoading || status.loading) {
@@ -82,9 +107,19 @@ const TopCustomer = () => {
    )
 }
 const RevenueFormatter = ({ cell }) => {
+   const nFormatter = num => {
+      if (num >= 1000000) {
+         return (num / 1000000).toFixed(2).replace(/\.00$/, '') + 'M'
+      }
+      if (num >= 1000) {
+         return (num / 1000).toFixed(2).replace(/\.00$/, '') + 'K'
+      }
+      return num
+   }
+   const newRevenue = nFormatter(cell._cell.value)
    return (
       <>
-         <Text as="text2">{cell._cell.value ? cell._cell.value : 0}</Text>
+         <Text as="text2">{newRevenue}</Text>
       </>
    )
 }
