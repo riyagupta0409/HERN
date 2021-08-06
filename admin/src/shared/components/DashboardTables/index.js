@@ -8,6 +8,7 @@ import moment from 'moment'
 import RecentOrderTable from './Listings/RecentOrder'
 import SubscribersTable from './Listings/Subscribers'
 import TopCustomerTable from './Listings/TopCustomer'
+import RecipeSummaryApp from './Listings/RecipeSummary'
 const { RangePicker } = DatePicker
 const DashboardTables = () => {
    return (
@@ -16,6 +17,7 @@ const DashboardTables = () => {
          <Tables>
             <RecentOrderTable />
             <TopCustomerTable />
+            <RecipeSummaryApp />
             <SubscribersTable />
          </Tables>
       </>

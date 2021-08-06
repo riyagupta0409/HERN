@@ -39,3 +39,12 @@ export const TOP_CUSTOMERS = gql`
       }
    }
 `
+export const RECIPE_SUMMARY = gql`
+   subscription RECIPE_SUMMARY(
+      $recipeSummaryArgs: insights_getRecipeSummary_args!
+   ) {
+      insights_analytics {
+         getRecipeSummary(args: $recipeSummaryArgs)
+      }
+   }
+`
