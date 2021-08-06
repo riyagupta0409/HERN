@@ -6,7 +6,7 @@ export const TableHeader = ({ children, heading, onClick }) => {
    return (
       <>
          <TableContainer>
-            <Flex container>
+            <Flex container justifyContent="space-between">
                <Text as="h2">{heading}</Text>
                {onClick && (
                   <ButtonGroup align="left">
