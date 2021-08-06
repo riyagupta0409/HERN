@@ -11,10 +11,13 @@ import { DashboardTableContext, DashboardTableProvider } from '../../context'
 import { TOP_CUSTOMERS } from '../../graphql/subscription'
 import { TableHeader } from '../../shared'
 import TableOptions from '../../tableOptions'
+import { useHistory } from 'react-router-dom'
+
 const TopCustomer = () => {
    const { dashboardTableState } = React.useContext(DashboardTableContext)
    const [topCustomerList, setTopCustomerList] = useState([])
    const [status, setStatus] = useState({ loading: true })
+   const history = useHistory()
 
    const { loading: subsLoading, error: subsError } = useSubscription(
       TOP_CUSTOMERS,
@@ -38,6 +41,9 @@ const TopCustomer = () => {
          },
       }
    )
+   const tableHeaderOnClick = () => {
+      history.push('crm/customers')
+   }
    const columns = [
       {
          title: `Revenue Generated (${dashboardTableState.currency})`,
@@ -64,7 +70,7 @@ const TopCustomer = () => {
    }
    return (
       <>
-         <TableHeader heading="Top Customer">
+         <TableHeader heading="Top Customer" onClick={tableHeaderOnClick}>
             <ReactTabulator
                data={topCustomerList}
                columns={columns}
