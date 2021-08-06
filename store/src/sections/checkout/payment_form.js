@@ -16,6 +16,7 @@ import { get_env, isClient } from '../../utils'
 import { useUser } from '../../context'
 import { HelperBar, Loader } from '../../components'
 import { BRAND, CREATE_STRIPE_PAYMENT_METHOD } from '../../graphql'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 export const PaymentForm = ({ intent }) => {
    const { user } = useUser()
@@ -71,6 +72,12 @@ export const PaymentForm = ({ intent }) => {
                      },
                   })
                }
+
+               // fb pixel  event for adding a card
+               ReactPixel.track('AddPaymentInfo', {
+                  cardHolderName: data.billing_details.name,
+                  brand: data.card.brand,
+               })
 
                dispatch({
                   type: 'TOGGLE_TUNNEL',

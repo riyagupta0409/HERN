@@ -2,10 +2,19 @@ import App from 'next/app'
 import { UserProvider } from '../context'
 import { Provider as AuthProvider } from 'next-auth/client'
 import { ApolloProvider, ConfigProvider, ScriptProvider } from '../lib'
+import { get_env } from '../utils'
 import { ToastProvider } from 'react-toast-notifications'
 
 import GlobalStyles from '../styles/global'
 import '../styles/globals.css'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
+const pixelId = isClient && get_env('PIXEL_ID')
+const options = {
+   autoConfig: true,
+   debug: true,
+}
+// initializing react pixel
+ReactPixel.init(pixelId, {}, options)
 
 const AppWrapper = ({ Component, pageProps }) => {
    return (
