@@ -4,6 +4,7 @@ import {ACTIVE_EVENTS_WEBHOOKS } from '../graphql';
 import { Loader } from '@dailykit/ui'
 import {logger}  from '../../../shared/utils'
 import EventEmitter from 'events';
+import {Table, TableHead, TableBody, TableRow, TableCell} from '@dailykit/ui'
 
 
 
@@ -16,22 +17,27 @@ function DisplayWebHooks(){
         logger(error)
         return null
     }
-    // if(data.customers.length === 0) {
-    //     return <span>There's no customer's yet</span>
-    // }
-//   return (
-//     <div className="App">
-//       {data.customers.map(customer => <span>{customer.firstName}</span>)}
-//     </div>
-//   );
-    console.log(data)
     return (
         <div className="App" >
-            <h3 >Active Events </h3>
-           {data.developer_webhookUrl_events.map(event => <span key={event.Id}>
-               {event.availableWebhookEvent.label } -- { event.webhookUrl.urlEndpoint}
-               </span>)}
+            <h1 align="center" >Active Events </h1>
+            <Table>
+            <TableHead>
+                <TableRow>
+                    <TableCell>Event</TableCell>
+                    <TableCell align="left">URL</TableCell>
+                </TableRow>
+            </TableHead>
+            <TableBody>
+            {data.developer_webhookUrl_events.map(event => 
+                <TableRow key={event.Id}>
+               <TableCell> {event.availableWebhookEvent.label } </TableCell>
+               <TableCell align="left">{ event.webhookUrl.urlEndpoint} </TableCell>
+               </TableRow>)}
+            </TableBody>
+            </Table>
+          
         </div>
+
     )
 
 }

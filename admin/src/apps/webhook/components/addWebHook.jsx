@@ -1,38 +1,63 @@
 import React , {useEffect,useState} from 'react';
-import { Select } from '@dailykit/ui';
 import {AVAILABLE_EVENTS } from '../graphql';
 import { Loader } from '@dailykit/ui'
 import { useQuery } from '@apollo/react-hooks'
 import {logger}  from '../../../shared/utils'
+import {TextButton , Form, Spacer, Text , Select } from '@dailykit/ui'
 
 
-function AddWebHook(){
+function AddWebHook(props){
 
+    const [selectedEvent , updateSelectedEvent] = useState(null)
+    const [inputWebhookUrl , updatedInputWebhookUrl] = useState(null)
+
+    const submitForm = () => {
+        console.log(selectedEvent , inputWebhookUrl);
+        props.closeForm()
+    }
+    
+    
     const {loading, error, data} = useQuery(AVAILABLE_EVENTS);
-    console.log(loading, error, data);
     if (loading) return <Loader />;
+
     if (error) {
         logger(error)
         return null;
     }
+
     else{
-        // updateAvailableEvents()
-        console.log(data , "here is data ");
+
+        var options = [{ id:0, value: ' ', title: 'select event' }]
+        const availableEvents = data.developer_availableWebhookEvent.map(event =>
+            ({id:event.id , value : event.id , title : event.label }))
+        var options = [...options , ...availableEvents]
         return (
-            <form>
-                <label>Select Event <br/>
-                    <select>
-                    {data.developer_availableWebhookEvent.map(event =><option key={event.id} value={event.id}>{event.label}</option> )}
-                    </select>
-                </label>
-                <br/>
-                <label>
-                    Add Webhook URL <br/>
-                    <input type="text" id="webhookUrl" placeholder="Add Webhook URL"></input>
-                </label>
-                <br/>
-                <button onClick={}>Create Webhook</button>
-            </form>
+            <>
+                <Text as='h3'>Add Webhook</Text>
+                <Spacer size='16px' />
+                <Form.Group>
+                    <Form.Label htmlFor='webhookEvent' title='webhookEvent'>
+                Select Event
+                    </Form.Label>
+                    <Form.Select id='webhookEvent' name='webhookEvent' options={options} onChange={(e) => {updateSelectedEvent(e.target.value)}} placeholder='Select an Event' />
+                </Form.Group>
+                <Spacer size='16px' />
+                <Form.Group>
+                <Form.Label htmlFor='webhookUrl' title='webhookUrl'>
+                Add Webhook URL
+                </Form.Label>
+                <Form.Text
+                id='webhookUrl'
+                name='webhookUrl'
+                onChange={(e) => {updatedInputWebhookUrl(e.target.value)}}
+                placeholder='Enter the webhook URL..'
+                />
+                </Form.Group>
+                <Spacer size='25px' />
+                <TextButton type='solid' size='md' onClick={() => submitForm()}>
+                Create Event
+                </TextButton>
+            </>
         )
     }
 

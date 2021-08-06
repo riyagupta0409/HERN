@@ -1,16 +1,22 @@
 import React , {useState} from 'react' ; 
 import DisplayWebHooks from './displayWebHooks' ;
 import AddWebHook from './addWebHook' 
+import {TextButton} from '@dailykit/ui' 
 
 const Main = () => {
 
     const [addOptionState , setAddOptionState] = useState(false)
+    const closeForm = () =>{
+        setAddOptionState(false)
+    }
     
     return(
         <>
-        <button onClick={() => {setAddOptionState(true)}}>Add WebHook</button>
+        {!addOptionState &&
+        <TextButton align="right" onClick={() => {setAddOptionState(true)}}>Add WebHook</TextButton>
+        }
         
-        {addOptionState && <AddWebHook />}
+        {addOptionState && <AddWebHook closeForm = {closeForm}/>}
         <DisplayWebHooks />
         </>
     )
