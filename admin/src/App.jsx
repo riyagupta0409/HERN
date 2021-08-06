@@ -34,6 +34,7 @@ import {
 } from './shared/components/DashboardAnalytics/Analytics'
 import DashboardCards from './shared/components/DashboardCardAnalytics'
 import { useAuth } from './shared/providers'
+import DashboardTables from './shared/components/DashboardTables'
 
 const APPS = gql`
    subscription apps {
@@ -149,6 +150,7 @@ const App = () => {
                            <SubscribedCustomerAnalytics />
                            <RegisteredCustomerAnalytics />
                         </DashboardAnalytics>
+                        <DashboardTables />
                         {/* <InsightDiv>
                      <InsightDashboard
                         appTitle="global"
