@@ -13,11 +13,12 @@ import TableOptions from '../../tableOptions'
 import { TableHeader } from '../../shared'
 import { useEffect } from 'react'
 import { DashboardTableContext } from '../../context'
+import { useHistory } from 'react-router-dom'
 const RecentOrderTable = () => {
    const [recentOrders, setRecentOrders] = useState([])
    const [status, setStatus] = useState({ loading: true })
    const { dashboardTableState } = React.useContext(DashboardTableContext)
-
+   const history = useHistory()
    const { loading: subsLoading, error: subsError } = useSubscription(
       RECENT_ORDERS,
       {
@@ -71,6 +72,9 @@ const RecentOrderTable = () => {
          },
       }
    )
+   const tableHeaderOnClick = () => {
+      history.push('order')
+   }
    const columns = [
       { title: 'Order Id', field: 'id' },
       {
@@ -103,7 +107,7 @@ const RecentOrderTable = () => {
    }
    return (
       <>
-         <TableHeader heading="Recent Order">
+         <TableHeader heading="Recent Order" onClick={tableHeaderOnClick}>
             <ReactTabulator
                data={recentOrders}
                columns={columns}
