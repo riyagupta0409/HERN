@@ -17,6 +17,11 @@ function DisplayWebHooks(){
         logger(error)
         return null
     }
+
+    function deleteEvent(eventId){
+        console.log('working')
+        console.log(eventId)
+    }
     return (
         <div className="App" >
             <h1 align="center" >Active Events </h1>
@@ -25,13 +30,15 @@ function DisplayWebHooks(){
                 <TableRow>
                     <TableCell>Event</TableCell>
                     <TableCell align="left">URL</TableCell>
+                    <TableCell >Action</TableCell>
                 </TableRow>
             </TableHead>
             <TableBody>
             {data.developer_webhookUrl_events.map(event => 
-                <TableRow key={event.Id}>
+                <TableRow key={event.id}>
                <TableCell> {event.availableWebhookEvent.label } </TableCell>
                <TableCell align="left">{ event.webhookUrl.urlEndpoint} </TableCell>
+               <TableCell > <button onClick={() => deleteEvent(event.id)}>&#x1F5D1;</button> </TableCell>
                </TableRow>)}
             </TableBody>
             </Table>
