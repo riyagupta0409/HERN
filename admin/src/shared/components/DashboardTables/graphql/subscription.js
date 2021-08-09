@@ -48,3 +48,17 @@ export const RECIPE_SUMMARY = gql`
       }
    }
 `
+export const ORDER_OPPORTUNITY = gql`
+   query ORDER_OPPORTUNITY(
+      $brandCustomerFilter: FullOccurenceReportCrmBrandCustomerBoolExp!
+   ) {
+      FullOccurenceReport(brandCustomerFilter: $brandCustomerFilter) {
+         orderId
+         fullName
+         fulfillmentDate
+         email
+         percentagePaused
+         percentageSkipped
+      }
+   }
+`
