@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import moment from 'moment'
 import { useSubscription } from '@apollo/react-hooks'
 import { DashboardTableContext } from '../../context'
@@ -39,12 +39,18 @@ const RecipeSummaryApp = () => {
          onSubscriptionData: ({ subscriptionData }) => {
             console.log('Recipe Summary', subscriptionData)
             setRecipeSummaryList(
-               subscriptionData.data.insights_analytics[0].getRecipeSummary
+               subscriptionData.data.insights_analytics[0].getTopRecipes
             )
             setStatus({ ...status, loading: false })
          },
       }
    )
+   useEffect(() => {
+      if (subsLoading) {
+         setStatus({ ...status, loading: true })
+      }
+   }, [subsLoading])
+
    const tableHandleOnClick = () => {
       history.push('products/recipes')
    }

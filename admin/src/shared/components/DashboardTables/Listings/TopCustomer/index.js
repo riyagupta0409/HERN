@@ -2,7 +2,7 @@ import { useSubscription } from '@apollo/react-hooks'
 import { reactFormatter, ReactTabulator } from '@dailykit/react-tabulator'
 import '../../tableStyle.css'
 import { Filler, Text } from '@dailykit/ui'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { toast } from 'react-toastify'
 import { logger } from '../../../../utils'
 import { ErrorState } from '../../../ErrorState'
@@ -52,6 +52,11 @@ const TopCustomer = () => {
          },
       }
    )
+   useEffect(() => {
+      if (subsLoading) {
+         setStatus({ ...status, loading: true })
+      }
+   }, [subsLoading])
    const tableHeaderOnClick = () => {
       history.push('crm/customers')
    }
