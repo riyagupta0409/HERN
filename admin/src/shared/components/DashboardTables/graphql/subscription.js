@@ -44,7 +44,7 @@ export const RECIPE_SUMMARY = gql`
       $recipeSummaryArgs: insights_getRecipeSummary_args!
    ) {
       insights_analytics {
-         getRecipeSummary(args: $recipeSummaryArgs)
+         getTopRecipes(args: $recipeSummaryArgs)
       }
    }
 `
@@ -59,6 +59,15 @@ export const ORDER_OPPORTUNITY = gql`
          email
          percentagePaused
          percentageSkipped
+      }
+   }
+`
+export const TOP_PRODUCT_LIST = gql`
+   subscription TOP_PRODUCT_LIST(
+      $topProductArgs: insights_getTopProducts_args!
+   ) {
+      insights_analytics {
+         getTopProducts(args: $topProductArgs)
       }
    }
 `

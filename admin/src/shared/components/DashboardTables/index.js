@@ -10,6 +10,7 @@ import SubscribersTable from './Listings/Subscribers'
 import TopCustomerTable from './Listings/TopCustomer'
 import RecipeSummaryApp from './Listings/RecipeSummary'
 import OrderOpportunityTable from './Listings/OrderOpportunity'
+import MenuSummary from './Listings/MenuSummary'
 const { RangePicker } = DatePicker
 const DashboardTables = () => {
    return (
@@ -19,6 +20,7 @@ const DashboardTables = () => {
             <RecentOrderTable />
             <TopCustomerTable />
             <RecipeSummaryApp />
+            <MenuSummary />
             <OrderOpportunityTable />
             <SubscribersTable />
          </Tables>
