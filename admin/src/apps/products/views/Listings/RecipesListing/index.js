@@ -303,7 +303,7 @@ class DataTable extends React.Component {
          headerHozAlign: 'right',
          width: 80,
       },
-   ]
+   ]  
    handleRowSelection = ({ _row }) => {
       this.props.setSelectedRows(prevState => [...prevState, _row.getData()])
 
@@ -559,7 +559,7 @@ function Selection() {
    return (
       <Checkbox
          id="label"
-         checked={checked}
+            checked={checked}
          onChange={handleMultipleRowSelection}
       ></Checkbox>
    )
@@ -575,9 +575,9 @@ const ActionBar = ({
    clearHeaderFilter,
 }) => {
    const [groupByOptions] = React.useState([
-      { id: 1, title: 'isPublished' },
-      { id: 2, title: 'cuisine' },
-      { id: 3, title: 'author' },
+      { id: 1, title: 'Published', payload:'isPublished' },
+      { id: 2, title: 'Cuisine', payload: 'cuisine' },
+      { id: 3, title: 'Author', payload:'author' },
    ])
 
    const defaultIDs = () => {
@@ -591,7 +591,7 @@ const ActionBar = ({
             : null
       if (recipeGroupParse !== null) {
          recipeGroupParse.forEach(x => {
-            const foundGroup = groupByOptions.find(y => y.title == x)
+            const foundGroup = groupByOptions.find(y => y.payload == x)
             arr.push(foundGroup.id)
          })
       }
@@ -601,9 +601,9 @@ const ActionBar = ({
    const selectedOption = option => {
       localStorage.setItem(
          'tabulator-recipe_table-group',
-         JSON.stringify(option.map(val => val.title))
+         JSON.stringify(option.map(val => val.payload))
       )
-      const newOptions = option.map(val => val.title)
+      const newOptions = option.map(val => val.payload)
       handleGroupBy(newOptions)
    }
    const searchedOption = option => console.log(option)
