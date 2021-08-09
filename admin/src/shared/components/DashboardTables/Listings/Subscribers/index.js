@@ -10,7 +10,8 @@ import { SUBSCRIBERS_LIST } from '../../graphql/subscription'
 import TableOptions from '../../tableOptions'
 import { reactFormatter, ReactTabulator } from '@dailykit/react-tabulator'
 import { TableHeader } from '../../shared'
-import { Filler } from '@dailykit/ui'
+import { Filler, Text } from '@dailykit/ui'
+import moment from 'moment'
 
 const SubscribersTable = () => {
    const { dashboardTableState } = React.useContext(DashboardTableContext)
@@ -53,7 +54,7 @@ const SubscribersTable = () => {
                      flatCustomer.phoneNumber =
                         customer.customer.platform_customer_.phoneNumber ||
                         'N/A'
-                     return flatBrandCustomerData
+                     return flatCustomer
                   })
                setSubscriberList(flatBrandCustomerData)
                setStatus({ ...status, loading: false })
@@ -67,12 +68,25 @@ const SubscribersTable = () => {
 
    //columns for table
    const columns = [
-      { title: 'Customer Name', field: 'fullName' },
-      { title: 'Subscription Date', field: 'created_at' },
-      { title: 'Email', field: 'email' },
+      {
+         title: 'Customer Name',
+         field: 'fullName',
+         width: 110,
+         headerTooltip: true,
+      },
+      {
+         title: 'Subscription Date',
+         field: 'created_at',
+         formatter: reactFormatter(<DateFormatter />),
+         width: 95,
+         headerTooltip: true,
+      },
+      { title: 'Email', field: 'email', width: 185, headerTooltip: true },
       {
          title: 'Phone Number',
          field: 'phoneNumber',
+         width: 102,
+         headerTooltip: true,
       },
    ]
 
@@ -91,13 +105,23 @@ const SubscribersTable = () => {
    }
    return (
       <>
-         <TableHeader heading="Subscribers so far"></TableHeader>
-         <ReactTabulator
-            data={subscribersList}
-            columns={columns}
-            options={TableOptions}
-            className="dashboard-table"
-         />
+         <TableHeader heading="Subscribers so far">
+            <ReactTabulator
+               data={subscribersList}
+               columns={columns}
+               options={TableOptions}
+               className="dashboard-table"
+            />
+         </TableHeader>
+      </>
+   )
+}
+const DateFormatter = ({ cell }) => {
+   return (
+      <>
+         <Text as="text2">
+            {cell._cell.value ? moment(cell._cell.value).format('ll') : 'N/A'}
+         </Text>
       </>
    )
 }
