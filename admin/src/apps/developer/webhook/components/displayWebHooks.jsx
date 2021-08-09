@@ -2,7 +2,7 @@ import React , {useEffect,useState} from 'react';
 import { useQuery } from '@apollo/react-hooks'
 import {ACTIVE_EVENTS_WEBHOOKS } from '../graphql';
 import { Loader } from '@dailykit/ui'
-import {logger}  from '../../../shared/utils'
+import {logger}  from '../../../../shared/utils'
 import EventEmitter from 'events';
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@dailykit/ui'
 

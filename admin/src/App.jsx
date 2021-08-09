@@ -94,8 +94,8 @@ const Carts = Loadable({
 })
 
 // changes for webhooks 
-const Webhooks = Loadable({
-   loader: () => import('./apps/webhook'),
+const Developer = Loadable({
+   loader: () => import('./apps/developer/webhook'),
    loading: Loader,
 })
 
@@ -127,8 +127,8 @@ const App = () => {
                      ))}
                      {/* added webhook app temporarily */}
                      <AppItem >
-                        <Link to='/webhook'>
-                           <span>Webhook</span>
+                        <Link to='/developer/webhook'>
+                           <span>Developer</span>
                         </Link>
                      </AppItem>
                      {/* added webhook app temporarily */}
@@ -164,7 +164,7 @@ const App = () => {
                <Route path="/content" component={Content} />
                <Route path="/editor" component={Editor} />
                <Route path="/carts" component={Carts} />
-               <Route path="/webhook" component={Webhooks} />
+               <Route path="/developer/webhook" component={Developer} />
             </Switch>
          </main>
          {/* {!isKeycloakSupported() && <RedirectBanner />} */}

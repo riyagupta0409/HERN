@@ -2,8 +2,8 @@ import React , {useEffect,useState} from 'react';
 import {AVAILABLE_EVENTS } from '../graphql';
 import { Loader } from '@dailykit/ui'
 import { useQuery } from '@apollo/react-hooks'
-import {logger}  from '../../../shared/utils'
-import {TextButton , Form, Spacer, Text , Select } from '@dailykit/ui'
+import {logger}  from '../../../../shared/utils'
+import {TextButton , Form, Spacer, Text, ButtonGroup, Select } from '@dailykit/ui'
 
 
 function AddWebHook(props){
@@ -54,9 +54,14 @@ function AddWebHook(props){
                 />
                 </Form.Group>
                 <Spacer size='25px' />
-                <TextButton type='solid' size='md' onClick={() => submitForm()}>
-                Create Event
-                </TextButton>
+                <ButtonGroup align="left">
+                    <TextButton type='solid' size='md' onClick={() => submitForm()}>
+                    Create Event
+                    </TextButton>
+                    <TextButton type='solid' size='md' onClick={() => props.closeForm()}>
+                    Cancel
+                    </TextButton>
+                </ButtonGroup>
             </>
         )
     }
