@@ -1,26 +1,47 @@
 import React , {useEffect,useState} from 'react';
-import { useQuery } from '@apollo/react-hooks'
-import {ACTIVE_EVENTS_WEBHOOKS } from '../graphql';
+import { useMutation, useQuery } from '@apollo/react-hooks'
+import {ACTIVE_EVENTS_WEBHOOKS, DELETE_WEBHOOK_EVENT } from '../graphql';
 import { Loader } from '@dailykit/ui'
 import {logger}  from '../../../../shared/utils'
-import EventEmitter from 'events';
-import {Table, TableHead, TableBody, TableRow, TableCell} from '@dailykit/ui'
+import {Table, TableHead, TableBody, TableRow, TableCell} from '@dailykit/ui';
+import { toast } from 'react-toastify'
 
 
 
 function DisplayWebHooks(){
 
-    const { loading, error, data } = useQuery(ACTIVE_EVENTS_WEBHOOKS);
-    console.log("returned data " ,loading, error, data)
-    if(loading) return <Loader />
+    // Mutation for deleting webhook
+    const [deleteWebhook, {loading: deletingWebhookLoading}] = useMutation(DELETE_WEBHOOK_EVENT);
+
+    // Query to fetch active webhook events
+    const { loading, error, data, refetch:refetchActiveWebhookEvents } = useQuery(ACTIVE_EVENTS_WEBHOOKS);
+    if(loading || deletingWebhookLoading) return <Loader />
     if(error) {
         logger(error)
         return null
     }
 
+    
+    // To delete Webhook
     function deleteEvent(eventId){
-        console.log('working')
-        console.log(eventId)
+        console.log('working');
+        console.log(eventId);
+        deleteWebhook({
+            variables:{
+                "eventId":eventId
+            },
+            onComplete : (data) => {
+                console.log('request completed')
+                toast.success('webhook successfully deleted')
+                console.log(data)
+            },
+            onError : (error) =>{
+
+                toast.error('Something went wrong')
+                logger(error)
+            }
+        })
+        refetchActiveWebhookEvents();
     }
     return (
         <div className="App" >
@@ -49,4 +70,4 @@ function DisplayWebHooks(){
 
 }
 
-export default DisplayWebHooks;
+export default DisplayWebHooks; 

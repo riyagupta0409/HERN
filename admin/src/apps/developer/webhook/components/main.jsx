@@ -1,7 +1,7 @@
 import React , {useState} from 'react' ; 
 import DisplayWebHooks from './displayWebHooks' ;
-import AddWebHook from './addWebHook' 
-import {TextButton, Spacer} from '@dailykit/ui' 
+import AddWebHook from './addWebHook';
+import {TextButton, Spacer} from '@dailykit/ui';
 
 const Main = () => {
 

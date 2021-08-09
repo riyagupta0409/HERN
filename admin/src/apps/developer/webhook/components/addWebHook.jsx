@@ -5,6 +5,7 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import {logger}  from '../../../../shared/utils'
 import {TextButton , Form, Spacer, Text, ButtonGroup, Select } from '@dailykit/ui'
 import { toast } from 'react-toastify'
+// import refetchActiveWebhookEvents from './displayWebHooks';
 
 function AddWebHook(props){
 
@@ -54,6 +55,8 @@ function AddWebHook(props){
                         "availableWebhookEventId": selectedEvent
                     }
                 })
+
+                // refetchActiveWebhookEvents();
     
                 // to check if the mutation result is still loading 
                 if(webhookLoading){
@@ -65,6 +68,8 @@ function AddWebHook(props){
             }
 
         }
+        
+        
     }
     
     
