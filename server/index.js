@@ -29,7 +29,8 @@ import {
    ActionsRouter,
    OhyayRouter,
    ExperienceRouter,
-   handleCartPayment
+   handleCartPayment,
+   createCustomerPaymentIntent
 } from './entities'
 import { PrintRouter } from './entities/print'
 import {
@@ -56,7 +57,7 @@ router.use('/api/assets', UploadRouter)
 router.use('/api/printer', PrintRouter)
 router.use('/api/rmk-menu', RMKMenuRouter)
 router.use('/api/inventory', WorkOrderRouter)
-router.post('/api/initiate-payment', initiatePayment)
+router.post('/api/initiate-payment', createCustomerPaymentIntent)
 router.get('/api/place/autocomplete/json', placeAutoComplete)
 router.get('/api/place/details/json', placeDetails)
 router.post('/api/distance-matrix', getDistance)
