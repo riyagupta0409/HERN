@@ -1,37 +1,150 @@
-import fs from 'fs'
 import axios from 'axios'
 import { get, groupBy, isEmpty } from 'lodash'
+import { createEvent } from 'ics'
+import { writeFileSync } from 'fs'
 import { client } from '../../lib/graphql'
 const fetch = require('node-fetch')
 const AWS = require('aws-sdk')
 const nodemailer = require('nodemailer')
 
-import { GET_SES_DOMAIN, UPDATE_CART } from './graphql'
+import {
+   GET_SES_DOMAIN,
+   UPDATE_CART,
+   CART,
+   CART_PAYMENT,
+   CREATE_CART_PAYMENT,
+   UPDATE_CART_PAYMENT
+} from './graphql'
 import path from 'path'
 import get_env from '../../../get_env'
 
 AWS.config.update({ region: 'us-east-2' })
 
-const CART = `
-   query cart($id: Int!) {
-      cart(id: $id) {
-         id
-         isTest
-         amount
-         totalPrice
-         paymentStatus
-         paymentMethodId
-         stripeCustomerId
-         statementDescriptor
+export const handleCartPayment = async (req, res) => {
+   try {
+      const payload = req.body.event.data.new
+      const { cart = {} } = await client.request(CART, { id: payload.id })
+      console.log('cart', cart)
+      if (cart.balancePayment > 0) {
+         const { cartPayments = [] } = await client.request(CART_PAYMENT, {
+            where: {
+               cartId: {
+                  _eq: cart.id
+               },
+               paymentStatus: {
+                  _neq: 'SUCCEEDED'
+               }
+            }
+         })
+         console.log('CartPayments', cartPayments)
+
+         if (cartPayments.length > 0) {
+            if (
+               cartPayments.length > 1 ||
+               cartPayments[0].amount !== cart.balancePayment
+            ) {
+               //cancell all invalid previous cart...
+               const cancelledCartPayments = await Promise.all(
+                  cartPayments.map(async cartPayment => {
+                     try {
+                        const { updateCartPayment = {} } = await client.request(
+                           UPDATE_CART_PAYMENT,
+                           {
+                              id: cartPayment.id,
+                              _inc: {
+                                 cancelAttempt: 1
+                              }
+                           }
+                        )
+                        return updateCartPayment
+                     } catch (error) {
+                        return {
+                           success: false,
+                           message: error.message
+                        }
+                     }
+                  })
+               )
+
+               console.log({ cancelledCartPayments })
+
+               const { createCartPayment = {} } = await client.request(
+                  CREATE_CART_PAYMENT,
+                  {
+                     object: {
+                        cartId: cart.id,
+                        paymentRetryAttempt: 1,
+                        amount: cart.balancePayment,
+                        isTest: cart.isTest,
+                        paymentMethodId: cart.paymentMethodId,
+                        stripeCustomerId: cart.stripeCustomerId
+                     }
+                  }
+               )
+               res.status(200).json(createCartPayment)
+            } else {
+               const updatedCartPayment = await Promise.all(
+                  cartPayments.map(async cartPayment => {
+                     try {
+                        const { updateCartPayment = {} } = await client.request(
+                           UPDATE_CART_PAYMENT,
+                           {
+                              id: cartPayment.id,
+                              _inc: {
+                                 paymentRetryAttempt: 1
+                              }
+                           }
+                        )
+                        return updateCartPayment
+                     } catch (error) {
+                        return {
+                           success: false,
+                           message: error.message
+                        }
+                     }
+                  })
+               )
+               console.log({ updatedCartPayment })
+               res.status(200).json(updatedCartPayment)
+            }
+         } else {
+            const { createCartPayment = {} } = await client.request(
+               CREATE_CART_PAYMENT,
+               {
+                  object: {
+                     cartId: cart.id,
+                     paymentRetryAttempt: 1,
+                     amount: cart.balancePayment,
+                     isTest: cart.isTest,
+                     paymentMethodId: cart.paymentMethodId,
+                     stripeCustomerId: cart.stripeCustomerId
+                  }
+               }
+            )
+            console.log({ createCartPayment })
+            res.status(200).json(createCartPayment)
+         }
       }
+   } catch (error) {
+      console.log(error)
+      res.status(400).json({
+         success: false,
+         message: error.message
+      })
    }
-`
+}
 
 export const initiatePayment = async (req, res) => {
    try {
       const payload = req.body.event.data.new
-
-      const { cart = {} } = await client.request(CART, { id: payload.id })
+      const { cart = {} } = await client.request(CART, { id: payload.cartId })
+      if (payload.id && payload.paymentStatus === 'SUCCEEDED') {
+         return res.status(200).json({
+            success: true,
+            message:
+               'Payment attempt cancelled since cart has already been paid!'
+         })
+      }
 
       if (cart.id && cart.paymentStatus === 'SUCCEEDED') {
          return res.status(200).json({
@@ -42,22 +155,22 @@ export const initiatePayment = async (req, res) => {
       }
 
       await client.request(UPDATE_CART, {
-         id: cart.id,
-         set: { amount: cart.totalPrice }
+         id: payload.cartId,
+         set: { amount: cart.amount + payload.amount }
       })
 
-      if (cart.isTest || cart.totalPrice === 0) {
-         await client.request(UPDATE_CART, {
-            id: cart.id,
-            set: {
+      if (payload.isTest || payload.amount === 0) {
+         await client.request(UPDATE_CART_PAYMENT, {
+            id: payload.id,
+            _set: {
                paymentStatus: 'SUCCEEDED',
                isTest: true,
                transactionId: 'NA',
                transactionRemark: {
                   id: 'NA',
-                  amount: cart.totalPrice * 100,
+                  amount: payload.amount,
                   message: 'payment bypassed',
-                  reason: cart.isTest ? 'test mode' : 'amount 0 - free'
+                  reason: payload.isTest ? 'test mode' : 'amount 0 - free'
                }
             }
          })
@@ -67,17 +180,18 @@ export const initiatePayment = async (req, res) => {
          })
       }
       const ORGANIZATION_ID = await get_env('ORGANIZATION_ID')
-      if (cart.totalPrice > 0) {
+      if (payload.amount > 0) {
          const body = {
             organizationId: ORGANIZATION_ID,
-            statementDescriptor: cart.statementDescriptor || '',
+            statementDescriptor: payload.statementDescriptor || '',
             cart: {
-               id: cart.id,
-               amount: cart.totalPrice
+               id: payload.id,
+               amount: payload.amount,
+               type: 'cartPayment'
             },
             customer: {
-               paymentMethod: cart.paymentMethodId,
-               stripeCustomerId: cart.stripeCustomerId
+               paymentMethod: payload.paymentMethodId,
+               stripeCustomerId: payload.stripeCustomerId
             }
          }
          const PAYMENTS_API = await get_env('PAYMENTS_API')
@@ -105,8 +219,11 @@ export const initiatePayment = async (req, res) => {
 
 export const sendMail = async (req, res) => {
    try {
-      const { emailInput } = req.body.input
+      const { emailInput, inviteInput = {} } = req.body.input
       const inputDomain = emailInput.from.split('@')[1]
+      let updatedAttachments = []
+
+      console.log('InviteINput', inviteInput)
 
       // Get the DKIM details from dailycloak
       const dkimDetails = await client.request(GET_SES_DOMAIN, {
@@ -128,13 +245,58 @@ export const sendMail = async (req, res) => {
                privateKey: dkimDetails.aws_ses[0].privateKey.toString('binary')
             }
          })
+
+         //build the invite event
+         if (Object.keys(inviteInput).length) {
+            const event = {
+               start: inviteInput.start,
+               duration: inviteInput.duration,
+               title: inviteInput.title,
+               description: inviteInput.description,
+               location: inviteInput.location,
+               url: inviteInput.url,
+               geo: inviteInput.geo,
+               categories: inviteInput.categories,
+               status: inviteInput.status,
+               busyStatus: inviteInput.busyStatus,
+               organizer: inviteInput.organizer,
+               attendees: inviteInput.attendees
+            }
+            createEvent(event, async (error, value) => {
+               if (error) {
+                  console.log(error)
+                  return
+               }
+               console.log('EVENT OUTPUT', value)
+               await writeFileSync(
+                  `${__dirname}/calendarInvite/${inviteInput.title.replace(
+                     ' ',
+                     '_'
+                  )}.ics`,
+                  value
+               )
+            })
+            updatedAttachments.push({
+               filename: `${inviteInput.title.replace(' ', '_')}.ics`,
+               path: `${__dirname}/calendarInvite/${inviteInput.title.replace(
+                  ' ',
+                  '_'
+               )}.ics`,
+               contentType: 'text/calendar'
+            })
+         }
+
+         emailInput.attachments.forEach(attachment => {
+            updatedAttachments.push(attachment)
+         })
+
          // build and send the message
          const message = {
             from: emailInput.from,
             to: emailInput.to,
             subject: emailInput.subject,
             html: emailInput.html,
-            attachments: emailInput.attachments
+            attachments: updatedAttachments
          }
 
          if (dkimDetails.aws_ses[0].isVerified === true) {
@@ -296,7 +458,6 @@ export const authorizeRequest = async (req, res) => {
       return res.status(404).json({ success: false, error: error.message })
    }
 }
-
 const ENVS = `
    query envs {
       envs: settings_env {
@@ -325,7 +486,7 @@ export const populate_env = async (req, res) => {
             server[node.title] = node.value
          })
 
-         fs.writeFileSync(
+         writeFileSync(
             path.join(__dirname, '../../../', 'config.js'),
             'module.exports = ' + JSON.stringify(server, null, 2)
          )
@@ -344,7 +505,7 @@ export const populate_env = async (req, res) => {
             'env-config.js'
          )
 
-         fs.writeFileSync(
+         writeFileSync(
             PATH_TO_SUBS,
             'window._env_ = ' + JSON.stringify(store, null, 2)
          )
@@ -363,7 +524,7 @@ export const populate_env = async (req, res) => {
                'public',
                'env-config.js'
             )
-            fs.writeFileSync(
+            writeFileSync(
                PATH_TO_ADMIN,
                'window._env_ = ' + JSON.stringify(admin, null, 2)
             )
@@ -375,7 +536,7 @@ export const populate_env = async (req, res) => {
                'build',
                'env-config.js'
             )
-            fs.writeFileSync(
+            writeFileSync(
                PATH_TO_ADMIN,
                'window._env_ = ' + JSON.stringify(admin, null, 2)
             )
