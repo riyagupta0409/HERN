@@ -1,3 +1,3 @@
-import CustomerRouter from './routes'
+import CustomerRouter2 from './routes'
 
-export { CustomerRouter }
+export { CustomerRouter2 }

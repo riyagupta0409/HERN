@@ -1,10 +1,10 @@
-import get from 'lodash.get'
+import get from 'lodash/get'
 import { GraphQLClient } from 'graphql-request'
 
 const client = new GraphQLClient(process.env.DAILYCLOAK_URL, {
    headers: {
-      'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET,
-   },
+      'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET
+   }
 })
 
 export const handleRazorpayEvents = async (req, res) => {
@@ -14,7 +14,7 @@ export const handleRazorpayEvents = async (req, res) => {
          paymentStatus: '',
          paymentRequestId: '',
          paymentTransactionId: '',
-         paymentTransactionInfo: req.body || {},
+         paymentTransactionInfo: req.body || {}
       }
       const paymentId = get(
          req.body,
@@ -23,13 +23,13 @@ export const handleRazorpayEvents = async (req, res) => {
 
       if (paymentId) {
          const { payment } = await client.request(PAYMENT_RECORD, {
-            id: paymentId,
+            id: paymentId
          })
          const isAutoCancelled = get(payment, 'isAutoCancelled')
          if (isAutoCancelled) {
             return res.status(200).json({
                success: true,
-               error: 'Aborting since payment was auto cancelled on different payment method attempt!',
+               error: 'Aborting since payment was auto cancelled on different payment method attempt!'
             })
          }
       }
@@ -48,7 +48,7 @@ export const handleRazorpayEvents = async (req, res) => {
          } else {
             return res.status(401).json({
                success: false,
-               error: 'Unmapped webhook event!',
+               error: 'Unmapped webhook event!'
             })
          }
 
@@ -57,18 +57,18 @@ export const handleRazorpayEvents = async (req, res) => {
                UPDATE_PAYMENT_RECORD,
                {
                   _set: variables,
-                  pk_columns: { id: paymentId },
+                  pk_columns: { id: paymentId }
                }
             )
             return res.status(200).json({
                success: true,
                data: updatePaymentTransaction,
-               message: 'Successfully updated payment transaction.',
+               message: 'Successfully updated payment transaction.'
             })
          }
          return res.status(500).json({
             success: false,
-            error: 'Failed to update payment transaction.',
+            error: 'Failed to update payment transaction.'
          })
       } else {
          return res

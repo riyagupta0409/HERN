@@ -110,21 +110,21 @@ export const createCustomerByClient = async (req, res) => {
    }
 }
 
-export const authorizeRequest = async (req, res) => {
-   try {
-      const organizationId = req.body.headers['Organization-Id']
-      const keycloakId = req.body.headers['Keycloak-Id']
+// export const authorizeRequest = async (req, res) => {
+//    try {
+//       const organizationId = req.body.headers['Organization-Id']
+//       const keycloakId = req.body.headers['Keycloak-Id']
 
-      return res.status(200).json({
-         'X-Hasura-Role': keycloakId ? 'consumer' : 'limited',
-         'X-Hasura-User-Id': organizationId,
-         'X-Hasura-Keycloak-Id': keycloakId
-      })
-   } catch (error) {
-      logger('/api/webhooks/authorize-request', error.message)
-      return res.status(404).json({ success: false, error: error.message })
-   }
-}
+//       return res.status(200).json({
+//          'X-Hasura-Role': keycloakId ? 'consumer' : 'limited',
+//          'X-Hasura-User-Id': organizationId,
+//          'X-Hasura-Keycloak-Id': keycloakId
+//       })
+//    } catch (error) {
+//       logger('/api/webhooks/authorize-request', error.message)
+//       return res.status(404).json({ success: false, error: error.message })
+//    }
+// }
 
 const UPSERT_CUSTOMER = `
    mutation platform_createCustomer($email: String, $keycloakId: String!, $stripeCustomerId: String) {

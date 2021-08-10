@@ -1,42 +1,48 @@
 import axios from 'axios'
-import get from 'lodash.get'
+import get from 'lodash/get'
 import { GraphQLClient } from 'graphql-request'
+import { client } from '../lib/graphql'
 
 import stripe from '../lib/stripe'
 
 const dailycloak = new GraphQLClient(process.env.DAILYCLOAK_URL, {
-   headers: { 'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET },
+   headers: { 'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET }
 })
 
 export const discardPreviousPaymentMethod = async args => {
    try {
-      let cart
-      const { cartId, origin = '', organization = {}, cartType = 'cart' } = args
+      // let cart
+      const {
+         cartPaymentId,
+         origin = '',
+         organization = {},
+         cartType = 'cart'
+      } = args
       const datahub = new GraphQLClient(organization.datahubUrl, {
-         headers: { 'x-hasura-admin-secret': organization.adminSecret },
+         headers: { 'x-hasura-admin-secret': organization.adminSecret }
       })
 
       console.log('args', args)
       console.log('cartype', cartType)
-      if (cartType === 'cartPayment') {
-         console.log('if')
-         const { cartPayment } = await datahub.request(CART_PAYMENT, {
-            id: cartId,
-         })
-         cart = cartPayment
-         console.log('cart', cartPayment)
-      } else {
-         const { cart: cartData } = await datahub.request(CART, { id: cartId })
-         cart = cartData
-      }
+      // if (cartType === 'cartPayment') {
+      console.log('if')
+      const { cartPayment } = await datahub.request(CART_PAYMENT, {
+         id: cartPaymentId
+      })
+      // cart = cartPayment
+      console.log('cart', cartPayment)
+      // } else {
+      //    const { cart: cartData } = await datahub.request(CART, { id: cartId })
+      //    cart = cartData
+      // }
 
       let type = ''
-      console.log('cart', cart)
-      if (cart.paymentId) {
+      // console.log('cart', cart)
+      if (cartPayment.paymentId) {
          type = 'razorpay'
       } else if (
          origin !== 'stripe' &&
-         (cart.stripeInvoiceId || cart.paymentRetryAttempt > 0)
+         (cartPayment.stripeInvoiceId || cartPayment.paymentRetryAttempt > 0)
       ) {
          type = 'stripe'
       }
@@ -54,39 +60,39 @@ export const discardPreviousPaymentMethod = async args => {
 
 const handleRazorpay = async args => {
    try {
-      const { cartId, organization = {}, datahub, cartType } = args
+      const { cartPaymentId, organization = {}, datahub, cartType } = args
 
-      if (cartType === 'cartPayment') {
-         await datahub.request(UPDATE_CART_PAYMENT, {
-            id: cartId,
-            _set: {
-               paymentId: null,
-               transactionId: null,
-               paymentRequestInfo: null,
-               paymentUpdatedAt: null,
-               transactionRemark: null,
-            },
-         })
-      } else {
-         await datahub.request(UPDATE_CART, {
-            id: cartId,
-            _set: {
-               paymentId: null,
-               transactionId: null,
-               paymentRequestInfo: null,
-               paymentUpdatedAt: null,
-               transactionRemark: null,
-            },
-         })
-      }
+      // if (cartType === 'cartPayment') {
+      await datahub.request(UPDATE_CART_PAYMENT, {
+         id: cartPaymentId,
+         _set: {
+            paymentId: null,
+            transactionId: null,
+            paymentRequestInfo: null,
+            paymentUpdatedAt: null,
+            transactionRemark: null
+         }
+      })
+      // } else {
+      //    await datahub.request(UPDATE_CART, {
+      //       id: cartId,
+      //       _set: {
+      //          paymentId: null,
+      //          transactionId: null,
+      //          paymentRequestInfo: null,
+      //          paymentUpdatedAt: null,
+      //          transactionRemark: null
+      //       }
+      //    })
+      // }
 
       const { payments = [] } = await dailycloak.request(
          RAZORPAY_TRANSACTIONS,
          {
             where: {
-               orderCartId: { _eq: cartId },
-               paymentPartnership: { organizationId: { _eq: organization.id } },
-            },
+               orderCartId: { _eq: cartPaymentId },
+               paymentPartnership: { organizationId: { _eq: organization.id } }
+            }
          }
       )
 
@@ -99,13 +105,13 @@ const handleRazorpay = async args => {
                if (!paymentRequestId)
                   return {
                      success: true,
-                     message: 'Aborting, since no payment request id linked!',
+                     message: 'Aborting, since no payment request id linked!'
                   }
 
                if (paymentRequestId.startsWith('order'))
                   return {
                      success: true,
-                     message: 'Razorpay orders are not cancellable!',
+                     message: 'Razorpay orders are not cancellable!'
                   }
 
                if (paymentRequestId.startsWith('plink')) {
@@ -124,18 +130,18 @@ const handleRazorpay = async args => {
                            id: payment.id,
                            _set: {
                               isAutoCancelled: true,
-                              paymentStatus: 'CANCELLED',
-                           },
+                              paymentStatus: 'CANCELLED'
+                           }
                         })
 
                         return {
                            success: true,
-                           message: 'Successfully cancelled payment link.',
+                           message: 'Successfully cancelled payment link.'
                         }
                      } else {
                         return {
                            success: false,
-                           message: 'Failed to cancel payment link.',
+                           message: 'Failed to cancel payment link.'
                         }
                      }
                   }
@@ -144,12 +150,12 @@ const handleRazorpay = async args => {
             } catch (error) {
                const request = {
                   error: get(error, 'response.data.error'),
-                  status: get(error, 'response.status'),
+                  status: get(error, 'response.status')
                }
                if (request.status === 400) {
                   return {
                      success: false,
-                     message: 'Payment link is already cancelled',
+                     message: 'Payment link is already cancelled'
                   }
                }
                return { success: false, error }
@@ -165,41 +171,41 @@ const handleRazorpay = async args => {
 
 const handleStripe = async args => {
    try {
-      const { cartId, organization = {}, datahub, cartType } = args
-      if (cartType === 'cartPayment') {
-         await datahub.request(UPDATE_CART_PAYMENT, {
-            id: cartId,
-            _set: {
-               paymentId: null,
-               transactionId: null,
-               paymentRequestInfo: null,
-               paymentUpdatedAt: null,
-               transactionRemark: null,
-            },
-         })
-      } else {
-         await datahub.request(UPDATE_CART, {
-            id: cartId,
-            _set: {
-               paymentId: null,
-               transactionId: null,
-               paymentRequestInfo: null,
-               paymentUpdatedAt: null,
-               transactionRemark: null,
-            },
-         })
-      }
+      const { cartPaymentId, organization = {}, datahub, cartType } = args
+      // if (cartType === 'cartPayment') {
+      await datahub.request(UPDATE_CART_PAYMENT, {
+         id: cartPaymentId,
+         _set: {
+            paymentId: null,
+            transactionId: null,
+            paymentRequestInfo: null,
+            paymentUpdatedAt: null,
+            transactionRemark: null
+         }
+      })
+      // } else {
+      //    await datahub.request(UPDATE_CART, {
+      //       id: cartId,
+      //       _set: {
+      //          paymentId: null,
+      //          transactionId: null,
+      //          paymentRequestInfo: null,
+      //          paymentUpdatedAt: null,
+      //          transactionRemark: null
+      //       }
+      //    })
+      // }
       const { payments = [] } = await dailycloak.request(STRIPE_TRANSACTIONS, {
          where: {
-            transferGroup: { _eq: '' + cartId },
-            organizationId: { _eq: organization.id },
-         },
+            transferGroup: { _eq: '' + cartPaymentId },
+            organizationId: { _eq: organization.id }
+         }
       })
 
       if (payments.length === 0) return
 
       const { organization: org } = await dailycloak.request(ORGANIZATION, {
-         id: organization.id,
+         id: organization.id
       })
 
       const { stripeAccountId, stripeAccountType } = org
@@ -214,8 +220,8 @@ const handleStripe = async args => {
                      {
                         ...(stripeAccountType === 'standard' &&
                            stripeAccountId && {
-                              stripeAccount: stripeAccountId,
-                           }),
+                              stripeAccount: stripeAccountId
+                           })
                      }
                   )
                   if (status === 'void') {
@@ -225,19 +231,19 @@ const handleStripe = async args => {
                            id: id,
                            _set: {
                               isAutoCancelled: true,
-                              status: 'CANCELLED',
-                           },
+                              status: 'CANCELLED'
+                           }
                         }
                      )
                      return {
                         success: true,
                         data: updatePayment,
-                        message: 'Stripe invoice has been voided!',
+                        message: 'Stripe invoice has been voided!'
                      }
                   } else {
                      return {
                         success: false,
-                        message: 'Failed to void stripe invoice!',
+                        message: 'Failed to void stripe invoice!'
                      }
                   }
                } else if (stripePaymentIntentId && !stripeInvoiceId) {
@@ -246,8 +252,8 @@ const handleStripe = async args => {
                      {
                         ...(stripeAccountType === 'standard' &&
                            stripeAccountId && {
-                              stripeAccount: stripeAccountId,
-                           }),
+                              stripeAccount: stripeAccountId
+                           })
                      }
                   )
                   if (status === 'cancelled') {
@@ -257,19 +263,19 @@ const handleStripe = async args => {
                            id: id,
                            _set: {
                               isAutoCancelled: true,
-                              paymentStatus: 'CANCELLED',
-                           },
+                              paymentStatus: 'CANCELLED'
+                           }
                         }
                      )
                      return {
                         success: true,
                         data: updatePayment,
-                        message: 'Stripe payment intent has been voided!',
+                        message: 'Stripe payment intent has been voided!'
                      }
                   } else {
                      return {
                         success: false,
-                        message: 'Failed to cancel stripe payment intent!',
+                        message: 'Failed to cancel stripe payment intent!'
                      }
                   }
                }

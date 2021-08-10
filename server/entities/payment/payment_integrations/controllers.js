@@ -1,6 +1,6 @@
 import axios from 'axios'
 import moment from 'moment'
-import get from 'lodash.get'
+import get from 'lodash/get'
 import { GraphQLClient } from 'graphql-request'
 
 import {

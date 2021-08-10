@@ -1,4 +1,4 @@
-import stripe from '../../lib/stripe'
+import stripe from '../../../lib/stripe'
 
 import { GraphQLClient } from 'graphql-request'
 
@@ -38,7 +38,7 @@ export const updateDailyosStripeStatus = async (req, res) => {
       const {
          stripeAccountId = '',
          datahubUrl = '',
-         adminSecret = '',
+         adminSecret = ''
       } = req.body.event.data.new
 
       if (!stripeAccountId) throw Error('Stripe account is not linked yet!')
@@ -47,11 +47,11 @@ export const updateDailyosStripeStatus = async (req, res) => {
 
       const client = new GraphQLClient(datahubUrl, {
          headers: {
-            'x-hasura-admin-secret': adminSecret,
-         },
+            'x-hasura-admin-secret': adminSecret
+         }
       })
       const { settings } = await client.request(STORE_SETTINGS, {
-         identifier: { _eq: 'Store Live' },
+         identifier: { _eq: 'Store Live' }
       })
 
       if (settings.length === 0) {
@@ -60,20 +60,20 @@ export const updateDailyosStripeStatus = async (req, res) => {
             type: 'availability',
             value: {
                isStoreLive: false,
-               isStripeConfigured: true,
-            },
+               isStripeConfigured: true
+            }
          })
       } else {
          await client.request(UPDATE_STORE_SETTING, {
             identifier: {
-               _eq: 'Store Live',
+               _eq: 'Store Live'
             },
             _set: {
                value: {
                   ...settings[0].value,
-                  isStripeConfigured: true,
-               },
-            },
+                  isStripeConfigured: true
+               }
+            }
          })
       }
 

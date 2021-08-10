@@ -1,5 +1,5 @@
 import { GraphQLClient } from 'graphql-request'
-import getKeyValue from 'lodash.get'
+import getKeyValue from 'lodash/get'
 import stripe from '../../../lib/stripe'
 import { isObjectValid, logger } from '../../../utils'
 
