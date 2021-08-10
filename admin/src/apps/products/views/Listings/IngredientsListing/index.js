@@ -88,6 +88,7 @@ const IngredientsListing = () => {
       createIngredient({ variables: { name } })
    }
 
+
    const deleteIngredientHandler = ingredient => {
       if (
          window.confirm(
@@ -370,6 +371,13 @@ class DataTable extends React.Component {
       localStorage.setItem('selected-rows-id_ingredients_table', JSON.stringify([]))
    }
 
+   clearIngredientPersistance= () =>
+      {
+         localStorage.removeItem('tabulator-ingredient_table-columns')
+         localStorage.removeItem('tabulator-ingredient_table-sort')
+         localStorage.removeItem('tabulator-ingredient_table-filter')  
+      }
+
    render() {
       const selectionColumn =
          this.props.selectedRows.length > 0 &&
@@ -413,6 +421,7 @@ class DataTable extends React.Component {
                openTunnel={this.props.openTunnel}
                handleGroupBy={this.handleGroupBy}
                clearHeaderFilter={this.clearHeaderFilter}
+               clearPersistance={this.clearIngredientPersistance}
             />
             <Spacer size="30px" />
             <ReactTabulator
@@ -423,7 +432,7 @@ class DataTable extends React.Component {
                selectableCheck={() => true}
                rowSelected={this.handleRowSelection}
                rowDeselected={this.handleDeSelection}
-               options={{ ...tableOptions, reactiveData: true }}
+               options={{ ...tableOptions, persistenceID: 'ingredient_table', reactiveData: true }}
                data-custom-attr="test-custom-attribute"
                className="custom-css-class"
             />
@@ -503,6 +512,7 @@ const ActionBar = ({
    openTunnel,
    handleGroupBy,
    clearHeaderFilter,
+   clearPersistance,
 }) => {
    const defaultIDs = () => {
       let arr = []
@@ -577,7 +587,7 @@ const ActionBar = ({
                >
                   <TextButton
                      onClick={() => {
-                        localStorage.clear()
+                        clearPersistance()
                      }}
                      type="ghost"
                      size="sm"
