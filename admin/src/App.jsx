@@ -6,7 +6,6 @@ import { useSubscription } from '@apollo/react-hooks'
 import { Switch, Route, Link } from 'react-router-dom'
 import FullOccurrenceReport from './shared/components/FullOccurrenceReport'
 import { isKeycloakSupported } from './shared/utils'
-import DashboardAnalytics from './shared/components/DashboardAnalytics'
 import {
    TabBar,
    RedirectBanner,
@@ -25,13 +24,6 @@ import {
    WelcomeNote,
 } from './styled'
 import BottomBar from './shared/components/BottomBar'
-import {
-   AcceptedAndRejectedAnalytics,
-   OrderReceivedAnalytics,
-   RegisteredCustomerAnalytics,
-   SubscribedCustomerAnalytics,
-   TotalEarningAnalytics,
-} from './shared/components/DashboardAnalytics/Analytics'
 import DashboardCards from './shared/components/DashboardCardAnalytics'
 import { useAuth } from './shared/providers'
 import DashboardTables from './shared/components/DashboardTables'
@@ -143,13 +135,6 @@ const App = () => {
                            </p>
                         </WelcomeNote>
                         <DashboardCards />
-                        <DashboardAnalytics>
-                           <TotalEarningAnalytics />
-                           <OrderReceivedAnalytics />
-                           <AcceptedAndRejectedAnalytics />
-                           <SubscribedCustomerAnalytics />
-                           <RegisteredCustomerAnalytics />
-                        </DashboardAnalytics>
                         <DashboardTables />
                         {/* <InsightDiv>
                      <InsightDashboard
