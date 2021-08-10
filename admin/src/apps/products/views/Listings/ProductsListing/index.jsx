@@ -453,7 +453,8 @@ class DataTable extends React.Component {
                                  selectableCheck={() => true}
                                  rowSelected={this.handleRowSelection}
                                  rowDeselected={this.handleDeSelection}
-                                 options={{ ...tableOptions, reactiveData: true }}
+                                 options={{ ...tableOptions, persistenceID: 'product_table',
+                                 reactiveData: true }}
                                  data-custom-attr="test-custom-attribute"
                                  className="custom-css-class"
                               />
@@ -496,7 +497,8 @@ class DataTable extends React.Component {
                      selectableCheck={() => true}
                      rowSelected={this.handleRowSelection}
                      rowDeselected={this.handleDeSelection}
-                     options={{ ...tableOptions, reactiveData: true }}
+                     options={{ ...tableOptions, persistenceID: 'product-customize_table',
+                     reactiveData: true }}
                      data-custom-attr="test-custom-attribute"
                      className="custom-css-class"
                   />
@@ -1042,7 +1044,8 @@ const ProductOptions = forwardRef(
                selectableCheck={() => true}
                rowSelected={handleRowSelection}
                rowDeselected={handleRowDeselection}
-               options={{...tableOptions, reactiveData: true}}
+               options={{...tableOptions, persistenceID: 'product_option_table',
+               reactiveData: true}}
                data-custom-attr="test-custom-attribute"
                className="custom-css-class"
             />
