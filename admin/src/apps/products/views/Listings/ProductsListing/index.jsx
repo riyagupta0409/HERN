@@ -41,6 +41,7 @@ import {
    ProductTypeTunnel,
    BulkActionsTunnel,
    ProductOptionsBulkAction,
+   
 } from './tunnels'
 import { reactFormatter, ReactTabulator } from '@dailykit/react-tabulator'
 import { useMutation, useSubscription } from '@apollo/react-hooks'
@@ -298,7 +299,7 @@ class DataTable extends React.Component {
 
       let newData = [...this.props.selectedRows.map(row => row.id)]
       localStorage.setItem(
-         'selected-rows-id_recipe_table',
+         'selected-rows-id_product_table',
          JSON.stringify(newData)
       )
    }
@@ -309,7 +310,7 @@ class DataTable extends React.Component {
          prevState.filter(row => row.id != data.id)
       )
       localStorage.setItem(
-         'selected-rows-id_product _table',
+         'selected-rows-id_product_table',
          JSON.stringify(this.props.selectedRows.map(row => row.id))
       )
    }
@@ -376,7 +377,7 @@ class DataTable extends React.Component {
          this.props.setSelectedRows(newArr)
       }
    }
-   removeSelectedRecipes = () => {
+   removeSelectedProducts = () => {
       this.setState({ checked: false })
       this.props.setSelectedRows([])
       this.tableRef.current.table.deselectRow()
@@ -391,7 +392,7 @@ class DataTable extends React.Component {
                  formatter: 'rowSelection',
                  titleFormatter: reactFormatter(
                     <CrossBox
-                       removeSelectedRecipes={this.removeSelectedRecipes}
+                       removeSelectedProducts={this.removeSelectedProducts}
                     />
                  ),
                  align: 'center',
@@ -911,8 +912,8 @@ const ProductOptions = forwardRef(
                : null
          tableRef.current.table.setGroupBy(
             !!productOptionsGroupParse && productOptionsGroupParse.length > 0
-               ? [productOptionsGroupParse]
-               : ['name']
+               ? ['name', ...productOptionsGroupParse]
+               : 'name'
          )
          tableRef.current.table.setGroupHeader(function (
             value,
@@ -958,7 +959,7 @@ const ProductOptions = forwardRef(
          setChecked({ checked: false })
          setSelectedRows([])
          tableRef.current.table.deselectRow()
-         localStorage.setItem('selected-rows-id_product_table', JSON.stringify([]))
+         localStorage.setItem('selected-rows-id_product_option_table', JSON.stringify([]))
       }
       
       const handleMultipleRowSelection = () => {
@@ -970,7 +971,7 @@ const ProductOptions = forwardRef(
                   setSelectedRows(multipleRowData)
                   console.log("first",selectedRows)
                   localStorage.setItem(
-                     'selected-rows-id_product_table',
+                     'selected-rows-id_product_option-table',
                      JSON.stringify(multipleRowData.map(row => row.id))
                   )
                } else {
@@ -979,7 +980,7 @@ const ProductOptions = forwardRef(
                   console.log("second",selectedRows)
 
                   localStorage.setItem(
-                     'selected-rows-id_product_table',
+                     'selected-rows-id_product_option-table',
                      JSON.stringify([])
                   )
                }

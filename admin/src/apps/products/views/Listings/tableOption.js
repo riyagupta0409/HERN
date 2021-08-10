@@ -5,7 +5,6 @@ const options = {
    maxHeight: 420,
    resizableColumns: false,
    virtualDomBuffer: 20,
-   persistenceID: 'recipe_table',
    placeholder: 'No Data Available',
    index: 'id',
    persistence: true,
