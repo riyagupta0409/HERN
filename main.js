@@ -37,6 +37,14 @@ AWS.config.setPromisesDependency(bluebird)
 
 const PORT = process.env.PORT || 4000
 
+
+// // temporary to check webhook route
+// app.post('/api/handleWebhookEvents/create-delete-event-trigger' , (req, res) => {
+//    console.log(req.body)
+// })
+
+
+
 // serves dailyos-backend endpoints for ex. hasura event triggers, upload, parseur etc.
 app.use('/server', ServerRouter)
 /*
@@ -52,6 +60,9 @@ app.use('/apps', (req, res, next) => {
 
    express.static('admin/build')(req, res, next)
 })
+
+
+
 /*
 handles template endpoints for ex. serving labels, sachets, emails in pdf or html format
 
