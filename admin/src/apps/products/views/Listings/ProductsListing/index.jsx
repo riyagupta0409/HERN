@@ -167,7 +167,7 @@ const ProductsListing = () => {
                options={options}
                active={view}
                onChange={option => {
-                  setView(option.id)
+                     setView(option.id)
                   setIsProductOptionTableVisible(false)
                }}
             />
@@ -383,6 +383,22 @@ class DataTable extends React.Component {
       this.tableRef.current.table.deselectRow()
       localStorage.setItem('selected-rows-id_product_table', JSON.stringify([]))
    }
+   clearProductPersistance = () =>{
+         localStorage.removeItem('tabulator-simple_product_table-columns')
+         localStorage.removeItem('tabulator-simple_product_table-sort')
+         localStorage.removeItem('tabulator-simple_product_table-filter')
+   }
+   clearCustomozeProductPersistance = () =>{
+      if (this.title==='customizable product') {
+         localStorage.removeItem('tabulator-customizable_product_table-columns')
+         localStorage.removeItem('tabulator-customizable_product_table-sort')
+         localStorage.removeItem('tabulator-customizable_product_table-filter')
+      } else {
+         localStorage.removeItem('tabulator-combo_product_table-columns')
+         localStorage.removeItem('tabulator-combo_product_table-sort')
+         localStorage.removeItem('tabulator-combo_product_table-filter')
+      }
+   }
    render() {
       
       const selectionColumn =
@@ -437,6 +453,7 @@ class DataTable extends React.Component {
                            <>
                               <ActionBar
                                  title={`${this.props.view} product`}
+                                 clearPersistance={this.clearProductPersistance}
                                  groupByOptions={this.groupByOptions}
                                  selectedRows={this.props.selectedRows}
                                  openTunnel={this.props.openTunnel}
@@ -453,7 +470,7 @@ class DataTable extends React.Component {
                                  selectableCheck={() => true}
                                  rowSelected={this.handleRowSelection}
                                  rowDeselected={this.handleDeSelection}
-                                 options={{ ...tableOptions, persistenceID: 'simple_product_table',
+                                 options={{ ...tableOptions, persistenceID: `${this.props.view}_product_table`,
                                  reactiveData: true }}
                                  data-custom-attr="test-custom-attribute"
                                  className="custom-css-class"
@@ -481,6 +498,7 @@ class DataTable extends React.Component {
                <>
                   <ActionBar
                      title={`${this.props.view} product`}
+                     clearPersistance={this.clearCustomozeProductPersistance}
                      groupByOptions={this.groupByOptions}
                      selectedRows={this.props.selectedRows}
                      openTunnel={this.props.openTunnel}
@@ -561,7 +579,6 @@ function ProductName({ cell, addTab }) {
       </>
    )
 }
-
 const ActionBar = ({
    title,
    groupByOptions,
@@ -569,8 +586,9 @@ const ActionBar = ({
    openTunnel,
    handleGroupBy,
    clearHeaderFilter,
+   clearPersistance,
 }) => {
-
+   console.log('this is title',title)
    const defaultIDs = () => {
       let arr = []
       const productGroup = localStorage.getItem('tabulator-product_table-group')
@@ -645,7 +663,7 @@ const ActionBar = ({
                >
                   <TextButton
                      onClick={() => {
-                        localStorage.clear()
+                     clearPersistance()
                      }}
                      type="ghost"
                      size="sm"
@@ -988,7 +1006,12 @@ const ProductOptions = forwardRef(
                }
             }         
       
-      
+      const clearProductOptionPersistance= () =>
+      {
+         localStorage.removeItem('tabulator-product_option_table-columns')
+         localStorage.removeItem('tabulator-product_option_table-sort')
+         localStorage.removeItem('tabulator-product_option_table-filter')  
+      }
 
       const selectionColumn =
          selectedRows.length > 0 &&
@@ -1026,6 +1049,7 @@ const ProductOptions = forwardRef(
       return (
          <>
             <ActionBar
+               clearPersistance={clearProductOptionPersistance}
                title="Product Option"
                groupByOptions={groupByOptions}
                selectedRows={selectedRows}
