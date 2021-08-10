@@ -1,8 +1,5 @@
 import express from 'express'
-const { ApolloServer } = require('apollo-server-express')
-const schema = require('./streaming/ohyay/src/schema/schema')
-const depthLimit = require('graphql-depth-limit')
-import get_env from '../get_env'
+
 import {
    MOFRouter,
    MenuRouter,
@@ -31,7 +28,8 @@ import {
    populate_env,
    ActionsRouter,
    OhyayRouter,
-   ExperienceRouter
+   ExperienceRouter,
+   handleCartPayment
 } from './entities'
 import { PrintRouter } from './entities/print'
 import {
@@ -46,28 +44,6 @@ import {
 } from './entities/emails'
 
 const router = express.Router()
-
-const apolloserver = new ApolloServer({
-   schema,
-   playground: {
-      endpoint: `${get_env('ENDPOINT')}/ohyay/graphql`
-   },
-   introspection: true,
-   validationRules: [depthLimit(11)],
-   formatError: err => {
-      console.log(err)
-      if (err.message.includes('ENOENT'))
-         return isProd ? new Error('No such folder or file exists!') : err
-      return isProd ? new Error(err) : err
-   },
-   debug: true,
-   context: ({ req }) => {
-      const ohyay_api_key = req.header('ohyay_api_key')
-      return { ohyay_api_key }
-   }
-})
-
-apolloserver.applyMiddleware({ app })
 
 // Routes
 router.get('/api/about', (req, res) => {
@@ -94,6 +70,7 @@ router.use('/api/customer', CustomerRouter)
 router.use('/api/actions', ActionsRouter)
 router.use('/api/ohyay', OhyayRouter)
 router.use('/api/experience', ExperienceRouter)
+router.use('/api/handleCartPayment', handleCartPayment)
 
 router.use('/webhook/user', UserRouter)
 router.use('/webhook/devices', DeviceRouter)

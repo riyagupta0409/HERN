@@ -486,7 +486,7 @@ export const populate_env = async (req, res) => {
             server[node.title] = node.value
          })
 
-         fs.writeFileSync(
+         writeFileSync(
             path.join(__dirname, '../../../', 'config.js'),
             'module.exports = ' + JSON.stringify(server, null, 2)
          )
@@ -505,7 +505,7 @@ export const populate_env = async (req, res) => {
             'env-config.js'
          )
 
-         fs.writeFileSync(
+         writeFileSync(
             PATH_TO_SUBS,
             'window._env_ = ' + JSON.stringify(store, null, 2)
          )
@@ -524,7 +524,7 @@ export const populate_env = async (req, res) => {
                'public',
                'env-config.js'
             )
-            fs.writeFileSync(
+            writeFileSync(
                PATH_TO_ADMIN,
                'window._env_ = ' + JSON.stringify(admin, null, 2)
             )
@@ -536,7 +536,7 @@ export const populate_env = async (req, res) => {
                'build',
                'env-config.js'
             )
-            fs.writeFileSync(
+            writeFileSync(
                PATH_TO_ADMIN,
                'window._env_ = ' + JSON.stringify(admin, null, 2)
             )
