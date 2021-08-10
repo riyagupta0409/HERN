@@ -388,8 +388,11 @@ class DataTable extends React.Component {
          localStorage.removeItem('tabulator-simple_product_table-sort')
          localStorage.removeItem('tabulator-simple_product_table-filter')
    }
+   
+   productType= `${this.props.view} product`
+
    clearCustomozeProductPersistance = () =>{
-      if (this.title==='customizable product') {
+      if (this.productType==='customizable product') {
          localStorage.removeItem('tabulator-customizable_product_table-columns')
          localStorage.removeItem('tabulator-customizable_product_table-sort')
          localStorage.removeItem('tabulator-customizable_product_table-filter')
