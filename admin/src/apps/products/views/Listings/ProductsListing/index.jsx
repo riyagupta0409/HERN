@@ -453,7 +453,7 @@ class DataTable extends React.Component {
                                  selectableCheck={() => true}
                                  rowSelected={this.handleRowSelection}
                                  rowDeselected={this.handleDeSelection}
-                                 options={{ ...tableOptions, persistenceID: 'product_table',
+                                 options={{ ...tableOptions, persistenceID: 'simple_product_table',
                                  reactiveData: true }}
                                  data-custom-attr="test-custom-attribute"
                                  className="custom-css-class"
@@ -497,7 +497,7 @@ class DataTable extends React.Component {
                      selectableCheck={() => true}
                      rowSelected={this.handleRowSelection}
                      rowDeselected={this.handleDeSelection}
-                     options={{ ...tableOptions, persistenceID: 'product-customize_table',
+                     options={{ ...tableOptions, persistenceID: `${this.props.view}_product_table`,
                      reactiveData: true }}
                      data-custom-attr="test-custom-attribute"
                      className="custom-css-class"
