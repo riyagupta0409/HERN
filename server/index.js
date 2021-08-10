@@ -26,7 +26,8 @@ import {
    GetFullOccurenceRouter,
    CustomerRouter,
    populate_env,
-   ActionsRouter
+   ActionsRouter,
+   WebhookEventRouter // for hadling webhook events
 } from './entities'
 import { PrintRouter } from './entities/print'
 import {
@@ -82,6 +83,8 @@ router.post(
    '/webhook/emails/handle-subscription-cancelled',
    handleSubscriptionCancelled
 )
+router.use('/api/handleWebhookEvents',  WebhookEventRouter);
+
 
 router.use('/api/store', StoreRouter)
 router.post('/api/envs', populate_env)
