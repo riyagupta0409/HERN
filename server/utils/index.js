@@ -6,4 +6,4 @@ export * from './logger'
 export * from './evalTime'
 export * from './reminderEmail'
 export * from './isObjectValid'
-export * from './discardPreviousPaymentMethod'
+export * from './discardPreviousPaymentMethod' // might need to remove this

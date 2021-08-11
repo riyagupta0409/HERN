@@ -31,15 +31,15 @@ export const PaymentForm = ({ intent }) => {
    const handleResult = async ({ setupIntent }) => {
       try {
          if (setupIntent.status === 'succeeded') {
-            const ORIGIN = isClient ? get_env('DAILYKEY_URL') : ''
-            let URL = `${ORIGIN}/api/payment-method/${setupIntent.payment_method}`
+            const DATAHUB = isClient ? get_env('DATA_HUB_HTTPS') : ''
+            let url = `${new URL(DATAHUB).origin}/api/payment-method/${setupIntent.payment_method}`
             if (
                organization.stripeAccountType === 'standard' &&
                organization.stripeAccountId
             ) {
-               URL += `?accountId=${organization.stripeAccountId}`
+               url += `?accountId=${organization.stripeAccountId}`
             }
-            const { data: { success, data = {} } = {} } = await axios.get(URL)
+            const { data: { success, data = {} } = {} } = await axios.get(url)
 
             if (success) {
                await createPaymentMethod({

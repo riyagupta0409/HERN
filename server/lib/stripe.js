@@ -1,6 +1,10 @@
-require('dotenv').config()
 import Stripe from 'stripe'
-console.log('stripekey', process.env.STRIPE_SECRET_KEY)
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+
+import get_env from '../../get_env'
+
+const stripe = async () => {
+   const STRIPE_SECRET_KEY = await get_env('STRIPE_SECRET_KEY')
+   return new Stripe(STRIPE_SECRET_KEY)
+}
 
 export default stripe

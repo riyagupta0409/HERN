@@ -194,14 +194,17 @@ export const initiatePayment = async (req, res) => {
                stripeCustomerId: payload.stripeCustomerId
             }
          }
-         const PAYMENTS_API = await get_env('PAYMENTS_API')
-         await fetch(`${PAYMENTS_API}/api/initiate-payment`, {
-            method: 'POST',
-            headers: {
-               'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(body)
-         })
+         const DATA_HUB = await get_env('DATA_HUB')
+         await fetch(
+            `${new URL(DATA_HUB).origin}/server/api/initiate-stripe-payment`,
+            {
+               method: 'POST',
+               headers: {
+                  'Content-Type': 'application/json'
+               },
+               body: JSON.stringify(body)
+            }
+         )
       }
 
       res.status(200).json({
