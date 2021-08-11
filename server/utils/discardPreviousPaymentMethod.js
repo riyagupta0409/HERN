@@ -18,15 +18,15 @@ export const discardPreviousPaymentMethod = async args => {
          organization = {},
          cartType = 'cart'
       } = args
-      const datahub = new GraphQLClient(organization.datahubUrl, {
-         headers: { 'x-hasura-admin-secret': organization.adminSecret }
-      })
+      // const datahub = new GraphQLClient(organization.datahubUrl, {
+      //    headers: { 'x-hasura-admin-secret': organization.adminSecret }
+      // })
 
       console.log('args', args)
       console.log('cartype', cartType)
       // if (cartType === 'cartPayment') {
       console.log('if')
-      const { cartPayment } = await datahub.request(CART_PAYMENT, {
+      const { cartPayment } = await client.request(CART_PAYMENT, {
          id: cartPaymentId
       })
       // cart = cartPayment
@@ -54,6 +54,7 @@ export const discardPreviousPaymentMethod = async args => {
       }
       return
    } catch (error) {
+      console.log(error)
       throw error
    }
 }
@@ -63,7 +64,7 @@ const handleRazorpay = async args => {
       const { cartPaymentId, organization = {}, datahub, cartType } = args
 
       // if (cartType === 'cartPayment') {
-      await datahub.request(UPDATE_CART_PAYMENT, {
+      await client.request(UPDATE_CART_PAYMENT, {
          id: cartPaymentId,
          _set: {
             paymentId: null,
@@ -165,6 +166,7 @@ const handleRazorpay = async args => {
 
       return result
    } catch (error) {
+      console.log(error)
       throw error
    }
 }

@@ -3,7 +3,7 @@ import { client } from '../../../lib/graphql'
 // import { GraphQLClient } from 'graphql-request'
 
 import { logger, discardPreviousPaymentMethod } from '../../../utils'
-
+import get_env from '../../../../get_env'
 // const client = new GraphQLClient(process.env.DAILYCLOAK_URL, {
 //    headers: {
 //       'x-hasura-admin-secret': process.env.DAILYCLOAK_ADMIN_SECRET
@@ -84,11 +84,11 @@ export const createCustomerPaymentIntent = async (req, res) => {
 
          // const hardcodedOrganizationId = 239
 
-         const { organization } = await client.request(ORGANIZATION, {
-            id: ORGANIZATION_ID //hardcoded orgnizationId to prevent any other payment (like from breezychef)
-         })
+         // const { organization } = await client.request(ORGANIZATION, {
+         //    id: ORGANIZATION_ID //hardcoded orgnizationId to prevent any other payment (like from breezychef)
+         // })
 
-         console.log('organization', organization, cart)
+         // console.log('organization', organization, cart)
 
          // const datahub = new GraphQLClient(organization.datahubUrl, {
          //    headers: { 'x-hasura-admin-secret': organization.adminSecret }
@@ -124,7 +124,7 @@ export const createCustomerPaymentIntent = async (req, res) => {
             origin: 'stripe',
             // cartType: cart.type,
             organization: {
-               id: organization.id,
+               id: ORGANIZATION_ID,
                datahubUrl: organization.datahubUrl,
                adminSecret: organization.adminSecret
             }
