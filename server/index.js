@@ -8,7 +8,7 @@ import {
    DeviceRouter,
    UploadRouter,
    RMKMenuRouter,
-   initiatePayment,
+   InitiatePaymentRouter,
    OccurenceRouter,
    WorkOrderRouter,
    NotificationRouter,
@@ -27,7 +27,7 @@ import {
    ActionsRouter,
    OhyayRouter,
    ExperienceRouter,
-   handleCartPayment,
+   // handleCartPayment,
    LogRouter,
    CardRouter,
    RefundRouter,
@@ -38,7 +38,7 @@ import {
    createStripeCustomer,
    sendStripeInvoice,
    sendSMS,
-   createCustomerPaymentIntent,
+   // createCustomerPaymentIntent,
    updateDailyosStripeStatus,
    getAccountDetails
 } from './entities'
@@ -71,7 +71,7 @@ router.use('/api/assets', UploadRouter)
 router.use('/api/printer', PrintRouter)
 router.use('/api/rmk-menu', RMKMenuRouter)
 router.use('/api/inventory', WorkOrderRouter)
-router.post('/api/initiate-payment', createCustomerPaymentIntent)
+
 router.get('/api/place/autocomplete/json', placeAutoComplete)
 router.get('/api/place/details/json', placeDetails)
 router.post('/api/distance-matrix', getDistance)
@@ -84,7 +84,7 @@ router.use('/api/occurences', GetFullOccurenceRouter)
 router.use('/api/actions', ActionsRouter)
 router.use('/api/ohyay', OhyayRouter)
 router.use('/api/experience', ExperienceRouter)
-router.use('/api/handleCartPayment', handleCartPayment)
+// router.use('/api/handleCartPayment', handleCartPayment)
 
 // NEW
 router.use('/api/cards', CardRouter)
@@ -93,9 +93,9 @@ router.use('/api/setup-intent', SetupIntentRouter)
 router.use('/api/payment-method', PaymentMethodRouter)
 router.use('/api/payment-intent', PaymentIntentRouter)
 router.use('/api/payment', PaymentRouter)
+router.use('/api/initiate-payment', InitiatePaymentRouter)
 
 router.get('/api/account-details/:id', getAccountDetails)
-router.post('/api/initiate-stripe-payment', createCustomerPaymentIntent)
 
 router.post('/api/webhooks/dailyos-stripe-status', updateDailyosStripeStatus)
 router.post('/api/webhooks/stripe/customer', createStripeCustomer)
