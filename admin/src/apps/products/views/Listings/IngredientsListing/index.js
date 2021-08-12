@@ -376,6 +376,7 @@ class DataTable extends React.Component {
          localStorage.removeItem('tabulator-ingredient_table-columns')
          localStorage.removeItem('tabulator-ingredient_table-sort')
          localStorage.removeItem('tabulator-ingredient_table-filter')  
+         localStorage.removeItem('tabulator-ingredients_table-group')  
       }
 
    render() {
@@ -516,15 +517,15 @@ const ActionBar = ({
 }) => {
    const defaultIDs = () => {
       let arr = []
-      const recipeGroup = localStorage.getItem('tabulator-ingredients_table-group')
-      const recipeGroupParse =
-         recipeGroup !== undefined &&
-         recipeGroup !== null &&
-         recipeGroup.length !== 0
-            ? JSON.parse(recipeGroup)
+      const ingredientGroup = localStorage.getItem('tabulator-ingredients_table-group')
+      const ingredientGroupParse =
+         ingredientGroup !== undefined &&
+         ingredientGroup !== null &&
+         ingredientGroup.length !== 0
+            ? JSON.parse(ingredientGroup)
             : null
-      if (recipeGroupParse !== null) {
-         recipeGroupParse.forEach(x => {
+      if (ingredientGroupParse !== null) {
+         ingredientGroupParse.forEach(x => {
             const foundGroup = groupByOptions.find(y => y.payload == x)
             arr.push(foundGroup.id)
          })
@@ -533,6 +534,10 @@ const ActionBar = ({
    }
 
    const selectedOption = option => {
+      localStorage.setItem(
+         'tabulator-ingredients_table-group',
+         JSON.stringify(option.map(val => val.payload))
+      )
       const newOptions = option.map(x => x.payload)
       handleGroupBy(newOptions)
    }
