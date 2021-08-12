@@ -225,7 +225,7 @@ class DataTable extends React.Component {
       super(props)
       this.state = {
          checked: false,
-         groups: [localStorage.getItem('tabulator-product_table-group')],
+         groups: [localStorage.getItem(`tabulator-${this.props.view}_product_table-group`)],
       }
       this.handleMultipleRowSelection =
          this.handleMultipleRowSelection.bind(this)
@@ -331,11 +331,12 @@ class DataTable extends React.Component {
          }
       )
    }
+   
    clearHeaderFilter = () => {
       this.tableRef.current.table.clearHeaderFilter()
    }
    selectRows = () => {
-      const productGroup = localStorage.getItem('tabulator-product_table-group')
+      const productGroup = localStorage.getItem(`tabulator-${this.props.view}_product_table-group`)
       const productGroupParse =
          productGroup !== undefined &&
          productGroup !== null &&
@@ -383,23 +384,26 @@ class DataTable extends React.Component {
       this.tableRef.current.table.deselectRow()
       localStorage.setItem('selected-rows-id_product_table', JSON.stringify([]))
    }
-   clearProductPersistance = () =>{
+   clearProductPersistence = () =>{
          localStorage.removeItem('tabulator-simple_product_table-columns')
          localStorage.removeItem('tabulator-simple_product_table-sort')
          localStorage.removeItem('tabulator-simple_product_table-filter')
+         localStorage.removeItem('tabulator-simple_product_table-group')
    }
    
    productType= `${this.props.view} product`
 
-   clearCustomozeProductPersistance = () =>{
+   clearCustomozeProductPersistence = () =>{
       if (this.productType==='customizable product') {
          localStorage.removeItem('tabulator-customizable_product_table-columns')
          localStorage.removeItem('tabulator-customizable_product_table-sort')
          localStorage.removeItem('tabulator-customizable_product_table-filter')
+         localStorage.removeItem('tabulator-customizable_product_table-group')
       } else {
          localStorage.removeItem('tabulator-combo_product_table-columns')
          localStorage.removeItem('tabulator-combo_product_table-sort')
          localStorage.removeItem('tabulator-combo_product_table-filter')
+         localStorage.removeItem('tabulator-combo_product_table-group')
       }
    }
    render() {
@@ -455,8 +459,8 @@ class DataTable extends React.Component {
                         {!this.props.isProductOptionTableVisible && (
                            <>
                               <ActionBar
-                                 title={`${this.props.view} product`}
-                                 clearPersistance={this.clearProductPersistance}
+                                 title={`${this.props.view}_product`}
+                                 clearPersistence={this.clearProductPersistence}
                                  groupByOptions={this.groupByOptions}
                                  selectedRows={this.props.selectedRows}
                                  openTunnel={this.props.openTunnel}
@@ -500,8 +504,8 @@ class DataTable extends React.Component {
             {this.props.view !== 'simple' && (
                <>
                   <ActionBar
-                     title={`${this.props.view} product`}
-                     clearPersistance={this.clearCustomozeProductPersistance}
+                     title={`${this.props.view}_product`}
+                     clearPersistence={this.clearCustomozeProductPersistence}
                      groupByOptions={this.groupByOptions}
                      selectedRows={this.props.selectedRows}
                      openTunnel={this.props.openTunnel}
@@ -589,12 +593,12 @@ const ActionBar = ({
    openTunnel,
    handleGroupBy,
    clearHeaderFilter,
-   clearPersistance,
+   clearPersistence,
 }) => {
-   console.log('this is title',title)
    const defaultIDs = () => {
       let arr = []
-      const productGroup = localStorage.getItem('tabulator-product_table-group')
+      const productGroup = localStorage.getItem(`tabulator-${title}_table-group`)
+      
       const productGroupParse =
          productGroup !== undefined &&
          productGroup !== null &&
@@ -607,15 +611,19 @@ const ActionBar = ({
             arr.push(foundGroup.id)
          })
       }
-      return arr.length == 0 ? [] : arr
+      return arr.length == 0 ? [] : arr 
    }
 
    const selectedOption = option => {
+      localStorage.setItem(
+         `tabulator-${title}_table-group`,
+         JSON.stringify(option.map(val => val.payload))
+      )
       const newOptions = option.map(x => x.payload)
       handleGroupBy(newOptions)
    }
    const searchedOption = option => console.log(option)
-   console.log('in action bar', selectedRows)
+   
    return (
       <>
          <Flex
@@ -666,7 +674,7 @@ const ActionBar = ({
                >
                   <TextButton
                      onClick={() => {
-                     clearPersistance()
+                     clearPersistence()
                      }}
                      type="ghost"
                      size="sm"
@@ -678,8 +686,8 @@ const ActionBar = ({
                   <Dropdown
                      type="multi"
                      variant="revamp"
-                     // disabled={true}
-                     defaultIds={defaultIDs}
+                     disabled={true}
+                     defaultIds={defaultIDs()}
                      options={groupByOptions}
                      searchedOption={searchedOption}
                      selectedOption={selectedOption}
@@ -850,30 +858,9 @@ const ProductOptions = forwardRef(
       const clearHeaderFilter = () => {
          tableRef.current.table.clearHeaderFilter()
       }
-      const defaultIDs = () => {
-         let arr = []
-         const productOptionsGroup = localStorage.getItem(
-            'tabulator_product_options_groupBy'
-         )
-         const productOptionsGroupParse =
-            productOptionsGroup !== undefined &&
-            productOptionsGroup !== null &&
-            productOptionsGroup.length !== 0
-               ? JSON.parse(productOptionsGroup)
-               : null
-         if (productOptionsGroupParse !== null) {
-            productOptionsGroupParse.forEach(x => {
-               const foundGroup = groupByOptions.find(y => y.payload == x)
-               arr.push(foundGroup.id)
-            })
-         }
-         return arr.length == 0 ? [] : arr
-      }
+      
       const handleGroupBy = option => {
-         localStorage.setItem(
-            'tabulator_product_options_groupBy',
-            JSON.stringify(option)
-         )
+         
          tableRef.current.table.setGroupBy(['name', ...option])
       }
       const handleRowSelection = ({ _row }) => {
@@ -881,14 +868,14 @@ const ProductOptions = forwardRef(
          const lastPersistence = localStorage.getItem(
             'selected-rows-id_product_option_table'
          )
-         const lastPersistanceParse =
+         const lastPersistenceParse =
             lastPersistence !== undefined &&
             lastPersistence !== null &&
             lastPersistence.length !== 0
                ? JSON.parse(lastPersistence)
                : []
          setSelectedRows(prevState => [...prevState, _row.getData()])
-         let newData = [...lastPersistanceParse, rowData.id]
+         let newData = [...lastPersistenceParse, rowData.id]
          localStorage.setItem(
             'selected-rows-id_product_option_table',
             JSON.stringify(newData)
@@ -900,7 +887,7 @@ const ProductOptions = forwardRef(
          const lastPersistence = localStorage.getItem(
             'selected-rows-id_product_option_table'
          )
-         const lastPersistanceParse =
+         const lastPersistenceParse =
             lastPersistence !== undefined &&
             lastPersistence !== null &&
             lastPersistence.length !== 0
@@ -909,12 +896,12 @@ const ProductOptions = forwardRef(
          setSelectedRows(prevState =>
             prevState.filter(row => row.id !== data.id)
          )
-         const newLastPersistanceParse = lastPersistanceParse.filter(
+         const newLastPersistenceParse = lastPersistenceParse.filter(
             id => id !== data.id
          )
          localStorage.setItem(
             'selected-rows-id_product_option_table',
-            JSON.stringify(newLastPersistanceParse)
+            JSON.stringify(newLastPersistenceParse)
          )
       }
       useImperativeHandle(ref, () => ({
@@ -1009,11 +996,12 @@ const ProductOptions = forwardRef(
                }
             }         
       
-      const clearProductOptionPersistance= () =>
+      const clearProductOptionPersistence= () =>
       {
          localStorage.removeItem('tabulator-product_option_table-columns')
          localStorage.removeItem('tabulator-product_option_table-sort')
-         localStorage.removeItem('tabulator-product_option_table-filter')  
+         localStorage.removeItem('tabulator-product_option_table-filter') 
+         localStorage.removeItem('tabulator-Product_Option_table-group')
       }
 
       const selectionColumn =
@@ -1052,12 +1040,12 @@ const ProductOptions = forwardRef(
       return (
          <>
             <ActionBar
-               clearPersistance={clearProductOptionPersistance}
-               title="Product Option"
+               clearPersistence={clearProductOptionPersistence}
+               title="Product_Option"
                groupByOptions={groupByOptions}
                selectedRows={selectedRows}
                openTunnel={openTunnel}
-               defaultIDs={defaultIDs()}
+                  // defaultIDs={defaultIDs()}
                handleGroupBy={handleGroupBy}
                clearHeaderFilter={clearHeaderFilter}
             />
