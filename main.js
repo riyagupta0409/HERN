@@ -44,7 +44,7 @@ app.use('/server', ServerRouter)
 serves build folder of admin
 */
 app.use('/apps', (req, res, next) => {
-   if (process.env.NODE_ENV === 'development') {
+   if (process.env.NODE_ENV === 'developmentn') {
       return createProxyMiddleware({
          target: 'http://localhost:8000',
          changeOrigin: true
