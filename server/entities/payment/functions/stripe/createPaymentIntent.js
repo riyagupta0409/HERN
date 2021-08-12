@@ -191,53 +191,6 @@ export const createPaymentIntent = async arg => {
                message: 'New invoice payment has been made'
             }
          }
-         if (organization.stripeAccountType === 'express') {
-            const intent = await _stripe.paymentIntents.create({
-               amount: chargeAmount,
-               currency: CURRENCY.toLowerCase(),
-               confirm: true,
-               on_behalf_of: organization.stripeAccountId,
-               customer: stripeCustomerId,
-               payment_method: paymentMethod,
-               transfer_group: transferGroup,
-               statement_descriptor:
-                  statementDescriptor || organization.organizationName,
-               return_url: `https://${organization.organizationUrl}/store/paymentProcessing`
-            })
-            if (intent && intent.id) {
-               await client.request(UPDATE_CART_PAYMENT, {
-                  pk_columns: { id: transferGroup },
-                  _set: {
-                     transactionId: intent.id,
-                     transactionRemark: intent,
-                     paymentStatus: STATUS[intent.status]
-                  }
-               })
-
-               await client.request(DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY, {
-                  objects: [
-                     {
-                        cartId: transferGroup,
-                        status: intent.status,
-                        type: 'PAYMENT_INTENT',
-                        transactionId: intent.id,
-                        transactionRemark: intent
-                     }
-                  ]
-               })
-
-               return {
-                  success: true,
-                  data: intent
-               }
-            }
-            if (!intent) {
-               return {
-                  success: false,
-                  message: 'Error creating payment intent'
-               }
-            }
-         }
       }
    } catch (error) {
       logger('/api/payment-intent', error)
