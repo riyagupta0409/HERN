@@ -87,7 +87,7 @@ export const createStripeInvoice = async arg => {
                      console.log('intent', intent.id)
                      await handlePaymentIntent({
                         intent,
-                        stripeAccountId: stripeAccountId
+                        stripeAccountId
                      })
                   }
                   return {
@@ -166,7 +166,7 @@ export const createStripeInvoice = async arg => {
                      organizationId,
                      cartPaymentId: transferGroup,
                      // customerPaymentIntentId: id,
-                     stripeAccountId: stripeAccountId
+                     stripeAccountId
                   }
                },
                (await isConnectedIntegration())
