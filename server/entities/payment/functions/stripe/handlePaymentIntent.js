@@ -1,5 +1,6 @@
 import stripe from '../../../../lib/stripe'
 import { client } from '../../../../lib/graphql'
+import { isConnectedIntegration } from '../../../../utils'
 import {
    UPDATE_CART_PAYMENT,
    DATAHUB_INSERT_STRIPE_PAYMENT_HISTORY
@@ -16,9 +17,14 @@ const STATUS = {
 const handlePaymentIntent = async ({ intent, stripeAccountId }) => {
    try {
       const _stripe = await stripe()
-      const invoice = await _stripe.invoices.retrieve(intent.invoice, {
-         stripeAccount: stripeAccountId
-      })
+      const invoice = await _stripe.invoices.retrieve(
+         intent.invoice,
+         (await isConnectedIntegration())
+            ? {
+                 stripeAccount: stripeAccountId
+              }
+            : null
+      )
 
       await client.request(UPDATE_CART_PAYMENT, {
          id: +invoice.metadata.cartPaymentId,

@@ -40,7 +40,8 @@ import {
    sendSMS,
    // createCustomerPaymentIntent,
    updateDailyosStripeStatus,
-   getAccountDetails
+   getAccountDetails,
+   StripeWebhookRouter
 } from './entities'
 
 import { PrintRouter } from './entities/print'
@@ -55,7 +56,10 @@ import {
    handleSubscriptionCancelled
 } from './entities/emails'
 
+import { stripeWebhookEvents } from './entities/payment/stripe-webhook/controllers'
+
 import './lib/stripe'
+import { parse } from './utils'
 
 const router = express.Router()
 
@@ -102,6 +106,7 @@ router.post('/api/webhooks/stripe/customer', createStripeCustomer)
 router.post('/api/webhooks/stripe/send-invoice', sendStripeInvoice)
 router.post('/api/webhooks/stripe/send-sms', sendSMS)
 // NEW
+router.post('/api/payment/stripe-webhook', stripeWebhookEvents)
 
 router.use('/webhook/user', UserRouter)
 router.use('/webhook/devices', DeviceRouter)

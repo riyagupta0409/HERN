@@ -9,3 +9,15 @@ query organizations {
    }
 }
 `
+export const CART_PAYMENT = `
+query CART_PAYMENT($id: Int!) {
+   cartPayment(id: $id) {
+   id
+   cartId
+   paymentStatus
+   paymentId
+   stripeInvoiceId
+   paymentRetryAttempt
+ }
+}
+`

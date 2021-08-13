@@ -17,11 +17,23 @@ import ServerRouter from './server'
 import schema from './template/schema'
 const ohyaySchema = require('./server/streaming/ohyay/src/schema/schema')
 import TemplateRouter from './template'
+
 const app = express()
+
+const setupForStripeWebhooks = {
+   // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
+   verify: (req, res, buf) => {
+      const url = req.originalUrl
+      console.log({ url })
+      if (url.startsWith('/server/api/payment/stripe-webhook')) {
+         req.rawBody = buf.toString()
+      }
+   }
+}
 
 // Middlewares
 app.use(cors())
-app.use(express.json())
+app.use(express.json(setupForStripeWebhooks))
 app.use(express.urlencoded({ extended: true }))
 app.use(
    morgan(

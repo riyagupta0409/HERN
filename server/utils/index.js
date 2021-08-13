@@ -8,3 +8,4 @@ export * from './reminderEmail'
 export * from './isObjectValid'
 export * from './discardPreviousPaymentMethod' // might need to remove this
 export * from './isConnectedIntegration'
+export * from './parse'
