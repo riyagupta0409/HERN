@@ -41,6 +41,7 @@ import {
    ProductTypeTunnel,
    BulkActionsTunnel,
    ProductOptionsBulkAction,
+   
 } from './tunnels'
 import { reactFormatter, ReactTabulator } from '@dailykit/react-tabulator'
 import { useMutation, useSubscription } from '@apollo/react-hooks'
@@ -166,7 +167,7 @@ const ProductsListing = () => {
                options={options}
                active={view}
                onChange={option => {
-                  setView(option.id)
+                     setView(option.id)
                   setIsProductOptionTableVisible(false)
                }}
             />
@@ -224,7 +225,7 @@ class DataTable extends React.Component {
       super(props)
       this.state = {
          checked: false,
-         groups: [localStorage.getItem('tabulator-product_table-group')],
+         groups: [localStorage.getItem(`tabulator-${this.props.view}_product_table-group`)],
       }
       this.handleMultipleRowSelection =
          this.handleMultipleRowSelection.bind(this)
@@ -298,7 +299,7 @@ class DataTable extends React.Component {
 
       let newData = [...this.props.selectedRows.map(row => row.id)]
       localStorage.setItem(
-         'selected-rows-id_recipe_table',
+         'selected-rows-id_product_table',
          JSON.stringify(newData)
       )
    }
@@ -309,7 +310,7 @@ class DataTable extends React.Component {
          prevState.filter(row => row.id != data.id)
       )
       localStorage.setItem(
-         'selected-rows-id_product _table',
+         'selected-rows-id_product_table',
          JSON.stringify(this.props.selectedRows.map(row => row.id))
       )
    }
@@ -330,11 +331,12 @@ class DataTable extends React.Component {
          }
       )
    }
+   
    clearHeaderFilter = () => {
       this.tableRef.current.table.clearHeaderFilter()
    }
    selectRows = () => {
-      const productGroup = localStorage.getItem('tabulator-product_table-group')
+      const productGroup = localStorage.getItem(`tabulator-${this.props.view}_product_table-group`)
       const productGroupParse =
          productGroup !== undefined &&
          productGroup !== null &&
@@ -376,11 +378,33 @@ class DataTable extends React.Component {
          this.props.setSelectedRows(newArr)
       }
    }
-   removeSelectedRecipes = () => {
+   removeSelectedProducts = () => {
       this.setState({ checked: false })
       this.props.setSelectedRows([])
       this.tableRef.current.table.deselectRow()
       localStorage.setItem('selected-rows-id_product_table', JSON.stringify([]))
+   }
+   clearProductPersistence = () =>{
+         localStorage.removeItem('tabulator-simple_product_table-columns')
+         localStorage.removeItem('tabulator-simple_product_table-sort')
+         localStorage.removeItem('tabulator-simple_product_table-filter')
+         localStorage.removeItem('tabulator-simple_product_table-group')
+   }
+   
+   productType= `${this.props.view} product`
+
+   clearCustomozeProductPersistence = () =>{
+      if (this.productType==='customizable product') {
+         localStorage.removeItem('tabulator-customizable_product_table-columns')
+         localStorage.removeItem('tabulator-customizable_product_table-sort')
+         localStorage.removeItem('tabulator-customizable_product_table-filter')
+         localStorage.removeItem('tabulator-customizable_product_table-group')
+      } else {
+         localStorage.removeItem('tabulator-combo_product_table-columns')
+         localStorage.removeItem('tabulator-combo_product_table-sort')
+         localStorage.removeItem('tabulator-combo_product_table-filter')
+         localStorage.removeItem('tabulator-combo_product_table-group')
+      }
    }
    render() {
       
@@ -391,7 +415,7 @@ class DataTable extends React.Component {
                  formatter: 'rowSelection',
                  titleFormatter: reactFormatter(
                     <CrossBox
-                       removeSelectedRecipes={this.removeSelectedRecipes}
+                       removeSelectedProducts={this.removeSelectedProducts}
                     />
                  ),
                  align: 'center',
@@ -435,7 +459,8 @@ class DataTable extends React.Component {
                         {!this.props.isProductOptionTableVisible && (
                            <>
                               <ActionBar
-                                 title={`${this.props.view} product`}
+                                 title={`${this.props.view}_product`}
+                                 clearPersistence={this.clearProductPersistence}
                                  groupByOptions={this.groupByOptions}
                                  selectedRows={this.props.selectedRows}
                                  openTunnel={this.props.openTunnel}
@@ -452,7 +477,8 @@ class DataTable extends React.Component {
                                  selectableCheck={() => true}
                                  rowSelected={this.handleRowSelection}
                                  rowDeselected={this.handleDeSelection}
-                                 options={{ ...tableOptions, reactiveData: true }}
+                                 options={{ ...tableOptions, persistenceID: `${this.props.view}_product_table`,
+                                 reactiveData: true }}
                                  data-custom-attr="test-custom-attribute"
                                  className="custom-css-class"
                               />
@@ -478,7 +504,8 @@ class DataTable extends React.Component {
             {this.props.view !== 'simple' && (
                <>
                   <ActionBar
-                     title={`${this.props.view} product`}
+                     title={`${this.props.view}_product`}
+                     clearPersistence={this.clearCustomozeProductPersistence}
                      groupByOptions={this.groupByOptions}
                      selectedRows={this.props.selectedRows}
                      openTunnel={this.props.openTunnel}
@@ -495,7 +522,8 @@ class DataTable extends React.Component {
                      selectableCheck={() => true}
                      rowSelected={this.handleRowSelection}
                      rowDeselected={this.handleDeSelection}
-                     options={{ ...tableOptions, reactiveData: true }}
+                     options={{ ...tableOptions, persistenceID: `${this.props.view}_product_table`,
+                     reactiveData: true }}
                      data-custom-attr="test-custom-attribute"
                      className="custom-css-class"
                   />
@@ -558,7 +586,6 @@ function ProductName({ cell, addTab }) {
       </>
    )
 }
-
 const ActionBar = ({
    title,
    groupByOptions,
@@ -566,11 +593,12 @@ const ActionBar = ({
    openTunnel,
    handleGroupBy,
    clearHeaderFilter,
+   clearPersistence,
 }) => {
-
    const defaultIDs = () => {
       let arr = []
-      const productGroup = localStorage.getItem('tabulator-product_table-group')
+      const productGroup = localStorage.getItem(`tabulator-${title}_table-group`)
+      
       const productGroupParse =
          productGroup !== undefined &&
          productGroup !== null &&
@@ -583,15 +611,19 @@ const ActionBar = ({
             arr.push(foundGroup.id)
          })
       }
-      return arr.length == 0 ? [] : arr
+      return arr.length == 0 ? [] : arr 
    }
 
    const selectedOption = option => {
+      localStorage.setItem(
+         `tabulator-${title}_table-group`,
+         JSON.stringify(option.map(val => val.payload))
+      )
       const newOptions = option.map(x => x.payload)
       handleGroupBy(newOptions)
    }
    const searchedOption = option => console.log(option)
-   console.log('in action bar', selectedRows)
+   
    return (
       <>
          <Flex
@@ -642,7 +674,7 @@ const ActionBar = ({
                >
                   <TextButton
                      onClick={() => {
-                        localStorage.clear()
+                     clearPersistence()
                      }}
                      type="ghost"
                      size="sm"
@@ -654,8 +686,8 @@ const ActionBar = ({
                   <Dropdown
                      type="multi"
                      variant="revamp"
-                     // disabled={true}
-                     defaultIds={defaultIDs}
+                     disabled={true}
+                     defaultIds={defaultIDs()}
                      options={groupByOptions}
                      searchedOption={searchedOption}
                      selectedOption={selectedOption}
@@ -826,30 +858,9 @@ const ProductOptions = forwardRef(
       const clearHeaderFilter = () => {
          tableRef.current.table.clearHeaderFilter()
       }
-      const defaultIDs = () => {
-         let arr = []
-         const productOptionsGroup = localStorage.getItem(
-            'tabulator_product_options_groupBy'
-         )
-         const productOptionsGroupParse =
-            productOptionsGroup !== undefined &&
-            productOptionsGroup !== null &&
-            productOptionsGroup.length !== 0
-               ? JSON.parse(productOptionsGroup)
-               : null
-         if (productOptionsGroupParse !== null) {
-            productOptionsGroupParse.forEach(x => {
-               const foundGroup = groupByOptions.find(y => y.payload == x)
-               arr.push(foundGroup.id)
-            })
-         }
-         return arr.length == 0 ? [] : arr
-      }
+      
       const handleGroupBy = option => {
-         localStorage.setItem(
-            'tabulator_product_options_groupBy',
-            JSON.stringify(option)
-         )
+         
          tableRef.current.table.setGroupBy(['name', ...option])
       }
       const handleRowSelection = ({ _row }) => {
@@ -857,14 +868,14 @@ const ProductOptions = forwardRef(
          const lastPersistence = localStorage.getItem(
             'selected-rows-id_product_option_table'
          )
-         const lastPersistanceParse =
+         const lastPersistenceParse =
             lastPersistence !== undefined &&
             lastPersistence !== null &&
             lastPersistence.length !== 0
                ? JSON.parse(lastPersistence)
                : []
          setSelectedRows(prevState => [...prevState, _row.getData()])
-         let newData = [...lastPersistanceParse, rowData.id]
+         let newData = [...lastPersistenceParse, rowData.id]
          localStorage.setItem(
             'selected-rows-id_product_option_table',
             JSON.stringify(newData)
@@ -876,7 +887,7 @@ const ProductOptions = forwardRef(
          const lastPersistence = localStorage.getItem(
             'selected-rows-id_product_option_table'
          )
-         const lastPersistanceParse =
+         const lastPersistenceParse =
             lastPersistence !== undefined &&
             lastPersistence !== null &&
             lastPersistence.length !== 0
@@ -885,12 +896,12 @@ const ProductOptions = forwardRef(
          setSelectedRows(prevState =>
             prevState.filter(row => row.id !== data.id)
          )
-         const newLastPersistanceParse = lastPersistanceParse.filter(
+         const newLastPersistenceParse = lastPersistenceParse.filter(
             id => id !== data.id
          )
          localStorage.setItem(
             'selected-rows-id_product_option_table',
-            JSON.stringify(newLastPersistanceParse)
+            JSON.stringify(newLastPersistenceParse)
          )
       }
       useImperativeHandle(ref, () => ({
@@ -911,8 +922,8 @@ const ProductOptions = forwardRef(
                : null
          tableRef.current.table.setGroupBy(
             !!productOptionsGroupParse && productOptionsGroupParse.length > 0
-               ? [productOptionsGroupParse]
-               : ['name']
+               ? ['name', ...productOptionsGroupParse]
+               : 'name'
          )
          tableRef.current.table.setGroupHeader(function (
             value,
@@ -958,7 +969,7 @@ const ProductOptions = forwardRef(
          setChecked({ checked: false })
          setSelectedRows([])
          tableRef.current.table.deselectRow()
-         localStorage.setItem('selected-rows-id_product_table', JSON.stringify([]))
+         localStorage.setItem('selected-rows-id_product_option_table', JSON.stringify([]))
       }
       
       const handleMultipleRowSelection = () => {
@@ -970,7 +981,7 @@ const ProductOptions = forwardRef(
                   setSelectedRows(multipleRowData)
                   console.log("first",selectedRows)
                   localStorage.setItem(
-                     'selected-rows-id_product_table',
+                     'selected-rows-id_product_option-table',
                      JSON.stringify(multipleRowData.map(row => row.id))
                   )
                } else {
@@ -979,13 +990,19 @@ const ProductOptions = forwardRef(
                   console.log("second",selectedRows)
 
                   localStorage.setItem(
-                     'selected-rows-id_product_table',
+                     'selected-rows-id_product_option-table',
                      JSON.stringify([])
                   )
                }
             }         
       
-      
+      const clearProductOptionPersistence= () =>
+      {
+         localStorage.removeItem('tabulator-product_option_table-columns')
+         localStorage.removeItem('tabulator-product_option_table-sort')
+         localStorage.removeItem('tabulator-product_option_table-filter') 
+         localStorage.removeItem('tabulator-Product_Option_table-group')
+      }
 
       const selectionColumn =
          selectedRows.length > 0 &&
@@ -1023,11 +1040,12 @@ const ProductOptions = forwardRef(
       return (
          <>
             <ActionBar
-               title="Product Option"
+               clearPersistence={clearProductOptionPersistence}
+               title="Product_Option"
                groupByOptions={groupByOptions}
                selectedRows={selectedRows}
                openTunnel={openTunnel}
-               defaultIDs={defaultIDs()}
+                  // defaultIDs={defaultIDs()}
                handleGroupBy={handleGroupBy}
                clearHeaderFilter={clearHeaderFilter}
             />
@@ -1041,7 +1059,8 @@ const ProductOptions = forwardRef(
                selectableCheck={() => true}
                rowSelected={handleRowSelection}
                rowDeselected={handleRowDeselection}
-               options={{...tableOptions, reactiveData: true}}
+               options={{...tableOptions, persistenceID: 'product_option_table',
+               reactiveData: true}}
                data-custom-attr="test-custom-attribute"
                className="custom-css-class"
             />

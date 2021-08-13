@@ -26,7 +26,10 @@ import {
    GetFullOccurenceRouter,
    CustomerRouter,
    populate_env,
-   ActionsRouter
+   ActionsRouter,
+   OhyayRouter,
+   ExperienceRouter,
+   handleCartPayment
 } from './entities'
 import { PrintRouter } from './entities/print'
 import {
@@ -65,6 +68,9 @@ router.use('/api/parseur', ParseurRouter)
 router.use('/api/occurences', GetFullOccurenceRouter)
 router.use('/api/customer', CustomerRouter)
 router.use('/api/actions', ActionsRouter)
+router.use('/api/ohyay', OhyayRouter)
+router.use('/api/experience', ExperienceRouter)
+router.use('/api/handleCartPayment', handleCartPayment)
 
 router.use('/webhook/user', UserRouter)
 router.use('/webhook/devices', DeviceRouter)
