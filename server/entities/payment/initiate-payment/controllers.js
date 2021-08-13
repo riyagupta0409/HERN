@@ -1,6 +1,6 @@
 import { client } from '../../../lib/graphql'
 import { logger } from '../../../utils'
-import { createPaymentIntent } from '../functions'
+import { createStripeInvoice } from '../functions'
 import { UPDATE_CART_PAYMENT } from '../graphql'
 
 export const initiatePaymentHandler = async (req, res) => {
@@ -37,10 +37,12 @@ export const initiatePaymentHandler = async (req, res) => {
       }
       if (payload.amount > 0) {
          if (payload.paymentType === 'stripe') {
-            // call the stripe payment intent method
-            const result = await createPaymentIntent({
+            // call the stripe invoice making method
+            const result = await createStripeInvoice({
                ...payload,
-               oldAmount: req.body.event.data.old.amount
+               oldAmount: req.body.event.data.old
+                  ? req.body.event.data.old.amount
+                  : 0
             })
             if (result.success) {
                res.status(200).json(result)
