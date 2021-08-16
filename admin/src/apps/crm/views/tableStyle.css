@@ -45,6 +45,33 @@
    /* background: #e5e5e5; */
    cursor: pointer;
 }
-.tabulator-row .tabulator-cell {
-   height: 48px;
-}
+ 
+ .crm-table .tabulator-header .tabulator-frozen.tabulator-frozen-left{
+   height: 100% !important;
+   padding-top: 0px !important;
+ }
+ .crm-table .tabulator-header .tabulator-col .tabulator-col-content{
+    padding: 0px;
+ }
+ .crm-table .tabulator-header .tabulator-col{
+   height: 100% !important;
+   padding-top: 4px !important;
+   padding-left: 2px !important;
+ }
+ .tabulator-header-filter input{
+    border-radius: 3px;
+    margin-top: 2px;
+ }
+ .crm-table .tabulator-header{
+    margin-left: 0px;
+    padding: 0px !important;
+ }
+ .tabulator-headers{
+    width: 125%;
+    height: 80px;
+    padding: 0px;
+ }
+ .crm-table .tabulator-header .tabulator-col.tabulator-sortable .tabulator-col-title{
+    padding-right: 25px;
+    text-align: left !important;
+ }

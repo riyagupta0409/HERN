@@ -728,6 +728,7 @@ const CustomerListing = () => {
                   columnHeaderVertAlign: 'bottom',
                }}
                ref={tableRef}
+               className="crm-table"
             />
          )}
          <InsightDashboard
