@@ -4,9 +4,11 @@ import stripe from '../../../../lib/stripe'
 import { logger, isConnectedIntegration } from '../../../../utils'
 import get_env from '../../../../../get_env'
 
+// * isConnectedIntegration is a helper function that checks if the integration is "connected"
+// and return a boolean value so that we can add the stripeAccountId to the stripe Invoice conditionally.
+
 export const createStripeInvoice = async arg => {
    try {
-      console.log('createPaymentIntent', arg)
       const {
          id: transferGroup,
          statementDescriptor,
@@ -24,27 +26,17 @@ export const createStripeInvoice = async arg => {
 
       if (stripeAccountId) {
          const chargeAmount = (amount * 100).toFixed(0)
-         // const fixedDeduction = organization.chargeFixed * 100
-         // const percentDeduction =
-         // chargeAmount * (organization.chargePercentage / 100)
          const CURRENCY = await get_env('CURRENCY')
-
-         // const transferAmount = (
-         //    chargeAmount -
-         //    fixedDeduction -
-         //    percentDeduction
-         // ).toFixed(0)
-
-         console.log(chargeAmount, organizationId, CURRENCY)
-
          const _stripe = await stripe()
-         console.log('after stripe init')
+
          if (stripeAccountType === 'standard') {
-            console.log('inside if statement for standard account')
             // RE ATTEMPT
+            // if the invoice is already created, and its been rejected for some reason, and the amount is same
+            // and if the user again hit the pay button
+            // we try to use the previous invoice and
+            // attempt that one for payment instead of creating a new one
             let previousInvoice = null
             if (stripeInvoiceId) {
-               console.log('inside if statement for prev stripe invoice id')
                previousInvoice = await _stripe.invoices.retrieve(
                   // stripeParams(stripeInvoiceId)
                   stripeInvoiceId,
@@ -61,8 +53,9 @@ export const createStripeInvoice = async arg => {
                   amount === oldAmount
                ].every(node => node)
 
+               // if previous invoice is valid for reattempt,
+               // and it doesn't require3dSecure (byDefault its set to false) then we use that one
                if (!requires3dSecure && isValidForReattempt) {
-                  console.log('inside if statement for paying previous invoice')
                   const invoice = await _stripe.invoices.pay(
                      stripeInvoiceId,
                      { payment_method: paymentMethod },
@@ -73,8 +66,11 @@ export const createStripeInvoice = async arg => {
                         : null
                   )
                   console.log('invoice', invoice.id)
+
+                  // handleInvoice just updates the cartPayment and stripePaymentHistory table
                   await handleInvoice({ invoice })
 
+                  // this is for express type stripe account
                   if (invoice.payment_intent) {
                      const intent = await _stripe.paymentIntents.retrieve(
                         invoice.payment_intent,
@@ -98,8 +94,9 @@ export const createStripeInvoice = async arg => {
                }
             }
 
+            // if we have previous invoid, and its not valid for reattempt
+            // or it requires 3d secure, then we make this invoice void and create new one.
             if (previousInvoice && stripeInvoiceId) {
-               console.log('inside if statement for voiding previous invoice')
                await _stripe.invoices.voidInvoice(
                   stripeInvoiceId,
                   (await isConnectedIntegration())
@@ -109,22 +106,12 @@ export const createStripeInvoice = async arg => {
                      : null
                )
             }
-            // CREATE NEW INVOICE
-            console.log('before creating new invoice item')
-            console.log(
-               'integration',
-               {
-                  amount: chargeAmount,
-                  currency: CURRENCY.toLowerCase(),
-                  customer: stripeCustomerId,
-                  description: 'Weekly Subscription'
-               },
-               (await isConnectedIntegration())
-                  ? {
-                       stripeAccount: stripeAccountId
-                    }
-                  : null
-            )
+
+            // Create a new invoice item,
+            // object(item) return by this create invoice item is not used anywhere else in the code,
+            // but doesn't mean this create invoice item step is useless
+            // since the stripe detect automatically the invoice items (draft invoices) at the time of
+            // creating a new invoice.
             const item = await _stripe.invoiceItems.create(
                {
                   amount: chargeAmount,
@@ -139,13 +126,9 @@ export const createStripeInvoice = async arg => {
                     }
                   : null
             )
-            console.log('after creating new invoice item')
             console.log('item', item.id)
 
-            if (requires3dSecure) {
-               console.log('REQUIRES 3D SECURE')
-            }
-            console.log('before creating new invoice')
+            // create a new invoice (detects the invoice items (draft invoices) and makes a new invoice using these invoice items)
             const invoice = await _stripe.invoices.create(
                {
                   customer: stripeCustomerId,
@@ -175,13 +158,12 @@ export const createStripeInvoice = async arg => {
                     }
                   : null
             )
-            console.log('after creating new invoice')
             console.log('invoice', invoice.id)
-            console.log('before handle invoice')
-            await handleInvoice({ invoice })
-            console.log('after handle invoice')
 
-            console.log('before finalizing invoice')
+            // handleInvoice just updates the cartPayment and stripePaymentHistory table
+            await handleInvoice({ invoice })
+
+            // finalize the Invoice drafts before paying
             const finalizedInvoice = await _stripe.invoices.finalizeInvoice(
                invoice.id,
                (await isConnectedIntegration())
@@ -191,9 +173,11 @@ export const createStripeInvoice = async arg => {
                   : null
             )
             console.log('finalizedInvoice', finalizedInvoice.id)
+
+            // again here handleInvoice just updates the cartPayment and stripePaymentHistory table
             await handleInvoice({ invoice: finalizedInvoice })
 
-            console.log('before invoice pay')
+            // here we pay for the invoice that is been finalized
             const result = await _stripe.invoices.pay(
                finalizedInvoice.id,
                (await isConnectedIntegration())
@@ -204,9 +188,8 @@ export const createStripeInvoice = async arg => {
             )
             console.log('result', result.id)
 
-            console.log('before handleInvoice but just after the invoice pay')
+            // again here handleInvoice just updates the cartPayment and stripePaymentHistory table
             await handleInvoice({ invoice: result })
-            console.log('after handleInvoice but just after the invoice pay')
             if (result.payment_intent) {
                const paymentIntent = await _stripe.paymentIntents.retrieve(
                   result.payment_intent,
