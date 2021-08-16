@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 
 
 export const ACTIVE_EVENTS_WEBHOOKS = gql`
-    query MyQuery {
+      subscription MySubscription {
         developer_webhookUrl_events {
           id
           availableWebhookEvent {

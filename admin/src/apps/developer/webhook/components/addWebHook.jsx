@@ -3,9 +3,8 @@ import {AVAILABLE_EVENTS, INSERT_WEBHOOK_EVENTS } from '../graphql';
 import { Loader } from '@dailykit/ui'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import {logger}  from '../../../../shared/utils'
-import {TextButton , Form, Spacer, Text, ButtonGroup, Select } from '@dailykit/ui'
+import {TextButton , Form, Spacer, Text, ButtonGroup, Select, Tunnel, useTunnel } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-// import refetchActiveWebhookEvents from './displayWebHooks';
 
 function AddWebHook(props){
 
@@ -16,12 +15,9 @@ function AddWebHook(props){
     // mutation for creating new webhook 
     const [insertWebhookEventUrl, {loading : webhookLoading}] = useMutation(INSERT_WEBHOOK_EVENTS ,{
         onComplete : (data) => {
-            console.log('request completed')
             toast.success('webhook successfully created')
-            console.log(data)
         },
         onError : (error) =>{
-            console.log(error);
             toast.error('Something went wrong (Ex. current webhook already exist)')
             logger(error)
         },
@@ -30,7 +26,6 @@ function AddWebHook(props){
 
     // on submitting form (or clicking create event button )
     const submitForm = () => {
-        console.log(selectedEvent , inputWebhookUrl);
 
         // add validation for checking if the values are not empty [~ pending ]
         if(selectedEvent === '' || selectedEvent == null ){
@@ -55,8 +50,6 @@ function AddWebHook(props){
                         "availableWebhookEventId": selectedEvent
                     }
                 })
-
-                // refetchActiveWebhookEvents();
     
                 // to check if the mutation result is still loading 
                 if(webhookLoading){
@@ -90,35 +83,39 @@ function AddWebHook(props){
         var options = [...options , ...availableEvents]
         return (
             <>
-                <Text as='h3'>Add Webhook</Text>
-                <Spacer size='16px' />
-                <Form.Group>
-                    <Form.Label htmlFor='webhookEvent' title='webhookEvent'>
-                Select Event
+                <Tunnel style={{padding:10}}>
+                    
+                    <Text as='h3'>Add Webhook</Text>
+                    <Spacer size='16px' />
+                    <Form.Group>
+                        <Form.Label htmlFor='webhookEvent' title='webhookEvent'>
+                    Select Event
+                        </Form.Label>
+                        <Form.Select id='webhookEvent' name='webhookEvent' options={options} onChange={(e) => {updateSelectedEvent(e.target.value)}} placeholder='Select an Event' />
+                    </Form.Group>
+                    <Spacer size='16px' />
+                    <Form.Group>
+                    <Form.Label htmlFor='webhookUrl' title='webhookUrl'>
+                    Add Webhook URL
                     </Form.Label>
-                    <Form.Select id='webhookEvent' name='webhookEvent' options={options} onChange={(e) => {updateSelectedEvent(e.target.value)}} placeholder='Select an Event' />
-                </Form.Group>
-                <Spacer size='16px' />
-                <Form.Group>
-                <Form.Label htmlFor='webhookUrl' title='webhookUrl'>
-                Add Webhook URL
-                </Form.Label>
-                <Form.Text
-                id='webhookUrl'
-                name='webhookUrl'
-                onChange={(e) => {updatedInputWebhookUrl(e.target.value)}}
-                placeholder='Enter the webhook URL..'
-                />
-                </Form.Group>
-                <Spacer size='25px' />
-                <ButtonGroup align="left">
-                    <TextButton type='solid' size='md' onClick={() => submitForm()}>
-                    Create Event
-                    </TextButton>
-                    <TextButton type='solid' size='md' onClick={() => props.closeForm()}>
-                    Cancel
-                    </TextButton>
-                </ButtonGroup>
+                    <Form.Text
+                    id='webhookUrl'
+                    name='webhookUrl'
+                    onChange={(e) => {updatedInputWebhookUrl(e.target.value)}}
+                    placeholder='Enter the webhook URL..'
+                    />
+                    </Form.Group>
+                    <Spacer size='25px' />
+                    <ButtonGroup align="left">
+                        <TextButton type='solid' size='md' onClick={() => submitForm()}>
+                        Create Event
+                        </TextButton>
+                        <TextButton type='solid' size='md' onClick={() => props.closeForm()}>
+                        Cancel
+                        </TextButton>
+                    </ButtonGroup>
+                    
+                </Tunnel>
             </>
         )
     }

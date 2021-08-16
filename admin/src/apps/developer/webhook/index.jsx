@@ -1,8 +1,3 @@
-import React from 'react';
-import App from './App';
-
-const WebhookApp = () => {
-    return(<App/>)    
-}
+import WebhookApp from './App';
 
 export default WebhookApp;

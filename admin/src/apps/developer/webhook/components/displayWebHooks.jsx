@@ -1,5 +1,5 @@
 import React , {useEffect,useState} from 'react';
-import { useMutation, useQuery } from '@apollo/react-hooks'
+import { useMutation, useQuery, useSubscription } from '@apollo/react-hooks'
 import {ACTIVE_EVENTS_WEBHOOKS, DELETE_WEBHOOK_EVENT } from '../graphql';
 import { Loader } from '@dailykit/ui'
 import {logger}  from '../../../../shared/utils'
@@ -14,7 +14,7 @@ function DisplayWebHooks(){
     const [deleteWebhook, {loading: deletingWebhookLoading}] = useMutation(DELETE_WEBHOOK_EVENT);
 
     // Query to fetch active webhook events
-    const { loading, error, data, refetch:refetchActiveWebhookEvents } = useQuery(ACTIVE_EVENTS_WEBHOOKS);
+    const { loading, error, data } = useSubscription(ACTIVE_EVENTS_WEBHOOKS);
     if(loading || deletingWebhookLoading) return <Loader />
     if(error) {
         logger(error)
@@ -41,7 +41,6 @@ function DisplayWebHooks(){
                 logger(error)
             }
         })
-        refetchActiveWebhookEvents();
     }
     return (
         <div className="App" >
