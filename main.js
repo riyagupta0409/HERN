@@ -1,5 +1,5 @@
-require('dotenv').config()
 import cors from 'cors'
+
 import request from 'request'
 import fs from 'fs'
 import path from 'path'
@@ -7,16 +7,18 @@ import express from 'express'
 import morgan from 'morgan'
 import AWS from 'aws-sdk'
 import bluebird from 'bluebird'
-const { createProxyMiddleware } = require('http-proxy-middleware')
-const { ApolloServer } = require('apollo-server-express')
 import depthLimit from 'graphql-depth-limit'
 
 import get_env from './get_env'
 
 import ServerRouter from './server'
 import schema from './template/schema'
-const ohyaySchema = require('./server/streaming/ohyay/src/schema/schema')
 import TemplateRouter from './template'
+
+require('dotenv').config()
+const { createProxyMiddleware } = require('http-proxy-middleware')
+const { ApolloServer } = require('apollo-server-express')
+const ohyaySchema = require('./server/streaming/ohyay/src/schema/schema')
 
 const app = express()
 
@@ -72,14 +74,14 @@ handles template endpoints for ex. serving labels, sachets, emails in pdf or htm
 */
 app.use('/template', TemplateRouter)
 
-const isProd = process.env.NODE_ENV === 'production' ? true : false
+const isProd = process.env.NODE_ENV === 'production'
 
 const proxy = createProxyMiddleware({
    target: 'http://localhost:3000',
    changeOrigin: true,
    onProxyReq: (proxyReq, req) => {
       if (req.body) {
-         let bodyData = JSON.stringify(req.body)
+         const bodyData = JSON.stringify(req.body)
          proxyReq.setHeader('Content-Type', 'application/json')
          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
          proxyReq.write(bodyData)
@@ -120,9 +122,9 @@ const serveSubscription = async (req, res, next) => {
       */
       if (process.env.NODE_ENV === 'development') {
          const url = RESTRICTED_FILES.some(file => routePath.includes(file))
-            ? 'http://localhost:3000/' + routePath
-            : 'http://localhost:3000/' + brand + '/' + routePath
-         request(url, function (error, _, body) {
+            ? `http://localhost:3000/${routePath}`
+            : `http://localhost:3000/${brand}/${routePath}`
+         request(url, (error, _, body) => {
             if (error) {
                throw error
             } else {
@@ -158,9 +160,9 @@ const serveSubscription = async (req, res, next) => {
                const url = RESTRICTED_FILES.some(file =>
                   routePath.includes(file)
                )
-                  ? 'http://localhost:3000/' + routePath
-                  : 'http://localhost:3000/' + brand + '/' + routePath
-               request(url, function (error, _, body) {
+                  ? `http://localhost:3000/${routePath}`
+                  : `http://localhost:3000/${brand}/${routePath}`
+               request(url, (error, _, body) => {
                   if (error) {
                      console.log(error)
                   } else {
@@ -168,17 +170,12 @@ const serveSubscription = async (req, res, next) => {
                   }
                })
             }
+         } else if (routePath.includes('env-config.js')) {
+            res.sendFile(path.join(__dirname, 'store/public/env-config.js'))
          } else {
-            if (routePath.includes('env-config.js')) {
-               res.sendFile(path.join(__dirname, 'store/public/env-config.js'))
-            } else {
-               res.sendFile(
-                  path.join(
-                     __dirname,
-                     routePath.replace('_next', 'store/.next')
-                  )
-               )
-            }
+            res.sendFile(
+               path.join(__dirname, routePath.replace('_next', 'store/.next'))
+            )
          }
       }
    } catch (error) {
