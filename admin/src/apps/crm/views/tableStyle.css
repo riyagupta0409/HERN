@@ -66,7 +66,7 @@
     margin-left: 0px;
     padding: 0px !important;
  }
- .tabulator-headers{
+ .crm-table .tabulator-headers{
     width: 125%;
     height: 80px;
     padding: 0px;
