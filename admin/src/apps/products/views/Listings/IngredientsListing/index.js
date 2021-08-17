@@ -14,7 +14,7 @@ import {
    Tunnels,
    useTunnel,
    Checkbox,
-
+   DropdownButton,
 } from '@dailykit/ui'
 import * as moment from 'moment'
 import { useTranslation } from 'react-i18next'
@@ -317,6 +317,18 @@ class DataTable extends React.Component {
    clearHeaderFilter = () => {
       this.tableRef.current.table.clearHeaderFilter()
    }
+   downloadCsvData = () => {
+      this.tableRef.current.table.download('csv', 'ingredient_table.csv')
+   }
+
+   downloadPdfData = () => {
+      this.tableRef.current.table.downloadToTab('pdf', 'ingredient_table.pdf')
+   }
+
+   downloadXlsxData = () => {
+      this.tableRef.current.table.download('xlsx', 'ingredient_table.xlsx')
+   }
+
    selectRows = () => {
       const ingredientsGroup = localStorage.getItem('tabulator-ingredients_table-group')
       const ingredientsGroupParse =
@@ -417,6 +429,9 @@ class DataTable extends React.Component {
             <Spacer size="5px" />
             <ActionBar
                title="ingredient"
+               downloadPdfData={this.downloadPdfData}
+               downloadCsvData={this.downloadCsvData}
+               downloadXlsxData={this.downloadXlsxData}
                groupByOptions={this.groupByOptions}
                selectedRows={this.props.selectedRows}
                openTunnel={this.props.openTunnel}
@@ -508,6 +523,9 @@ function FormatDate({
 
 const ActionBar = ({
    title,
+   downloadPdfData,
+   downloadCsvData,
+   downloadXlsxData,
    groupByOptions,
    selectedRows,
    openTunnel,
@@ -599,6 +617,27 @@ const ActionBar = ({
                   >
                      Clear Persistence
                   </TextButton>
+                  <Spacer size="15px" xAxis />
+                  <DropdownButton title="Download" width="150px">
+                     <DropdownButton.Options>
+                        <DropdownButton.Option
+                           onClick={() => downloadCsvData()}
+                        >
+                           CSV
+                        </DropdownButton.Option>
+                        <DropdownButton.Option
+                           onClick={() => downloadPdfData()}
+                        >
+                           PDF
+                        </DropdownButton.Option>
+                        <DropdownButton.Option
+                           onClick={() => downloadXlsxData()}
+                        >
+                           XLSX
+                        </DropdownButton.Option>
+                     </DropdownButton.Options>
+                  </DropdownButton>
+                  <Spacer size="15px" xAxis />
                   <Text as="text1">Group By:</Text>
                   <Spacer size="30px" xAxis />
                   <Dropdown
@@ -625,7 +664,7 @@ const ActionBar = ({
                      type="ghost"
                      size="sm"
                      onClick={() => openTunnel(2)}
-                  >
+                  > 
                      <FilterIcon />
                   </IconButton>
                   <ButtonGroup align="left">
