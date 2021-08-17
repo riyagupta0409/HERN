@@ -23,6 +23,7 @@ import {
    HorizontalTabList,
    HorizontalTabPanel,
    HorizontalTabPanels,
+   DropdownButton,
 } from '@dailykit/ui'
 // third party imports
 import { useTranslation } from 'react-i18next'
@@ -384,6 +385,19 @@ class DataTable extends React.Component {
       this.tableRef.current.table.deselectRow()
       localStorage.setItem('selected-rows-id_product_table', JSON.stringify([]))
    }
+   downloadCsvData = () => {
+      this.tableRef.current.table.download('csv', `${this.props.view}_product_table.csv`)
+   }
+
+   downloadPdfData = () => {
+      this.tableRef.current.table.downloadToTab('pdf', `${this.props.view}_product_table.pdf`)
+   }
+
+   downloadXlsxData = () => {
+      this.tableRef.current.table.download('xlsx', `${this.props.view}_product_table.xlsx`)
+   }
+
+
    clearProductPersistence = () =>{
          localStorage.removeItem('tabulator-simple_product_table-columns')
          localStorage.removeItem('tabulator-simple_product_table-sort')
@@ -460,6 +474,9 @@ class DataTable extends React.Component {
                            <>
                               <ActionBar
                                  title={`${this.props.view}_product`}
+                                 downloadPdfData={this.downloadPdfData}
+                                 downloadCsvData={this.downloadCsvData}
+                                 downloadXlsxData={this.downloadXlsxData}
                                  clearPersistence={this.clearProductPersistence}
                                  groupByOptions={this.groupByOptions}
                                  selectedRows={this.props.selectedRows}
@@ -505,6 +522,9 @@ class DataTable extends React.Component {
                <>
                   <ActionBar
                      title={`${this.props.view}_product`}
+                     downloadPdfData={this.downloadPdfData}
+                     downloadCsvData={this.downloadCsvData}
+                     downloadXlsxData={this.downloadXlsxData}
                      clearPersistence={this.clearCustomozeProductPersistence}
                      groupByOptions={this.groupByOptions}
                      selectedRows={this.props.selectedRows}
@@ -587,6 +607,9 @@ function ProductName({ cell, addTab }) {
    )
 }
 const ActionBar = ({
+   downloadPdfData,
+   downloadCsvData,
+   downloadXlsxData,
    title,
    groupByOptions,
    selectedRows,
@@ -681,6 +704,27 @@ const ActionBar = ({
                   >
                      Clear Persistence
                   </TextButton>
+                  <Spacer size="15px" xAxis />
+                  <DropdownButton title="Download" width="150px">
+                     <DropdownButton.Options>
+                        <DropdownButton.Option
+                           onClick={() => downloadCsvData()}
+                        >
+                           CSV
+                        </DropdownButton.Option>
+                        <DropdownButton.Option
+                           onClick={() => downloadPdfData()}
+                        >
+                           PDF
+                        </DropdownButton.Option>
+                        <DropdownButton.Option
+                           onClick={() => downloadXlsxData()}
+                        >
+                           XLSX
+                        </DropdownButton.Option>
+                     </DropdownButton.Options>
+                  </DropdownButton>
+                  <Spacer size="15px" xAxis />
                   <Text as="text1">Group By:</Text>
                   <Spacer size="5px" xAxis />
                   <Dropdown
@@ -1003,7 +1047,17 @@ const ProductOptions = forwardRef(
          localStorage.removeItem('tabulator-product_option_table-filter') 
          localStorage.removeItem('tabulator-Product_Option_table-group')
       }
-
+      const downloadCsvData = () => {
+         tableRef.current.table.download('csv', 'product_option_table.csv')
+      }
+   
+      const downloadPdfData = () => {
+         tableRef.current.table.downloadToTab('pdf', 'product_option_table.pdf')
+      }
+   
+      const downloadXlsxData = () => {
+         tableRef.current.table.download('xlsx', 'product_option_table.xlsx')
+      }
       const selectionColumn =
          selectedRows.length > 0 &&
          selectedRows.length < productOptionsList.length  // 
@@ -1040,6 +1094,9 @@ const ProductOptions = forwardRef(
       return (
          <>
             <ActionBar
+               downloadPdfData={downloadPdfData}
+               downloadCsvData={downloadCsvData}
+               downloadXlsxData={downloadXlsxData}
                clearPersistence={clearProductOptionPersistence}
                title="Product_Option"
                groupByOptions={groupByOptions}
