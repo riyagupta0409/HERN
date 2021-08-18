@@ -36,7 +36,9 @@ import {
    printKOT,
    getKOTUrls,
    printLabel,
-   handleThirdPartyOrder
+   handleThirdPartyOrder,
+   createCronEvent,
+   createScheduledEvent
 } from './entities/events'
 import {
    handleCustomerSignup,
@@ -82,6 +84,8 @@ router.post('/webhook/authorize-request', authorizeRequest)
 router.post('/event/print-label', printLabel)
 router.post('/event/print-kot', printKOT)
 router.post('/event/order/third-party', handleThirdPartyOrder)
+router.post('/event/create-cron-event', createCronEvent)
+router.post('/event/create-new-scheduled-event', createScheduledEvent)
 
 router.post('/webhook/emails/handle-customer-signup', handleCustomerSignup)
 router.post(
