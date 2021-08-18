@@ -27,6 +27,8 @@ import {
 import { useUser } from '../../../context'
 import { UPDATE_BRAND_CUSTOMER } from '../../../graphql'
 
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
+
 const Checkout = props => {
    const router = useRouter()
    const { isAuthenticated } = useUser()
@@ -173,6 +175,19 @@ const PaymentContent = () => {
    const [updateCart] = useMutation(QUERIES.UPDATE_CART, {
       onCompleted: async ({ updateCart = {} }) => {
          try {
+            ReactPixel.trackCustom('initiatePayment', {
+               paymentMethodId: state.payment.selected.id,
+               customerEmail: user?.platform_customer?.email,
+               customerPhone: state?.profile?.phoneNumber,
+               customerLastName: state?.profile?.lastName,
+               customerFirstName: state?.profile?.firstName,
+               cartId: updateCart?.id,
+               itemTotal: updateCart?.itemTotal,
+               discount: updateCart?.discount,
+               deliveryPrice: updateCart?.deliveryPrice,
+               tax: updateCart?.tax,
+               totalPrice: updateCart?.totalPrice,
+            })
             let referralCode = null
             if (
                Array.isArray(user?.customerReferrals) &&

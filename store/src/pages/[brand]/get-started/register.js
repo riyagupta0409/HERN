@@ -28,6 +28,7 @@ import {
    setStoredReferralCode,
 } from '../../../utils/referrals'
 import { CloseIcon } from '../../../assets/icons'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 const Register = props => {
    const [current, setCurrent] = React.useState('REGISTER')
@@ -645,6 +646,13 @@ const RegisterPanel = ({ setCurrent }) => {
          const { data } = await axios.post(url, { password: form.password })
 
          if (data?.success && data?.hash) {
+            // fb pixel integration after successfull registration
+            ReactPixel.trackCustom('signup', {
+               email: form.email,
+               phone: form.phone,
+               code: form.code,
+            })
+
             await insertPlatformCustomer({
                variables: {
                   object: {

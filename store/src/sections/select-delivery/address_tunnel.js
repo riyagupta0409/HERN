@@ -10,6 +10,7 @@ import { MUTATIONS } from '../../graphql'
 import { CloseIcon } from '../../assets/icons'
 import { useScript, isClient, get_env } from '../../utils'
 import { Tunnel, Button, Form, Spacer } from '../../components'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 export const AddressTunnel = () => {
    const { user } = useUser()
@@ -25,6 +26,8 @@ export const AddressTunnel = () => {
             appearance: 'success',
          })
          dispatch({ type: 'SET_ADDRESS', payload: address })
+         // fb pixel custom event for adding a new address
+         ReactPixel.trackCustom('addAddress', address)
       },
       onError: error => {
          addToast(error.message, {

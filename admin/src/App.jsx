@@ -6,7 +6,6 @@ import { useSubscription } from '@apollo/react-hooks'
 import { Switch, Route, Link } from 'react-router-dom'
 import FullOccurrenceReport from './shared/components/FullOccurrenceReport'
 import { isKeycloakSupported } from './shared/utils'
-import DashboardAnalytics from './shared/components/DashboardAnalytics'
 import {
    TabBar,
    RedirectBanner,
@@ -14,15 +13,20 @@ import {
    AddressTunnel,
    Banner,
 } from './shared/components'
-import { AppItem, AppList, Layout, InsightDiv } from './styled'
-import BottomBar from './shared/components/BottomBar'
 import {
-   AcceptedAndRejectedAnalytics,
-   OrderReceivedAnalytics,
-   RegisteredCustomerAnalytics,
-   SubscribedCustomerAnalytics,
-   TotalEarningAnalytics,
-} from './shared/components/DashboardAnalytics/Analytics'
+   AppItem,
+   AppList,
+   Layout,
+   InsightDiv,
+   DashboardPanel,
+   NavMenuPanel,
+   HomeContainer,
+   WelcomeNote,
+} from './styled'
+import BottomBar from './shared/components/BottomBar'
+import DashboardCards from './shared/components/DashboardCardAnalytics'
+import { useAuth } from './shared/providers'
+import DashboardTables from './shared/components/DashboardTables'
 
 const APPS = gql`
    subscription apps {
@@ -99,7 +103,7 @@ const App = () => {
 
    const [open, toggle] = React.useState(false)
    const { loading, data: { apps = [] } = {} } = useSubscription(APPS)
-
+   const { user } = useAuth()
    if (loading) return <Loader />
    return (
       <Layout>
@@ -108,33 +112,40 @@ const App = () => {
             <Switch>
                <Route path="/" exact>
                   <Banner id="app-home-top" />
-                  <AppList open={open}>
-                     {apps.map(app => (
-                        <AppItem key={app.id}>
-                           <Link to={app.route}>
-                              {app.icon && (
-                                 <img src={app.icon} alt={app.title} />
-                              )}
-                              <span>{app.title}</span>
-                           </Link>
-                        </AppItem>
-                     ))}
-                  </AppList>
-                  <DashboardAnalytics>
-                     <TotalEarningAnalytics />
-                     <OrderReceivedAnalytics />
-                     <AcceptedAndRejectedAnalytics />
-                     <SubscribedCustomerAnalytics />
-                     <RegisteredCustomerAnalytics />
-                  </DashboardAnalytics>
-                  <InsightDiv>
+                  <HomeContainer>
+                     <NavMenuPanel>
+                        <AppList open={open}>
+                           {apps.map(app => (
+                              <AppItem key={app.id}>
+                                 <Link to={app.route}>
+                                    {app.icon && (
+                                       <img src={app.icon} alt={app.title} />
+                                    )}
+                                    <span>{app.title}</span>
+                                 </Link>
+                              </AppItem>
+                           ))}
+                        </AppList>
+                     </NavMenuPanel>
+                     <DashboardPanel>
+                        <WelcomeNote>
+                           <p>
+                              Welcome Back {user?.name || 'user'}
+                              <span>👋</span>
+                           </p>
+                        </WelcomeNote>
+                        <DashboardCards />
+                        <DashboardTables />
+                        {/* <InsightDiv>
                      <InsightDashboard
                         appTitle="global"
                         moduleTitle="dashboard"
                         includeChart
                         showInTunnel={false}
                      />
-                  </InsightDiv>
+                  </InsightDiv> */}
+                     </DashboardPanel>
+                  </HomeContainer>
                   <Banner id="app-home-bottom" />
                </Route>
                <Route path="/inventory" component={Inventory} />

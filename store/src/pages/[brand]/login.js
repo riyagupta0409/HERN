@@ -3,12 +3,12 @@ import { useRouter } from 'next/router'
 import tw, { styled } from 'twin.macro'
 
 import { SEO, Layout } from '../../components'
-import { getRoute, isClient } from '../../utils'
+import { getRoute, isClient, getSettings } from '../../utils'
 import { signIn } from 'next-auth/client'
 import { WEBSITE_PAGE, NAVIGATION_MENU } from '../../graphql'
 import { graphQLClient } from '../../lib'
 import 'regenerator-runtime'
-import { getSettings } from '../../utils'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 const Login = props => {
    const { settings, navigationMenus } = props
@@ -66,6 +66,11 @@ const LoginPanel = () => {
          if (response?.status !== 200) {
             setError('Email or password is incorrect!')
          } else if (response?.status === 200) {
+            // fb pixel integration for tracking customer login
+            ReactPixel.trackCustom('login', {
+               email: form.email,
+               phone: form.phone,
+            })
             const landedOn = isClient && localStorage.getItem('landed_on')
             if (isClient && landedOn) {
                localStorage.removeItem('landed_on')

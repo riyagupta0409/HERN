@@ -4,9 +4,11 @@ import { styled } from 'twin.macro'
 import { useUser } from '../context'
 import { COUPONS } from '../graphql'
 import { useConfig } from '../lib'
+import { isClient } from '../utils'
 import { useMenu } from '../sections/select-menu'
 import { Loader } from './loader'
 import { CloseIcon } from '../assets/icons'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 export const CouponsList = ({ createOrderCartRewards, closeTunnel }) => {
    const { state } = useMenu()
@@ -30,6 +32,13 @@ export const CouponsList = ({ createOrderCartRewards, closeTunnel }) => {
          setAvailableCoupons([
             ...coupons.filter(coupon => coupon.visibilityCondition.isValid),
          ])
+
+         // fb pixel custom event for coupon list
+         ReactPixel.trackCustom('showCouponList', {
+            coupons: [
+               ...coupons.filter(coupon => coupon.visibilityCondition.isValid),
+            ],
+         })
       },
    })
 
@@ -53,6 +62,9 @@ export const CouponsList = ({ createOrderCartRewards, closeTunnel }) => {
                cartId: id,
             })
          }
+         // FB pixel custom event for coupon applied
+         ReactPixel.trackCustom('couponApplied', coupon)
+
          createOrderCartRewards({
             variables: {
                objects,
