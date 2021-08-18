@@ -5,7 +5,7 @@ import tw, { styled, css } from 'twin.macro'
 import { useSubscription } from '@apollo/react-hooks'
 
 import { graphQLClient, useConfig } from '../../lib'
-import { getRoute, getSettings, isClient } from '../../utils'
+import { getRoute, getSettings, isClient, get_env } from '../../utils'
 import { CART_STATUS, NAVIGATION_MENU, WEBSITE_PAGE } from '../../graphql'
 
 import OrderInfo from '../../sections/OrderInfo'
@@ -13,6 +13,7 @@ import { Layout, SEO, Loader, HelperBar } from '../../components'
 import { PlacedOrderIllo, CartIllo, PaymentIllo } from '../../assets/icons'
 import { useRouter } from 'next/router'
 import { useUser } from '../../context'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 const PlacingOrder = props => {
    const { seo, settings, navigationMenus } = props
@@ -48,6 +49,22 @@ const ContentWrapper = () => {
       skip: !isClient,
       variables: {
          id: isClient ? new URLSearchParams(location.search).get('id') : '',
+      },
+      onSubscriptionData: ({
+         subscriptionData: { data: { cart = {} } = {} } = {},
+      } = {}) => {
+         // fb pixel event for first time order
+         ReactPixel.trackCustom('earlyPay', {
+            ...cart,
+            currency: isClient && get_env('CURRENCY'),
+            value: cart?.amount,
+         })
+
+         ReactPixel.track('Purchase', {
+            ...cart,
+            currency: isClient && get_env('CURRENCY'),
+            value: cart?.amount,
+         })
       },
    })
    const theme = configOf('theme-color', 'Visual')

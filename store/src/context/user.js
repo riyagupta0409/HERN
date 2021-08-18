@@ -12,7 +12,8 @@ import {
    WALLETS,
 } from '../graphql'
 import { PageLoader } from '../components'
-import { isClient, processUser } from '../utils'
+import { isClient, processUser, get_env } from '../utils'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 const UserContext = React.createContext()
 
@@ -162,7 +163,20 @@ export const UserProvider = ({ children }) => {
    React.useEffect(() => {
       if (keycloakId && !loading && customer?.id) {
          const user = processUser(customer, organization?.stripeAccountType)
-
+         // fb pixel initialization when user is logged in
+         const pixelId = isClient && get_env('PIXEL_ID')
+         const advancedMatching = {
+            em: user?.platform_customer?.email,
+            ph: user?.platform_customer?.phoneNumber,
+            fn: user?.platform_customer?.firstName,
+            ln: user?.platform_customer?.lastName,
+            external_id: user?.platform_customer?.keycloakId,
+         }
+         const options = {
+            autoConfig: true,
+            debug: true,
+         }
+         ReactPixel.init(pixelId, advancedMatching, options)
          if (Array.isArray(user?.carts) && user?.carts?.length > 0) {
             const index = user.carts.findIndex(
                node => node.paymentStatus === 'SUCCEEDED'
