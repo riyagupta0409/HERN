@@ -46,7 +46,8 @@
    cursor: pointer;
 }
  
- .crm-table .tabulator-header .tabulator-frozen.tabulator-frozen-left{
+
+ .crm-table .tabulator-header .tabulator-frozen .tabulator-frozen-left{
    height: 100% !important;
    padding-top: 0px !important;
  }
@@ -66,12 +67,13 @@
     margin-left: 0px;
     padding: 0px !important;
  }
- .tabulator-headers{
+
+ .crm-table .tabulator-headers{
     width: 125%;
     height: 80px;
     padding: 0px;
  }
- .crm-table .tabulator-header .tabulator-col.tabulator-sortable .tabulator-col-title{
+ .crm-table .tabulator-header .tabulator-col .tabulator-sortable .tabulator-col-title{
     padding-right: 25px;
     text-align: left !important;
  }

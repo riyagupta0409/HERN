@@ -15,6 +15,7 @@ import { getRoute, isClient } from '../../../utils'
 import { Button } from '../../../components'
 import { CloseIcon } from '../../../assets/icons'
 import { UPDATE_BRAND_CUSTOMER } from '../../../graphql'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 export const CartPanel = ({ noSkip, isCheckout }) => {
    const router = useRouter()
@@ -23,6 +24,10 @@ export const CartPanel = ({ noSkip, isCheckout }) => {
    const { configOf } = useConfig()
    const [updateBrandCustomer] = useMutation(UPDATE_BRAND_CUSTOMER, {
       skip: !isCheckout || !user?.brandCustomerId,
+      onCompleted: ({ updateBrandCustomer }) => {
+         // fb pixel event when checkout is proceeded
+         ReactPixel.track('InitiateCheckout', updateBrandCustomer)
+      },
       onError: error => {
          console.log('UPDATE BRAND CUSTOMER -> ERROR -> ', error)
       },

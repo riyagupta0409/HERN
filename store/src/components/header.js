@@ -12,6 +12,9 @@ import { ProfileSidebar } from './profile_sidebar'
 import { CrossIcon } from '../assets/icons'
 import { Loader } from './loader'
 import NavigationBar from './navbar'
+
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
+
 export const Header = ({ settings, navigationMenus }) => {
    const router = useRouter()
    const { isAuthenticated, user, isLoading } = useUser()
@@ -27,6 +30,11 @@ export const Header = ({ settings, navigationMenus }) => {
    const [isMobileNavVisible, setIsMobileNavVisible] = React.useState(false)
 
    const newNavigationMenus = DataWithChildNodes(navigationMenus)
+
+   // FB pixel event tracking for page view
+   React.useEffect(() => {
+      ReactPixel.pageView()
+   }, [])
    return (
       <>
          <Wrapper>

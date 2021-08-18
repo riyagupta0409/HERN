@@ -8,6 +8,8 @@ import { useUser } from '../../context'
 import { Loader } from '../../components'
 import { isClient, formatCurrency, getRoute } from '../../utils'
 
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
+
 export const Plan = ({ cameFrom = '', plan, handlePlanClick }) => {
    const router = useRouter()
    const { user } = useUser()
@@ -48,6 +50,22 @@ export const Plan = ({ cameFrom = '', plan, handlePlanClick }) => {
       addToast('Successfully selected a plan.', {
          appearance: 'success',
       })
+
+      // fb pixel custom event for plan selection
+      ReactPixel.trackCustom('selectPlan', {
+         serving: defaultItemCount?.count,
+         recipePerWeek: defaultServing?.size,
+         totalServing: Number.parseFloat(
+            (defaultItemCount?.count || 1) * (defaultServing?.size || 1)
+         ).toFixed(0),
+         pricePerServing: formatCurrency(
+            Number.parseFloat(
+               (defaultItemCount?.price || 1) /
+                  ((defaultItemCount?.count || 1) * (defaultServing?.size || 1))
+            ).toFixed(2)
+         ),
+      })
+
       router.push(
          getRoute(
             `/get-started/${
@@ -283,7 +301,7 @@ const CountList = styled.ul`
       p-1
       border
       w-full
-      flex items-center justify-between 
+      flex items-center justify-between
    `}
 `
 
@@ -296,8 +314,8 @@ const CountListItem = styled.li`
    min-width: 7rem;
    ${tw`
       flex-1 cursor-pointer text-sm mr-1
-      flex items-center justify-center 
-      hover:text-white hover:bg-green-300 hover:rounded 
+      flex items-center justify-center
+      hover:text-white hover:bg-green-300 hover:rounded
    `}
 `
 

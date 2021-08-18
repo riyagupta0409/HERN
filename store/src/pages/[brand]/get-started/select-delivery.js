@@ -18,6 +18,7 @@ import {
    DeliveryDateSection,
 } from '../../../sections/select-delivery'
 import { getRoute, getSettings, get_env, isClient } from '../../../utils'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 const SelectDelivery = props => {
    const router = useRouter()
@@ -122,6 +123,12 @@ const DeliveryContent = () => {
       onCompleted: () => {
          addToast('Successfully saved delivery preferences.', {
             appearance: 'success',
+         })
+         // react pixel custome event tracking for subscription selection
+         ReactPixel.trackCustom('selectSubscription', {
+            subscriptionOnboardStatus: 'SELECT_MENU',
+            subscriptionId: state.delivery.selected.id,
+            subscriptionAddressId: state.address.selected.id,
          })
          router.push(
             getRoute(

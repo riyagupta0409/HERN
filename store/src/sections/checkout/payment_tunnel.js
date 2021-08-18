@@ -68,8 +68,9 @@ const createSetupIntent = async (customer, organization = {}) => {
       ) {
          stripeAccountId = organization?.stripeAccountId
       }
-      const URL = `${get_env('DAILYKEY_URL')}/api/setup-intent`
-      const { data } = await axios.post(URL, { customer, stripeAccountId })
+      const DATAHUB = get_env('DATA_HUB_HTTPS')
+      const url = `${new URL(DATAHUB).origin}/api/setup-intent`
+      const { data } = await axios.post(url, { customer, stripeAccountId })
       return data.data
    } catch (error) {
       return error
