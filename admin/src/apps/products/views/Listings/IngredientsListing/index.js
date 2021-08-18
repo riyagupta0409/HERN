@@ -15,6 +15,7 @@ import {
    useTunnel,
    Checkbox,
    DropdownButton,
+   Filler,
 } from '@dailykit/ui'
 import * as moment from 'moment'
 import { useTranslation } from 'react-i18next'
@@ -48,11 +49,20 @@ const IngredientsListing = () => {
    const [selectedRows, setSelectedRows] = React.useState([])
    const [tunnels, openTunnel, closeTunnel, visible] = useTunnel(2)
    const dataTableRef = React.useRef()
-
-   const { loading, data: { ingredients = [] } = {}, error } = useSubscription(
-      S_INGREDIENTS
-   )
-
+   const [ingredientNew, setIngredientsNew] = React.useState([])
+   
+   const { loading, error } = useSubscription(S_INGREDIENTS, {
+   onSubscriptionData : ({ subscriptionData }) => {
+      const newOption =subscriptionData.data.ingredients.map(x => {
+         const count1 = x.ingredientProcessings_aggregate.aggregate.count
+         x.ingredientProcessings_count = count1
+         const count2 = x.ingredientSachetViews_aggregate.aggregate.count
+         x.ingredientSachetViews_count = count2
+         return x
+      })
+      setIngredientsNew(newOption)
+   },
+})
    // Mutations
    const [createIngredient] = useMutation(CREATE_INGREDIENT, {
       onCompleted: data => {
@@ -105,12 +115,17 @@ const IngredientsListing = () => {
    const removeSelectedRow = id => {
       dataTableRef.current.removeSelectedRow(id)
    }
+   if (loading){
+      return <InlineLoader />
+   }
    if (!loading && error) {
       toast.error('Failed to fetch Ingredients!')
       logger(error)
       return <ErrorState />
    }
-
+if (ingredientNew.length == 0){
+   return <Filler message= "ingredient not available" />
+}
    return (
       <ResponsiveFlex maxWidth="1280px" margin="0 auto">
          <Banner id="products-app-ingredients-listing-top" />
@@ -134,7 +149,7 @@ const IngredientsListing = () => {
             height="72px"
          >
             <Flex container>
-               <Text as="h2">Ingredients({ingredients.length}) </Text>
+               <Text as="h2">Ingredients({ingredientNew.length}) </Text>
                <Tooltip identifier="ingredients_list_heading" />
             </Flex>
             <ComboButton type="solid" onClick={createIngredientHandler}>
@@ -146,7 +161,7 @@ const IngredientsListing = () => {
          ) : (
             <DataTable
                ref={dataTableRef}
-               data={ingredients}
+               data={ingredientNew}
                addTab={addTab}
                openTunnel={openTunnel}
                deleteIngredientHandler={deleteIngredientHandler}
@@ -261,18 +276,16 @@ class DataTable extends React.Component {
        },
       {
          title: 'Processings',
-         field: 'ingredientProcessings',
+         field: 'ingredientProcessings_count',
          headerFilter: false,
          hozAlign: 'right',
-         formatter: reactFormatter(<Count />),
          width: 150,
       },
       {
          title: 'Sachets',
-         field: 'ingredientSachets',
+         field: 'ingredientSachetViews_count',
          headerFilter: false,
          hozAlign: 'right',
-         formatter: reactFormatter(<Count />),
          width: 150,
       },
       
