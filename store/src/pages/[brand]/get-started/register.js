@@ -642,8 +642,8 @@ const RegisterPanel = ({ setCurrent }) => {
             setStoredReferralCode(form.code)
          }
 
-         const URL = `${window.location.origin}/api/hash`
-         const { data } = await axios.post(URL, { password: form.password })
+         const url = `${window.location.origin}/api/hash`
+         const { data } = await axios.post(url, { password: form.password })
 
          if (data?.success && data?.hash) {
             // fb pixel integration after successfull registration
