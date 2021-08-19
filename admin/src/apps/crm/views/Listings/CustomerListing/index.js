@@ -731,7 +731,7 @@ const CustomerListing = () => {
                ref={tableRef}
                className="crm-table"
             />
-         )}
+         )} 
          <InsightDashboard
             appTitle="CRM App"
             moduleTitle="Customer Listing"
