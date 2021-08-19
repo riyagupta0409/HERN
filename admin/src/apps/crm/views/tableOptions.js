@@ -7,7 +7,6 @@ const options = {
    virtualDomBuffer: 80,
    placeholder: 'No Data Available',
    persistence: true,
-   persistenceID: 'customer_table',
    persistence: {
       group: false,
       sort: true, //persist column sorting
