@@ -726,6 +726,7 @@ const CustomerListing = () => {
                   ...options,
                   placeholder: 'No Customers Available Yet !',
                   columnHeaderVertAlign: 'bottom',
+                  persistenceID : 'customer_table'
                }}
                ref={tableRef}
                className="crm-table"
