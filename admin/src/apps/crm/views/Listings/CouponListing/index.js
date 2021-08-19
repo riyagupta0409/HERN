@@ -11,6 +11,9 @@ import {
    PlusIcon,
    Flex,
    Form,
+   DropdownButton,
+   TextButton,
+   Spacer,
 } from '@dailykit/ui'
 import {
    COUPON_LISTING,
@@ -176,8 +179,9 @@ const CouponListing = () => {
          field: 'code',
          headerFilter: true,
          hozAlign: 'left',
+         frozen: true,
          cssClass: 'rowClick',
-         width: 150,
+         width: 300,
          cellClick: (e, cell) => {
             rowClick(e, cell)
          },
@@ -187,6 +191,23 @@ const CouponListing = () => {
                tooltip(identifier)?.description || column.getDefinition().title
             )
          },
+      },
+      {
+         title: 'Action',
+         field: 'action',
+         headerHorzAlign: 'center',
+         frozen: true,
+         cellClick: (e, cell) => {
+            e.stopPropagation()
+            deleteHandler(e, cell._cell.row.data)
+         },
+         formatter: reactFormatter(<DeleteButton />),
+         hozAlign: 'center',
+         titleFormatter: function (cell, formatterParams, onRendered) {
+            cell.getElement().style.textAlign = 'center'
+            return '' + cell.getValue()
+         },
+         width: 100,
       },
       {
          title: 'Used',
@@ -254,22 +275,26 @@ const CouponListing = () => {
          },
          width: 100,
       },
-      {
-         title: 'Action',
-         field: 'action',
-         cellClick: (e, cell) => {
-            e.stopPropagation()
-            deleteHandler(e, cell._cell.row.data)
-         },
-         formatter: reactFormatter(<DeleteButton />),
-         hozAlign: 'center',
-         titleFormatter: function (cell, formatterParams, onRendered) {
-            cell.getElement().style.textAlign = 'center'
-            return '' + cell.getValue()
-         },
-         width: 100,
-      },
+      
    ]
+   const downloadCsvData = () => {
+      tableRef.current.table.download('csv', 'coupons_table.csv')
+   }
+
+   const downloadPdfData = () => {
+      tableRef.current.table.downloadToTab('pdf', 'coupons_table.pdf')
+   }
+
+   const downloadXlsxData = () => {
+      tableRef.current.table.download('xlsx', 'coupons_table.xlsx')
+   }
+   const clearProductOptionPersistence= () =>
+      {
+         localStorage.removeItem('tabulator-coupons_table-columns')
+         localStorage.removeItem('tabulator-coupons_table-sort')
+         localStorage.removeItem('tabulator-coupons_table-filter') 
+      }
+
    if (loading || listLoading) return <InlineLoader />
    return (
       <StyledWrapper>
@@ -282,6 +307,37 @@ const CouponListing = () => {
                </Text>
                <Tooltip identifier="coupon_list_heading" />
             </Flex>
+
+            <TextButton
+                     onClick={() => {
+                        clearProductOptionPersistence ()
+                     }}
+                     type="ghost"
+                     size="sm"
+                  >
+                     Clear Persistence
+                  </TextButton>
+                  <Spacer size="15px" xAxis />
+                  <DropdownButton title="Download" width="150px">
+                     <DropdownButton.Options>
+                        <DropdownButton.Option
+                           onClick={() => downloadCsvData()}
+                        >
+                           CSV
+                        </DropdownButton.Option>
+                        <DropdownButton.Option
+                           onClick={() => downloadPdfData()}
+                        >
+                           PDF
+                        </DropdownButton.Option>
+                        <DropdownButton.Option
+                           onClick={() => downloadXlsxData()}
+                        >
+                           XLSX
+                        </DropdownButton.Option>
+                     </DropdownButton.Options>
+                  </DropdownButton>
+
             <ButtonGroup>
                <ComboButton type="solid" onClick={createCoupon}>
                   <PlusIcon />
@@ -296,8 +352,10 @@ const CouponListing = () => {
                options={{
                   ...options,
                   placeholder: 'No Coupons Available Yet !',
+                  persistenceID : 'coupons_table'
                }}
                ref={tableRef}
+               className = 'crm-coupons'
             />
          )}
          <InsightDashboard
