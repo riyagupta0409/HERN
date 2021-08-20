@@ -288,7 +288,7 @@ const CouponListing = () => {
    const downloadXlsxData = () => {
       tableRef.current.table.download('xlsx', 'coupons_table.xlsx')
    }
-   const clearProductOptionPersistence= () =>
+   const clearCouponsPersistence= () =>
       {
          localStorage.removeItem('tabulator-coupons_table-columns')
          localStorage.removeItem('tabulator-coupons_table-sort')
@@ -310,7 +310,7 @@ const CouponListing = () => {
 
             <TextButton
                      onClick={() => {
-                        clearProductOptionPersistence ()
+                        clearCouponsPersistence()
                      }}
                      type="ghost"
                      size="sm"
