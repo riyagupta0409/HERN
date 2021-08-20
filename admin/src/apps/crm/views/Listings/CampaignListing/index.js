@@ -238,7 +238,7 @@ const CampaignListing = () => {
    const downloadXlsxData = () => {
       tableRef.current.table.download('xlsx', 'campaign_table.xlsx')
    }
-   const clearProductOptionPersistence= () =>
+   const clearCampaignPersistence= () =>
       {
          localStorage.removeItem('tabulator-campaign_table-columns')
          localStorage.removeItem('tabulator-campaign_table-sort')
@@ -261,7 +261,7 @@ const CampaignListing = () => {
 
             <TextButton
                      onClick={() => {
-                        clearProductOptionPersistence ()
+                        clearCampaignPersistence()
                      }}
                      type="ghost"
                      size="sm"
