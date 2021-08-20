@@ -6,7 +6,7 @@ export const createScheduledEvent = async (req, res) => {
       const { scheduledEventInput = {} } = req.body.input
       const DATA_HUB = await get_env('DATA_HUB')
 
-      const url = new URL(DATA_HUB).origin + '/datahub/v1/query'
+      const url = `${new URL(DATA_HUB).origin}/datahub/v1/query`
 
       const HASURA_GRAPHQL_ADMIN_SECRET = await get_env(
          'HASURA_GRAPHQL_ADMIN_SECRET'
