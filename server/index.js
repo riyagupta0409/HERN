@@ -59,10 +59,7 @@ import {
    emailTemplateHandler
 } from './entities/emails'
 
-import { stripeWebhookEvents } from './entities/payment/stripe-webhook/controllers'
-
 import './lib/stripe'
-import { parse } from './utils'
 
 const router = express.Router()
 
@@ -101,6 +98,7 @@ router.use('/api/payment-method', PaymentMethodRouter)
 router.use('/api/payment-intent', PaymentIntentRouter)
 router.use('/api/payment', PaymentRouter)
 router.use('/api/initiate-payment', InitiatePaymentRouter)
+router.use('/api/payment/stripe-webhook', StripeWebhookRouter)
 
 router.get('/api/account-details/:id', getAccountDetails)
 
@@ -109,7 +107,6 @@ router.post('/api/webhooks/stripe/customer', createStripeCustomer)
 router.post('/api/webhooks/stripe/send-invoice', sendStripeInvoice)
 router.post('/api/webhooks/stripe/send-sms', sendSMS)
 // NEW
-router.post('/api/payment/stripe-webhook', stripeWebhookEvents)
 
 router.use('/webhook/user', UserRouter)
 router.use('/webhook/devices', DeviceRouter)

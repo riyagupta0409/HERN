@@ -1,5 +1,17 @@
 import { emailTrigger } from '../../utils'
 import { client } from '../../lib/graphql'
+
+const GET_CUSTOMER_EMAIL = `query CustomerDetails($id: Int!) {
+    brandCustomer(id: $id) {
+        id
+        isSubscriptionCancelled
+        customer {
+          email
+        }
+      }
+    }
+  `
+
 export const handleSubscriptionCancelled = async (req, res) => {
    try {
       const { data = {} } = req.body.event
@@ -8,7 +20,7 @@ export const handleSubscriptionCancelled = async (req, res) => {
          id: data.new.id
       })
       if (
-         data.old.isSubscriptionCancelled != data.new.isSubscriptionCancelled
+         data.old.isSubscriptionCancelled !== data.new.isSubscriptionCancelled
       ) {
          if (brandCustomer.isSubscriptionCancelled) {
             await emailTrigger({
@@ -23,7 +35,8 @@ export const handleSubscriptionCancelled = async (req, res) => {
                message: 'event reactivateSubscription triggered'
             })
             return
-         } else if (!brandCustomer.isSubscriptionCancelled) {
+         }
+         if (!brandCustomer.isSubscriptionCancelled) {
             await emailTrigger({
                title: 'deactivateSubscription',
                variables: {
@@ -39,17 +52,6 @@ export const handleSubscriptionCancelled = async (req, res) => {
          }
       }
    } catch (error) {
-      return res.status(400).json({ success: false, error: error })
+      return res.status(400).json({ success: false, error })
    }
 }
-
-const GET_CUSTOMER_EMAIL = `query CustomerDetails($id: Int!) {
-    brandCustomer(id: $id) {
-        id
-        isSubscriptionCancelled
-        customer {
-          email
-        }
-      }
-    }
-  `

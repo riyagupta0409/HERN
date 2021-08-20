@@ -1,5 +1,16 @@
 import { emailTrigger } from '../../utils'
 import { client } from '../../lib/graphql'
+
+const GET_CUSTOMER_EMAIL = `query CustomerDetails($id: Int!) {
+    brandCustomer(id: $id) {
+        id
+      customer {
+        email
+      }
+    }
+  }
+  `
+
 export const handleCustomerSignup = async (req, res) => {
    try {
       const { data = {} } = req.body.event
@@ -21,16 +32,6 @@ export const handleCustomerSignup = async (req, res) => {
       })
       return
    } catch (error) {
-      return res.status(400).json({ success: false, error: error })
+      return res.status(400).json({ success: false, error })
    }
 }
-
-const GET_CUSTOMER_EMAIL = `query CustomerDetails($id: Int!) {
-    brandCustomer(id: $id) {
-        id
-      customer {
-        email
-      }
-    }
-  }
-  `

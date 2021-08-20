@@ -55,7 +55,7 @@ export const root = async (req, res) => {
 
       const timezone = await get_env('TIMEZONE')
 
-      let result = await method.default({
+      const result = await method.default({
          data,
          template,
          meta: { client, format_currency, timezone }
@@ -99,6 +99,6 @@ export const download = async (req, res) => {
 
 router.get('/', root)
 router.post('/download/:path(*)', download)
-router.use('/files', express.static(__dirname + '../..' + '/templates'))
+router.use('/files', express.static(`${__dirname}../..` + `/templates`))
 
 export default router
