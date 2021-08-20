@@ -11,10 +11,11 @@ import { useMenu } from './state'
 import { useConfig } from '../../lib'
 import { useUser } from '../../context'
 import { HelperBar, Loader } from '../../components'
-import { formatCurrency, getRoute } from '../../utils'
+import { formatCurrency, getRoute, isClient } from '../../utils'
 import { SkeletonProduct } from './skeletons'
 import { CheckIcon } from '../../assets/icons'
 import { OCCURENCE_PRODUCTS_BY_CATEGORIES } from '../../graphql'
+const ReactPixel = isClient ? require('react-facebook-pixel').default : null
 
 export const Menu = () => {
    const { user } = useUser()
@@ -45,6 +46,27 @@ export const Menu = () => {
       return index === -1 ? false : true
    }
    const theme = configOf('theme-color', 'Visual')
+
+   // fb pixel custom event when menu page is opened
+   React.useEffect(() => {
+      if (!loading) {
+         ReactPixel.trackCustom('show-menu', {
+            startDate: moment(state?.week?.fulfillmentDate)
+               .weekday(1)
+               .format('ddd MMM D, YYYY'),
+            endDate: moment(state?.week?.fulfillmentDate)
+               .add(7, 'day')
+               .weekday(0)
+               .format('ddd MMM D, YYYY'),
+            id: state?.week?.id,
+            subscriptionId: user?.subscriptionId,
+            contents: categories.map(category => ({
+               name: category?.name,
+               products: category?.productsAggregate?.nodes,
+            })),
+         })
+      }
+   }, [categories, loading])
 
    if (loading) return <SkeletonProduct />
    if (isEmpty(categories))
@@ -268,9 +290,9 @@ const Label = styled.span`
    top: 16px;
    ${tw`
       px-2
-      absolute 
+      absolute
       rounded-r
-      bg-green-500 
-      text-sm uppercase font-medium tracking-wider text-white 
+      bg-green-500
+      text-sm uppercase font-medium tracking-wider text-white
    `}
 `

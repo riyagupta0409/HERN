@@ -481,6 +481,7 @@ export const CART_STATUS = gql`
          fulfillmentInfo
          billingDetails
          customerKeycloakId
+         amount
          products: cartItems(where: { level: { _eq: 1 } }) {
             id
             name: displayName
