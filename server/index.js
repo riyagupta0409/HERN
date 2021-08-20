@@ -55,7 +55,8 @@ import {
 } from './entities/events'
 import {
    handleCustomerSignup,
-   handleSubscriptionCancelled
+   handleSubscriptionCancelled,
+   emailTemplateHandler
 } from './entities/emails'
 
 import { stripeWebhookEvents } from './entities/payment/stripe-webhook/controllers'
@@ -128,6 +129,7 @@ router.post(
    '/webhook/emails/handle-subscription-cancelled',
    handleSubscriptionCancelled
 )
+router.post('/webhook/email-template-handler', emailTemplateHandler)
 
 router.use('/api/store', StoreRouter)
 router.post('/api/envs', populate_env)

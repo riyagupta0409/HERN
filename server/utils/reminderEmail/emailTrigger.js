@@ -35,22 +35,10 @@ const getHtml = async (
    try {
       const DATA_HUB = await get_env('DATA_HUB')
       const { origin } = new URL(DATA_HUB)
-      const template_variables = encodeURI(JSON.stringify(variables))
       if (subjectLineTemplate) {
-         const template_options = encodeURI(
-            JSON.stringify({
-               path: functionFile.path,
-               emailTemplateFileName,
-               format: 'html',
-               readVar: true
-            })
+         const template_variables = encodeURI(
+            JSON.stringify({ ...variables, readVar: true })
          )
-         const url = `${origin}/template/?template=${template_options}&data=${template_variables}`
-         const { data } = await axios.get(url)
-         const result = template_compiler(subjectLineTemplate, data)
-         return result
-      }
-      if (!subjectLineTemplate) {
          const template_options = encodeURI(
             JSON.stringify({
                path: functionFile.path,
@@ -59,17 +47,35 @@ const getHtml = async (
             })
          )
          const url = `${origin}/template/?template=${template_options}&data=${template_variables}`
+
+         const { data } = await axios.get(url)
+         const result = template_compiler(subjectLineTemplate, data)
+         return result
+      }
+      if (!subjectLineTemplate) {
+         const template_variables = encodeURI(JSON.stringify(variables))
+         const template_options = encodeURI(
+            JSON.stringify({
+               path: functionFile.path,
+               emailTemplateFileName,
+               format: 'html'
+            })
+         )
+         const url = `${origin}/template/?template=${template_options}&data=${template_variables}`
+
          const { data: html } = await axios.get(url)
+
          return html
       }
    } catch (error) {
-      console.log(error)
+      console.log('error from getHtml', error)
       throw error
    }
 }
 
 export const emailTrigger = async ({ title, variables = {}, to }) => {
    try {
+      console.log('entering emailTrigger', { title, variables, to })
       const { templateSettings = [] } = await client.request(
          GET_TEMPLATE_SETTINGS,
          {
@@ -98,14 +104,16 @@ export const emailTrigger = async ({ title, variables = {}, to }) => {
                emailTemplateFile.fileName,
                variables
             )
+            console.log('html', typeof html)
             const subjectLine = await getHtml(
                functionFile,
                emailTemplateFile.fileName,
                variables,
                subjectLineTemplate
             )
+            console.log('subjectLine', typeof subjectLine)
 
-            await client.request(SEND_MAIL, {
+            const { sendEmail } = await client.request(SEND_MAIL, {
                emailInput: {
                   from: fromEmail,
                   to,
@@ -114,10 +122,17 @@ export const emailTrigger = async ({ title, variables = {}, to }) => {
                   html
                }
             })
-         } else {
+            return sendEmail
+         }
+         if (!proceed) {
             console.log(
                'Could not send email as required variables were not provided'
             )
+            return {
+               success: false,
+               message:
+                  'Could not send email as required variables were not provided'
+            }
          }
       }
    } catch (error) {
