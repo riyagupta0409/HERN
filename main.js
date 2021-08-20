@@ -1,5 +1,5 @@
-require('dotenv').config()
 import cors from 'cors'
+
 import request from 'request'
 import fs from 'fs'
 import path from 'path'
@@ -7,8 +7,6 @@ import express from 'express'
 import morgan from 'morgan'
 import AWS from 'aws-sdk'
 import bluebird from 'bluebird'
-const { createProxyMiddleware } = require('http-proxy-middleware')
-const { ApolloServer } = require('apollo-server-express')
 import depthLimit from 'graphql-depth-limit'
 
 import get_env from './get_env'
@@ -16,11 +14,28 @@ import get_env from './get_env'
 import ServerRouter from './server'
 import schema from './template/schema'
 import TemplateRouter from './template'
+
+require('dotenv').config()
+const { createProxyMiddleware } = require('http-proxy-middleware')
+const { ApolloServer } = require('apollo-server-express')
+const ohyaySchema = require('./server/streaming/ohyay/src/schema/schema')
+
 const app = express()
+
+const setupForStripeWebhooks = {
+   // Because Stripe needs the raw body, we compute it but only when hitting the Stripe callback URL.
+   verify: (req, res, buf) => {
+      const url = req.originalUrl
+      console.log({ url })
+      if (url.startsWith('/server/api/payment/stripe-webhook')) {
+         req.rawBody = buf.toString()
+      }
+   }
+}
 
 // Middlewares
 app.use(cors())
-app.use(express.json())
+app.use(express.json(setupForStripeWebhooks))
 app.use(express.urlencoded({ extended: true }))
 app.use(
    morgan(
@@ -42,7 +57,7 @@ app.use('/server', ServerRouter)
 /*
 serves build folder of admin
 */
-app.use('/apps', (req, res, next) => {
+app.use('/apps/:path(*)', (req, res, next) => {
    if (process.env.NODE_ENV === 'development') {
       return createProxyMiddleware({
          target: 'http://localhost:8000',
@@ -62,14 +77,14 @@ handles template endpoints for ex. serving labels, sachets, emails in pdf or htm
 */
 app.use('/template', TemplateRouter)
 
-const isProd = process.env.NODE_ENV === 'production' ? true : false
+const isProd = process.env.NODE_ENV === 'production'
 
 const proxy = createProxyMiddleware({
    target: 'http://localhost:3000',
    changeOrigin: true,
    onProxyReq: (proxyReq, req) => {
       if (req.body) {
-         let bodyData = JSON.stringify(req.body)
+         const bodyData = JSON.stringify(req.body)
          proxyReq.setHeader('Content-Type', 'application/json')
          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData))
          proxyReq.write(bodyData)
@@ -110,9 +125,9 @@ const serveSubscription = async (req, res, next) => {
       */
       if (process.env.NODE_ENV === 'development') {
          const url = RESTRICTED_FILES.some(file => routePath.includes(file))
-            ? 'http://localhost:3000/' + routePath
-            : 'http://localhost:3000/' + brand + '/' + routePath
-         request(url, function (error, _, body) {
+            ? `http://localhost:3000/${routePath}`
+            : `http://localhost:3000/${brand}/${routePath}`
+         request(url, (error, _, body) => {
             if (error) {
                throw error
             } else {
@@ -148,9 +163,9 @@ const serveSubscription = async (req, res, next) => {
                const url = RESTRICTED_FILES.some(file =>
                   routePath.includes(file)
                )
-                  ? 'http://localhost:3000/' + routePath
-                  : 'http://localhost:3000/' + brand + '/' + routePath
-               request(url, function (error, _, body) {
+                  ? `http://localhost:3000/${routePath}`
+                  : `http://localhost:3000/${brand}/${routePath}`
+               request(url, (error, _, body) => {
                   if (error) {
                      console.log(error)
                   } else {
@@ -158,17 +173,12 @@ const serveSubscription = async (req, res, next) => {
                   }
                })
             }
+         } else if (routePath.includes('env-config.js')) {
+            res.sendFile(path.join(__dirname, 'store/public/env-config.js'))
          } else {
-            if (routePath.includes('env-config.js')) {
-               res.sendFile(path.join(__dirname, 'store/public/env-config.js'))
-            } else {
-               res.sendFile(
-                  path.join(
-                     __dirname,
-                     routePath.replace('_next', 'store/.next')
-                  )
-               )
-            }
+            res.sendFile(
+               path.join(__dirname, routePath.replace('_next', 'store/.next'))
+            )
          }
       }
    } catch (error) {
@@ -202,6 +212,29 @@ const apolloserver = new ApolloServer({
 })
 
 apolloserver.applyMiddleware({ app })
+
+// ohyay remote schema integration
+const ohyayApolloserver = new ApolloServer({
+   schema: ohyaySchema,
+   playground: {
+      endpoint: `${get_env('ENDPOINT')}/ohyay/graphql`
+   },
+   introspection: true,
+   validationRules: [depthLimit(11)],
+   formatError: err => {
+      console.log(err)
+      if (err.message.includes('ENOENT'))
+         return isProd ? new Error('No such folder or file exists!') : err
+      return isProd ? new Error(err) : err
+   },
+   debug: true,
+   context: ({ req }) => {
+      const ohyay_api_key = req.header('ohyay_api_key')
+      return { ohyay_api_key }
+   }
+})
+
+ohyayApolloserver.applyMiddleware({ app })
 
 app.listen(PORT, () => {
    console.log(`Server started on ${PORT}`)
