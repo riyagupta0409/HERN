@@ -15,11 +15,9 @@ export * from './webhook'
 export * from './parseur'
 export * from './store'
 export * from './fullOccurence'
-<<<<<<< HEAD
 export * from './customer'
 export * from './actions'
 export * from './webhookEvents'
-=======
 // export * from './customer'
 // export * from './actions'
 export * from './ohyay'
@@ -34,4 +32,3 @@ export * from './payment-intent'
 export * from './payment-method'
 export * from './payment_integrations'
 export * from './stripe'
->>>>>>> ca76df11bb8b09fd7a3469f15496997d7bbd6656
