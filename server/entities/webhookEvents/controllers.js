@@ -1,4 +1,5 @@
 import axios from 'axios'; 
+import { client } from '../../lib/graphql';
 
 if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
@@ -42,7 +43,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://49816ee594c7.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
+                                "webhook": "http://c138-103-119-165-40.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
@@ -81,7 +82,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://49816ee594c7.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
+                                "webhook": "http://c138-103-119-165-40.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
@@ -101,6 +102,29 @@ const handleEvents = {
 
 
 export const sendWebhookEvents  = async (req , res) => {
-    console.log(req)
+    
+    const payload = req.body
+
+    const eventName = req.body.trigger.name
+
+    const response = await client.request(
+        GET_AVAILABLE_WEBHOOK_EVENT_ID, { "eventName": eventName }
+     )
+
+     const availableWebhookEventId = response.developer_availableWebhookEvent[0].id
+
+     console.log(availableWebhookEventId)
+
+
+
     res.send('hi')
 }
+
+const GET_AVAILABLE_WEBHOOK_EVENT_ID = `
+query MyQuery($eventName:String) {
+  developer_availableWebhookEvent(where: {label: {_eq: $eventName}}) {
+    id
+  }
+}
+
+`

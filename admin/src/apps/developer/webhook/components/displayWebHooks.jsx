@@ -24,8 +24,6 @@ function DisplayWebHooks(){
     
     // To delete Webhook
     function deleteEvent(eventId){
-        console.log('working');
-        console.log(eventId);
         deleteWebhook({
             variables:{
                 "eventId":eventId

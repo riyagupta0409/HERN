@@ -25,9 +25,7 @@ import {
    GetFullOccurenceRouter,
    populate_env,
    ActionsRouter,
-<<<<<<< HEAD
-   WebhookEventRouter // for hadling webhook events
-=======
+   WebhookEventRouter, // for hadling webhook events
    OhyayRouter,
    ExperienceRouter,
    // handleCartPayment,
@@ -45,7 +43,6 @@ import {
    updateDailyosStripeStatus,
    getAccountDetails,
    StripeWebhookRouter
->>>>>>> staging
 } from './entities'
 
 import { PrintRouter } from './entities/print'
