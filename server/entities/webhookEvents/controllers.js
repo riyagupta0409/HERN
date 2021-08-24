@@ -9,27 +9,24 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 /*
-
 this controller is responsible for sending payload to all the webhook urls 
 that are binded to a particular event whenever that event is triggered . 
-
 It will be recieving the payload whenever the event is triggered in req.body.event.data.new
 then all the webhook urls binded to that event will be fetched from webhookUrl_events table 
 and post request with the payload will be sent to each webhook url
-
 */
 export const sendWebhookEvents  = async (req , res) => {
     const triggerName = req.body.trigger.name ; 
-    console.log(triggerName)
     const webhookUrlArrayObject = await client.request(
         GET_EVENT_WEBHOOK_URLS,
         {
             "webhookEvent" : triggerName
         }
      )
-     var webhookUrlArray = webhookUrlArrayObject.developer_webhookUrl_events
+     const webhookUrlArray = webhookUrlArrayObject.developer_webhookUrl_events
 
-     console.log(webhookUrlArrayObject)
+     // eslint-disable-next-line no-console
+     console.log(webhookUrlArray)
 
     res.send('hi')
 }
@@ -39,7 +36,6 @@ this controller is responsible for handling event trigges state
 if the is active status of an event turns true then the event will be added in hasura events
 and if the active status of an event turns false then the event will be removed from hasura events
 using handleEvents.create and handleEvents.delete respectively 
-
 */
 export const handleIsActiveEventTrigger = async (req , res) => {
     try{
@@ -63,7 +59,7 @@ const handleEvents = {
             const tableName = req.body.event.data.old.tableName
             const schemaName = req.body.event.data.old.schemaName
 
-            const response = await axios({
+            await axios({
                    url:"https://test.dailykit.org/datahub/v1/query",
                     method:'POST',
                     headers:{
@@ -123,7 +119,6 @@ const handleEvents = {
                                     "payload": "*"
                                 },
                                 "replace": false
-                            
                         }
                     }
             })
@@ -134,5 +129,3 @@ const handleEvents = {
     }
 
 }
-
-

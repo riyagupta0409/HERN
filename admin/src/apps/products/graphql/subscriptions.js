@@ -19,38 +19,26 @@ export const CUISINES_NAMES = gql`
 `
 export const S_INGREDIENTS = gql`
    subscription Ingredients {
-      ingredients(
-         order_by: { createdAt: desc }
-         where: { isArchived: { _eq: false } }
-      ) {
-         id
-         name
-         category
-         image
-         isValid
-         isPublished
-         createdAt
-         ingredientProcessings {
-            id
-            nutritionalInfo
-            processingName
-            ingredientSachets {
-               id
-               isValid
-               quantity
-               unit
-               nutritionalInfo
-               ingredient {
-                  id
-                  name
-               }
-            }
-         }
-         ingredientSachets {
-            id
-         }
+  ingredients(order_by: {createdAt: desc}, where: {isArchived: {_eq: false}}) {
+    id
+    name
+    category
+    image
+    isValid
+    isPublished
+    createdAt
+    ingredientProcessings_aggregate {
+      aggregate {
+        count
       }
-   }
+    }
+    ingredientSachetViews_aggregate {
+      aggregate {
+        count
+      }
+    }
+  }
+}
 `
 
 export const S_PROCESSINGS = gql`
