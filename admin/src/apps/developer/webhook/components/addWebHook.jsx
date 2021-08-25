@@ -3,7 +3,7 @@ import {AVAILABLE_EVENTS, INSERT_WEBHOOK_EVENTS } from '../graphql';
 import { Loader } from '@dailykit/ui'
 import { useQuery, useMutation } from '@apollo/react-hooks'
 import {logger}  from '../../../../shared/utils'
-import {TextButton , Form, Spacer, Text, ButtonGroup, Select, Tunnel, useTunnel } from '@dailykit/ui'
+import {TextButton , Form, Spacer, Text, ButtonGroup, Select, Tunnel, useTunnel, TunnelHeader } from '@dailykit/ui'
 import { toast } from 'react-toastify'
 
 function AddWebHook(props){
@@ -84,8 +84,20 @@ function AddWebHook(props){
         return (
             <>
                 <Tunnel style={{padding:10}}>
+
+                    <TunnelHeader
+                    title="Add Webhook"
+                    close={() => props.closeForm()}
+                    description='This is for adding webhook'
                     
-                    <Text as='h3'>Add Webhook</Text>
+                    right={
+                        {
+                            title: 'Create',
+                            action: () => submitForm()
+                        }
+                    }
+                />
+                    
                     <Spacer size='16px' />
                     <Form.Group>
                         <Form.Label htmlFor='webhookEvent' title='webhookEvent'>

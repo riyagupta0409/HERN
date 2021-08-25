@@ -1,6 +1,6 @@
 import axios from 'axios'; 
 import { client } from '../../lib/graphql';
-import {GET_EVENT_WEBHOOK_URLS} from './graphql';
+import { GET_AVAILABLE_WEBHOOK_EVENT_ID, INSERT_PROCESSED_EVENT, GET_EVENT_WEBHOOK_URLS} from './graphql';
 
 
 // for hasura admin secret in development mode 
@@ -15,22 +15,52 @@ It will be recieving the payload whenever the event is triggered in req.body.eve
 then all the webhook urls binded to that event will be fetched from webhookUrl_events table 
 and post request with the payload will be sent to each webhook url
 */
+
 export const sendWebhookEvents  = async (req , res) => {
-    const triggerName = req.body.trigger.name ; 
+
+    
+    const payload = req.body
+
+    const eventName = req.body.trigger.name
+
+    const response_availableWebhookEventId = await client.request(
+        GET_AVAILABLE_WEBHOOK_EVENT_ID, { "eventName": eventName }
+     )
+
+     const availableWebhookEventId = response_availableWebhookEventId.developer_availableWebhookEvent[0].id
+
+     const response_insertProcessedEvent = await client.request(
+         INSERT_PROCESSED_EVENT, {
+             "availableWebhookEventId":availableWebhookEventId,
+             "payload":payload
+         }
+     )
+
     const webhookUrlArrayObject = await client.request(
         GET_EVENT_WEBHOOK_URLS,
         {
-            "webhookEvent" : triggerName
+            "webhookEvent" : eventName
         }
      )
-     const webhookUrlArray = webhookUrlArrayObject.developer_webhookUrl_events
 
-     // eslint-disable-next-line no-console
-     console.log(webhookUrlArray)
+    var webhookUrlArray = webhookUrlArrayObject.developer_webhookUrl_events
+
+    webhookUrlArray.forEach(element=>{
+        const urlEndpoint = element["webhookUrl"].urlEndpoint
+
+        const response = axios({
+            url: urlEndpoint,
+            method:"POST",
+            data:payload
+        })
+
+        console.log(response)
+
+    })
+
 
     res.send('hi')
 }
-
 /*
 this controller is responsible for handling event trigges state 
 if the is active status of an event turns true then the event will be added in hasura events
@@ -75,7 +105,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://59a46024a389.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
+                                "webhook": "http://c7ea-103-212-130-196.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
@@ -113,7 +143,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://59a46024a389.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
+                                "webhook": "http://c7ea-103-212-130-196.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"

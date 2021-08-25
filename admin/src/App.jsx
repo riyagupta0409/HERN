@@ -132,11 +132,11 @@ const App = () => {
                               </AppItem>
 
                            ))}
-                           <AppItem>
-                                 <Link to='/developer'>
-                                    <span>Developer</span>
-                                 </Link>
-                              </AppItem>
+                           <AppItem >
+                              <Link to='/developer'>
+                                 <span>Developer</span>
+                              </Link>
+                           </AppItem>
                         </AppList>
                      </NavMenuPanel>
                      <DashboardPanel>
@@ -148,6 +148,14 @@ const App = () => {
                         </WelcomeNote>
                         <DashboardCards />
                         <DashboardTables />
+                        {/* <InsightDiv>
+                     <InsightDashboard
+                        appTitle="global"
+                        moduleTitle="dashboard"
+                        includeChart
+                        showInTunnel={false}
+                     />
+                  </InsightDiv> */}
                      </DashboardPanel>
                   </HomeContainer>
                   <Banner id="app-home-bottom" />

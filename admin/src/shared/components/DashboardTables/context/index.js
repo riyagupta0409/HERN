@@ -8,6 +8,7 @@ const currency = {
    INR: '₹',
    EUR: '€',
 }
+console.log(process.env)
 const initialState = {
    from: false,
    to: false,

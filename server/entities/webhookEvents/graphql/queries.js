@@ -7,3 +7,12 @@ query MyQuery($webhookEvent: String = "") {
     }
   }  
 `
+
+export const GET_AVAILABLE_WEBHOOK_EVENT_ID = `
+query MyQuery($eventName:String) {
+  developer_availableWebhookEvent(where: {label: {_eq: $eventName}}) {
+    id
+  }
+}
+
+`
