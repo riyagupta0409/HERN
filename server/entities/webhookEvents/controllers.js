@@ -1,10 +1,74 @@
 import axios from 'axios'; 
 import { client } from '../../lib/graphql';
+import { GET_AVAILABLE_WEBHOOK_EVENT_ID, INSERT_PROCESSED_EVENT, GET_EVENT_WEBHOOK_URLS} from './graphql';
 
+
+// for hasura admin secret in development mode 
 if(process.env.NODE_ENV !== 'production'){
     require('dotenv').config()
 }
 
+/*
+
+this controller is responsible for sending payload to all the webhook urls 
+that are binded to a particular event whenever that event is triggered . 
+
+It will be recieving the payload whenever the event is triggered in req.body.event.data.new
+then all the webhook urls binded to that event will be fetched from webhookUrl_events table 
+and post request with the payload will be sent to each webhook url
+
+*/
+
+export const sendWebhookEvents  = async (req , res) => {
+    
+    const payload = req.body
+
+    const eventName = req.body.trigger.name
+
+    const response_availableWebhookEventId = await client.request(
+        GET_AVAILABLE_WEBHOOK_EVENT_ID, { "eventName": eventName }
+     )
+
+     const availableWebhookEventId = response_availableWebhookEventId.developer_availableWebhookEvent[0].id
+
+     const response_insertProcessedEvent = await client.request(
+         INSERT_PROCESSED_EVENT, {
+             "availableWebhookEventId":availableWebhookEventId,
+             "payload":payload
+         }
+     )
+
+    const webhookUrlArrayObject = await client.request(
+        GET_EVENT_WEBHOOK_URLS,
+        {
+            "webhookEvent" : eventName
+        }
+     )
+    var webhookUrlArray = webhookUrlArrayObject.developer_webhookUrl_events
+
+    webhookUrlArray.forEach(element=>{
+        const urlEndpoint = element["webhookUrl"].urlEndpoint
+
+        const response = axios({
+            url: urlEndpoint,
+            method:"POST",
+            data:payload
+        })
+
+        console.log(response)
+
+    })
+
+
+    res.send('hi')
+}
+/*
+this controller is responsible for handling event trigges state 
+if the is active status of an event turns true then the event will be added in hasura events
+and if the active status of an event turns false then the event will be removed from hasura events
+using handleEvents.create and handleEvents.delete respectively 
+
+*/
 export const handleIsActiveEventTrigger = async (req , res) => {
     try{
         if(req.body.event.data.old.isActive === false && req.body.event.data.new.isActive === true) {
@@ -20,7 +84,7 @@ export const handleIsActiveEventTrigger = async (req , res) => {
 
 const handleEvents = {
 
-    // create event trigger
+    // create event in hasura events 
     create : async (req , res) => {
         try {
             const eventName = req.body.event.data.old.label
@@ -43,13 +107,12 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://c138-103-119-165-40.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
+                                "webhook": "http://c7ea-103-212-130-196.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
                                 },
-                                "replace": false
-                            
+                                "replace": false                
                         }
                     }
             })
@@ -59,7 +122,7 @@ const handleEvents = {
     
     } , 
 
-    // delete event trigger 
+    // delete event from hasura events 
     delete : async (req , res) => {
         try {
             const eventName = req.body.event.data.old.label
@@ -82,7 +145,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://c138-103-119-165-40.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
+                                "webhook": "http://c7ea-103-212-130-196.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
@@ -101,30 +164,6 @@ const handleEvents = {
 }
 
 
-export const sendWebhookEvents  = async (req , res) => {
-    
-    const payload = req.body
-
-    const eventName = req.body.trigger.name
-
-    const response = await client.request(
-        GET_AVAILABLE_WEBHOOK_EVENT_ID, { "eventName": eventName }
-     )
-
-     const availableWebhookEventId = response.developer_availableWebhookEvent[0].id
-
-     console.log(availableWebhookEventId)
 
 
 
-    res.send('hi')
-}
-
-const GET_AVAILABLE_WEBHOOK_EVENT_ID = `
-query MyQuery($eventName:String) {
-  developer_availableWebhookEvent(where: {label: {_eq: $eventName}}) {
-    id
-  }
-}
-
-`

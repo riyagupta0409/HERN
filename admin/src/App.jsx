@@ -130,6 +130,7 @@ const App = () => {
                                     <span>{app.title}</span>
                                  </Link>
                               </AppItem>
+
                            ))}
                            <AppItem >
                               <Link to='/developer'>
