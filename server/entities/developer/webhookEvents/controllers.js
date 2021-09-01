@@ -1,6 +1,6 @@
 import axios from 'axios'; 
-import { client } from '../../lib/graphql';
-import { GET_AVAILABLE_WEBHOOK_EVENT_ID, INSERT_PROCESSED_EVENT, GET_EVENT_WEBHOOK_URLS} from './graphql';
+import { client } from '../../../lib/graphql';
+import { GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, INSERT_PROCESSED_EVENT} from './graphql';
 
 
 // for hasura admin secret in development mode 
@@ -20,44 +20,43 @@ and post request with the payload will be sent to each webhook url
 */
 
 export const sendWebhookEvents  = async (req , res) => {
+
+    console.log("done")
     
     const payload = req.body
 
     const eventName = req.body.trigger.name
 
-    const response_availableWebhookEventId = await client.request(
-        GET_AVAILABLE_WEBHOOK_EVENT_ID, { "eventName": eventName }
+    const response_availableWebhookEvent = await client.request(
+        GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, { "webhookEventLabel": eventName }
      )
 
-     const availableWebhookEventId = response_availableWebhookEventId.developer_availableWebhookEvent[0].id
+    console.log(response_availableWebhookEvent)
 
-     const response_insertProcessedEvent = await client.request(
-         INSERT_PROCESSED_EVENT, {
-             "availableWebhookEventId":availableWebhookEventId,
-             "payload":payload
-         }
-     )
 
-    const webhookUrlArrayObject = await client.request(
-        GET_EVENT_WEBHOOK_URLS,
-        {
-            "webhookEvent" : eventName
+    const availableWebhookEventId = response_availableWebhookEvent.developer_availableWebhookEvent[0].id
+
+    const response_insertProcessedEvent = await client.request(
+        INSERT_PROCESSED_EVENT, {
+            "availableWebhookEventId":availableWebhookEventId,
+            "payload":payload
         }
-     )
-    var webhookUrlArray = webhookUrlArrayObject.developer_webhookUrl_events
+    )
+
+    var webhookUrlArray =  response_availableWebhookEvent.developer_availableWebhookEvent[0].webhookUrl_events
 
     webhookUrlArray.forEach(element=>{
         const urlEndpoint = element["webhookUrl"].urlEndpoint
 
-        const response = axios({
+        const response_webhook = axios({
             url: urlEndpoint,
             method:"POST",
             data:payload
         })
 
-        console.log(response)
-
     })
+
+
 
 
     res.send('hi')
@@ -70,6 +69,7 @@ using handleEvents.create and handleEvents.delete respectively
 
 */
 export const handleIsActiveEventTrigger = async (req , res) => {
+
     try{
         if(req.body.event.data.old.isActive === false && req.body.event.data.new.isActive === true) {
             handleEvents.create(req, res)
@@ -107,7 +107,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://c7ea-103-212-130-196.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
+                                "webhook": "http://dcf9-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
@@ -145,7 +145,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://c7ea-103-212-130-196.ngrok.io/server/api/handleWebhookEvents/sendWebhookEvents",
+                                "webhook": "http://dcf9-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
