@@ -62,6 +62,11 @@ import {
 
 import './lib/stripe'
 
+// disabling console.log in production mode 
+if (process.env.NODE_ENV !== 'production') {
+   console.log = console.warn = console.error = () => {};
+}
+
 const router = express.Router()
 
 // Routes

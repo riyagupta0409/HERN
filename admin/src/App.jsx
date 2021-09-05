@@ -28,6 +28,8 @@ import DashboardCards from './shared/components/DashboardCardAnalytics'
 import { useAuth } from './shared/providers'
 import DashboardTables from './shared/components/DashboardTables'
 
+
+
 const APPS = gql`
    subscription apps {
       apps(order_by: { id: asc }) {
