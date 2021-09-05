@@ -2,7 +2,7 @@ import gql from 'graphql-tag'
 
 
 export const ACTIVE_EVENTS_WEBHOOKS = gql`
-      subscription MySubscription {
+      subscription ACTIVE_EVENTS_WEBHOOKS {
         developer_webhookUrl_events {
           id
           availableWebhookEvent {
@@ -43,3 +43,13 @@ export const  AVAILABLE_EVENTS = gql`
     }
     
     `
+
+  export const GET_WEBHOOK_URL_EVENTS_COUNT = gql`
+    subscription GET_WEBHOOK_URL_EVENTS_COUNT {
+      developer_webhookUrl_events_aggregate {
+        aggregate {
+          count
+        }
+      }
+    }
+  `

@@ -25,7 +25,7 @@ import {
    GetFullOccurenceRouter,
    populate_env,
    ActionsRouter,
-   WebhookEventRouter, // for hadling webhook events
+   DeveloperRouter, // for hadling webhook events
    OhyayRouter,
    ExperienceRouter,
    // handleCartPayment,
@@ -61,11 +61,6 @@ import {
 } from './entities/emails'
 
 import './lib/stripe'
-
-// disabling console.log in production mode 
-if (process.env.NODE_ENV !== 'production') {
-   console.log = console.warn = console.error = () => {};
-}
 
 const router = express.Router()
 
@@ -132,7 +127,7 @@ router.post(
    '/webhook/emails/handle-subscription-cancelled',
    handleSubscriptionCancelled
 )
-router.use('/api/handleWebhookEvents',  WebhookEventRouter);
+router.use('/api/developer',  DeveloperRouter);
 
 router.post('/webhook/email-template-handler', emailTemplateHandler)
 

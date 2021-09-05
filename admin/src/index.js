@@ -25,10 +25,7 @@ import { get_env } from './shared/utils'
 
 import './global.css'
 
-// disabling console.logs in production 
-// if (process.env.NODE_ENV !== 'production') {
-//    console.log = console.warn = console.error = () => {};
-// }
+
 
 
 const languages = ['en', 'fr', 'es', 'he', 'de', 'el', 'hi', 'it']

@@ -118,14 +118,6 @@ function AddWebHook(props){
                     />
                     </Form.Group>
                     <Spacer size='25px' />
-                    <ButtonGroup align="left">
-                        <TextButton type='solid' size='md' onClick={() => submitForm()}>
-                        Create Event
-                        </TextButton>
-                        <TextButton type='solid' size='md' onClick={() => props.closeForm()}>
-                        Cancel
-                        </TextButton>
-                    </ButtonGroup>
                     
                 </Tunnel>
             </>
