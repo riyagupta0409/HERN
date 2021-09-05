@@ -1,24 +1,50 @@
 .tabulator-header {
+   height: 80px;
    font-size: 14px;
    border-bottom: 2px solid #d8d8d8;
 }
 
+.crm-coupons .tabulator-headers .tabulator-col {
+   height: 78px !important;
+   margin-top: -8px !important;
+}
+.crm-campaign .tabulator-headers .tabulator-col {
+   height: 78px !important;
+   margin-top: -8px !important;
+}
+.gIjFdD {
+   justify-content: flex-end;
+}
+
+.tabulator-headers {
+   background-color: #f4f4f4;
+   height: 100% ;
+   /* padding-top: auto; */
+   font-weight: 500;
+   line-height: 18px;
+   letter-spacing: 0.44px;
+   font-size: 14px;
+   /* padding-top: 10px; */
+   padding: 8px;
+   text-align: left;
+}
+
+.tabulator-col {
+   background: #f4f4f4 !important;
+}
+
 .tabulator-row {
    height: 48px;
-   font-size: 16px;
    display: flex;
-   align-items: center;
-   border-bottom: 1px solid #d8d8d8;
-   letter-spacing: 0.44px;
-   line-height: 18px;
-   color: #202020;
    font-family: Roboto !important;
    font-style: normal;
    font-weight: 500;
-}
-
-.rowClick:hover {
-   background: #e5e5e5;
+   font-size: 16px;
+   line-height: 18px;
+   color: #202020;
+   align-items: center;
+   letter-spacing: 0.44px;
+   border-bottom: 1px solid #d8d8d8;
 }
 
 .center-text {
@@ -35,17 +61,54 @@
    margin-top: 5px;
 }
 
-.fulfillmentDate {
-   overflow: visible !important;
+.tabulator-row .colHover:hover {
+   color: #367bf5;
+   background-color: #f7f7f7;
 }
-.fulfillmentDate:hover {
-   background: #e5e5e5;
+.tabulator-row .tabulator-cell {
+   height: 48px;
 }
-.colHover:hover {
-   /* background: #e5e5e5; */
-   cursor: pointer;
+.tabulator-row .tabulator-selected {
+   background-color: #ebf1f4 !important;
+   border: 1px solid #fff;
 }
+.tabulator-row .tabulator-selected:hover {
+   background-color: #ebf1f4 !important;
+}
+
+.tabulator-header-filter input {
+   outline: none;
+   border-radius: 2px;
+   margin-top: 5px; 
+}
+
+.tabulator-arrow {
+   border-bottom: 6px #202020 solid !important;
+}
+
+input[type='checkbox'] {
+   width: 18px;
+   height: 18px;
+}
+
+.formatterCell {
+   width: 100%;
+}
+
+.tabulator-cell {
+   padding-right: 20px !important;
+}
+
+/* .tabulator-row.tabulator-group {
+   border: 1px solid #fff;
+} */
+
+/* .tabulator-col-content {
+   padding: 50px !important;
+} */
+
  
+
  .crm-table .tabulator-header .tabulator-frozen .tabulator-frozen-left{
    height: 100% !important;
    padding-top: 0px !important;
@@ -59,13 +122,14 @@
    padding-left: 2px !important;
  }
  .tabulator-header-filter input{
-    border-radius: 3px;
+    border-radius: 3px; 
     margin-top: 2px;
  }
  .crm-table .tabulator-header{
     margin-left: 0px;
     padding: 0px !important;
  }
+
  .crm-table .tabulator-headers{
     width: 125%;
     height: 80px;

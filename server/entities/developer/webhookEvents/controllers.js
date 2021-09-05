@@ -9,17 +9,24 @@ if(process.env.NODE_ENV !== 'production'){
 }
 
 /*
-
 this controller is responsible for sending payload to all the webhook urls 
 that are binded to a particular event whenever that event is triggered . 
-
-It will be recieving the payload whenever the event is triggered in req.body.event.data.new
+It will be recieving the payload whenever the event is triggered 
 then all the webhook urls binded to that event will be fetched from webhookUrl_events table 
 and post request with the payload will be sent to each webhook url
-
+along with the retry configuration.
 */
+export const sendWebhookEvents = async (req , res) => {
+    console.log('here')
+    const processedWebhookEventId = req.body.event.data.new.id
+    const payload = req.body.event.data.new.payload
+    console.log(payload , processedWebhookEventId) 
+    res.send('payload sent')
+}
 
-export const sendWebhookEvents  = async (req , res) => {
+export const processWebhookEvents  = async (req , res) => {
+
+    console.log("inside processWebhookEvents")
     
     const payload = req.body
 
@@ -28,10 +35,6 @@ export const sendWebhookEvents  = async (req , res) => {
     const response_availableWebhookEvent = await client.request(
         GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, { "webhookEventLabel": eventName }
      )
-
-    console.log(response_availableWebhookEvent)
-
-
     const availableWebhookEventId = response_availableWebhookEvent.developer_availableWebhookEvent[0].id
 
     const response_insertProcessedEvent = await client.request(
@@ -40,6 +43,8 @@ export const sendWebhookEvents  = async (req , res) => {
             "payload":payload
         }
     )
+    console.log(response_insertProcessedEvent)
+    // var webhookUrlArray =  response_availableWebhookEvent.developer_availableWebhookEvent[0].webhookUrl_events
 
     var webhookUrlArray =  response_availableWebhookEvent.developer_availableWebhookEvent[0].webhookUrl_events;
 
@@ -55,33 +60,33 @@ export const sendWebhookEvents  = async (req , res) => {
     //     console.log(response_webhook, response_webhook.status);
     // })
 
-const webhookUrlArrayTraversal = async (webhookUrlArray)=>{
-    webhookUrlArray.forEach(element=>{
-        const urlEndpoint = element["webhookUrl"].urlEndpoint
-        const advanceConfig = element["advanceConfig"]
+// const webhookUrlArrayTraversal = async (webhookUrlArray)=>{
+//     webhookUrlArray.forEach(element=>{
+//         const urlEndpoint = element["webhookUrl"].urlEndpoint
+//         const advanceConfig = element["advanceConfig"]
 
-        function postPayload(urlEndpoint, advanceConfig){
-            const response_webhook = axios({
-                url: urlEndpoint,
-                method:"POST",
-                data:payload
-            })
-            setTimeout(()=>{
-                if(response_webhook.status!=200&&advanceConfig.retryInterval){
-                    advanceConfig.retryInterval-=1;
-                    postPayload(urlEndpoint, advanceConfig)
-                }
-            }, advanceConfig.retryInterval)
-        }
+//         function postPayload(urlEndpoint, advanceConfig){
+//             const response_webhook = axios({
+//                 url: urlEndpoint,
+//                 method:"POST",
+//                 data:payload
+//             })
+//             setTimeout(()=>{
+//                 if(response_webhook.status!=200&&advanceConfig.retryInterval){
+//                     advanceConfig.retryInterval-=1;
+//                     postPayload(urlEndpoint, advanceConfig)
+//                 }
+//             }, advanceConfig.retryInterval)
+//         }
 
-        postPayload(urlEndpoint, advanceConfig)
+//         postPayload(urlEndpoint, advanceConfig)
 
         
 
-    })
-}
+//     })
+// }
 
-webhookUrlArrayTraversal(webhookUrlArray);
+// webhookUrlArrayTraversal(webhookUrlArray);
     
 
     
@@ -108,17 +113,15 @@ webhookUrlArrayTraversal(webhookUrlArray);
 
 
 
-    res.send('hi')
-}
 /*
 this controller is responsible for handling event trigges state 
 if the is active status of an event turns true then the event will be added in hasura events
 and if the active status of an event turns false then the event will be removed from hasura events
 using handleEvents.create and handleEvents.delete respectively 
-
 */
+    }
 export const handleIsActiveEventTrigger = async (req , res) => {
-
+    console.log('handling is active event trigger')
     try{
         if(req.body.event.data.old.isActive === false && req.body.event.data.new.isActive === true) {
             handleEvents.create(req, res)
@@ -140,7 +143,7 @@ const handleEvents = {
             const tableName = req.body.event.data.old.tableName
             const schemaName = req.body.event.data.old.schemaName
 
-            const response = await axios({
+            await axios({
                    url:"https://test.dailykit.org/datahub/v1/query",
                     method:'POST',
                     headers:{
@@ -200,7 +203,6 @@ const handleEvents = {
                                     "payload": "*"
                                 },
                                 "replace": false
-                            
                         }
                     }
             })
@@ -211,8 +213,3 @@ const handleEvents = {
     }
 
 }
-
-
-
-
-

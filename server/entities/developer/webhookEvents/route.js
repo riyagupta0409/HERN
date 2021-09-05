@@ -1,16 +1,13 @@
 import { Router } from 'express'
-import {handleIsActiveEventTrigger , sendWebhookEvents } from './controllers'
-
+import {handleIsActiveEventTrigger , sendWebhookEvents  , processWebhookEvents} from './controllers'
 
 const router = Router();
-
-/*
-req url :  api/developer/handleWebhookEvents/create-delete-event-trigger
-*/
 
 router.post('/create-delete-event-trigger' , handleIsActiveEventTrigger)
 
 router.post('/sendWebhookEvents' , sendWebhookEvents)
+
+router.post('/processWebhookEvents' , processWebhookEvents)
 
 export default router 
 

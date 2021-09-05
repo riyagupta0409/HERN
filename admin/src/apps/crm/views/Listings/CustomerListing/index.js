@@ -726,11 +726,12 @@ const CustomerListing = () => {
                   ...options,
                   placeholder: 'No Customers Available Yet !',
                   columnHeaderVertAlign: 'bottom',
+                  persistenceID : 'customer_table'
                }}
                ref={tableRef}
                className="crm-table"
             />
-         )}
+         )} 
          <InsightDashboard
             appTitle="CRM App"
             moduleTitle="Customer Listing"

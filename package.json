@@ -57,7 +57,6 @@
       "zlib": "^1.0.5"
    },
    "devDependencies": {
-      "eslint": "^7.32.0",
       "eslint-config-airbnb": "^18.2.1",
       "eslint-config-prettier": "^8.3.0",
       "eslint-plugin-import": "^2.24.0",
