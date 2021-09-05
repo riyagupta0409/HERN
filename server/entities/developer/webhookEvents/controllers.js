@@ -20,8 +20,6 @@ and post request with the payload will be sent to each webhook url
 */
 
 export const sendWebhookEvents  = async (req , res) => {
-
-    console.log("done")
     
     const payload = req.body
 
@@ -43,18 +41,69 @@ export const sendWebhookEvents  = async (req , res) => {
         }
     )
 
-    var webhookUrlArray =  response_availableWebhookEvent.developer_availableWebhookEvent[0].webhookUrl_events
+    var webhookUrlArray =  response_availableWebhookEvent.developer_availableWebhookEvent[0].webhookUrl_events;
 
+    console.log(webhookUrlArray);
+
+    // webhookUrlArray.forEach(element=>{
+    //     const urlEndpoint = element["webhookUrl"].urlEndpoint;
+    //     const response_webhook = axios({
+    //         url: urlEndpoint,
+    //         method:"POST",
+    //         data:payload
+    //     })
+    //     console.log(response_webhook, response_webhook.status);
+    // })
+
+const webhookUrlArrayTraversal = async (webhookUrlArray)=>{
     webhookUrlArray.forEach(element=>{
         const urlEndpoint = element["webhookUrl"].urlEndpoint
+        const advanceConfig = element["advanceConfig"]
 
-        const response_webhook = axios({
-            url: urlEndpoint,
-            method:"POST",
-            data:payload
-        })
+        function postPayload(urlEndpoint, advanceConfig){
+            const response_webhook = axios({
+                url: urlEndpoint,
+                method:"POST",
+                data:payload
+            })
+            setTimeout(()=>{
+                if(response_webhook.status!=200&&advanceConfig.retryInterval){
+                    advanceConfig.retryInterval-=1;
+                    postPayload(urlEndpoint, advanceConfig)
+                }
+            }, advanceConfig.retryInterval)
+        }
+
+        postPayload(urlEndpoint, advanceConfig)
+
+        
 
     })
+}
+
+webhookUrlArrayTraversal(webhookUrlArray);
+    
+
+    
+    // var array = ["Riya", "Chiranjeev", "Rishi", "Divyangna"]
+    // var retries = [1,3,2,1]
+    // var success = [-2, -2, -2, -2]
+
+    // for(var i = 0; i < array.length; i++){
+    //     function postpayload(name, r, success, i){ 
+    //             console.log("called", name)
+    //             setTimeout(()=>{
+    //                 if(success[i]&&r){
+    //                     success[i]+=1;
+    //                     postpayload(name, r-1, success, i)
+    //                 }
+    //             },10000);
+    //             console.log(success)
+    //     }
+    //     postpayload(array[i], retries[i] ,success, i);
+    // }
+
+
 
 
 
@@ -107,7 +156,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://dcf9-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
+                                "webhook": "http://2615-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
@@ -145,7 +194,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://dcf9-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
+                                "webhook": "http://2615-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
