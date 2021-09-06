@@ -1,6 +1,6 @@
 import axios from 'axios'; 
 import { client } from '../../../lib/graphql';
-import { GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, INSERT_PROCESSED_EVENT} from './graphql';
+import { GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, INSERT_PROCESSED_EVENT,FETCH_PROCESSED_WEBHOOK_BY_URL , INSERT_INVOCATION_LOGS} from './graphql';
 
 
 // for hasura admin secret in development mode 
@@ -20,7 +20,15 @@ export const sendWebhookEvents = async (req , res) => {
     console.log('here')
     const processedWebhookEventId = req.body.event.data.new.id
     const payload = req.body.event.data.new.payload
-    console.log(payload , processedWebhookEventId) 
+    const response_webhookUrlArray = await client.request(
+        FETCH_PROCESSED_WEBHOOK_BY_URL , {"processedWebhookEventId" : processedWebhookEventId}
+    )
+    const webhookUrlArray = response_webhookUrlArray.developer_processedWebhookEventsByUrl
+    console.log(webhookUrlArray)
+    var webhookUrlArrayLength = webhookUrlArray.length
+    for(var i = 0; i < webhookUrlArrayLength; i++){
+        postpayload(i , webhookUrlArray , payload);
+    }
     res.send('payload sent')
 }
 
@@ -44,20 +52,7 @@ export const processWebhookEvents  = async (req , res) => {
         }
     )
     console.log(response_insertProcessedEvent)
-    // var webhookUrlArray =  response_availableWebhookEvent.developer_availableWebhookEvent[0].webhookUrl_events
-
-    // webhookUrlArray.forEach(element=>{
-    //     const urlEndpoint = element["webhookUrl"].urlEndpoint
-
-    //     const response_webhook = axios({
-    //         url: urlEndpoint,
-    //         method:"POST",
-    //         data:payload
-    //     })
-
-    // })
     res.send('request completed')
-    // res.send('hi')
 }
 
 
@@ -83,6 +78,63 @@ export const handleIsActiveEventTrigger = async (req , res) => {
         .json({ success: false, message: `request failed` })}
 }
 
+const retrySendingPayload = async(processedWebhookEventsByUrlId , webhookUrl_eventsId , urlEndPoint , payload , numberOfRetries , retryInterval , leftOutTime) => {
+    var startTime = new Date().getTime()
+    var res= await sendPayloadToUrlEndpoint(urlEndPoint , payload)
+    // here the response will be added to invocation logs [-- pending]
+    insertInInvocationLogs(payload , {status : res.status, body : res.body , headers : res.headers } , processedWebhookEventsByUrlId , webhookUrl_eventsId )
+    if(res.status === 200 ||  new Date().getTime() - startTime > leftOutTime || numberOfRetries <= 0 ){
+        console.log(urlEndPoint , numberOfRetries ,new Date().getTime() - startTime)
+        return res ;
+    }
+    var leftOutTime = leftOutTime - (new Date().getTime() - startTime)
+    var numberOfRetries = numberOfRetries - 1
+    setTimeout(()=> { retrySendingPayload(urlEndPoint , payload , numberOfRetries , retryInterval  , leftOutTime) }, retryInterval*1000) 
+    
+}
+
+const sendPayloadToUrlEndpoint =  async (urlEndPoint , payload ) => {
+        try{
+       const res = await axios({
+            url : urlEndPoint ,
+            method : 'POST' , 
+            data : payload
+        })
+        return res
+    }
+    catch(error){
+        return {status:400}
+    }
+}
+
+const postpayload = async(i , webhookUrlArray , payload) =>{ // create a unique function (scope) each time
+    var k = i
+    var timeout = webhookUrlArray[k].webhookUrl_event.advanceConfig.timeOut
+    var urlEndPoint = webhookUrlArray[k].urlEndPoint
+    var processedWebhookEventsByUrlId = webhookUrlArray[k].id
+    var webhookUrl_eventsId = webhookUrlArray[k].webhookUrl_eventsId
+    var retryInterval = webhookUrlArray[k].webhookUrl_event.advanceConfig.retryInterval
+    var numberOfRetries = webhookUrlArray[k].webhookUrl_event.advanceConfig.numberOfRetries
+    retrySendingPayload(processedWebhookEventsByUrlId , webhookUrl_eventsId ,urlEndPoint , payload , numberOfRetries ,  retryInterval , timeout*1000) 
+}
+
+const insertInInvocationLogs = async(payloadSent , response , processedWebhookEventsByUrlId , webhookUrl_EventsId) =>{
+    try{
+        const response_insert_invocationLogs = await client.request(
+            INSERT_INVOCATION_LOGS, {
+                "PayloadSent":payloadSent,
+                "Response":response,
+                "processedWebhookEventsByUrlId":processedWebhookEventsByUrlId,
+                "webhookUrl_EventsId" : webhookUrl_EventsId
+            }
+        )
+        console.log('response_insert_invocationLogs' , response_insert_invocationLogs)
+    }
+    catch(error){
+        console.log(error)
+    }
+}
+
 const handleEvents = {
 
     // create event in hasura events 
@@ -93,7 +145,7 @@ const handleEvents = {
             const schemaName = req.body.event.data.old.schemaName
 
             await axios({
-                   url:"https://test.dailykit.org/datahub/v1/query",
+                   url:"https://testhern.dailykit.org/datahub/v1/query",
                     method:'POST',
                     headers:{
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -131,7 +183,7 @@ const handleEvents = {
             const schemaName = req.body.event.data.old.schemaName
 
             const response = await axios({
-                   url:"https://test.dailykit.org/datahub/v1/query",
+                   url:"https://testhern.dailykit.org/datahub/v1",
                     method:'POST',
                     headers:{
                         'Content-Type': 'application/x-www-form-urlencoded',
