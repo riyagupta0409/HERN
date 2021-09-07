@@ -1,6 +1,6 @@
 import axios from 'axios'; 
 import { client } from '../../../lib/graphql';
-import { GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, INSERT_PROCESSED_EVENT} from './graphql';
+import { GET_AVAILABLE_WEBHOOK_EVENT_ID, INSERT_PROCESSED_EVENT, GET_URL_ENDPOINT_AND_ADVANCE_CONFIG} from './graphql';
 
 
 // for hasura admin secret in development mode 
@@ -17,25 +17,26 @@ and post request with the payload will be sent to each webhook url
 along with the retry configuration.
 */
 export const sendWebhookEvents = async (req , res) => {
-    console.log('here')
-    const processedWebhookEventId = req.body.event.data.new.id
+    const processedWebhookEventsId = req.body.event.data.new.id
     const payload = req.body.event.data.new.payload
-    console.log(payload , processedWebhookEventId) 
+    console.log(payload , processedWebhookEventsId) 
+    const response_getURl = await client.request(
+        GET_URL_ENDPOINT_AND_ADVANCE_CONFIG, {"processedWebhookEventsId":processedWebhookEventsId}
+    )
+    console.log(response_getURl);
     res.send('payload sent')
 }
 
 export const processWebhookEvents  = async (req , res) => {
-
-    console.log("inside processWebhookEvents")
     
     const payload = req.body
 
     const eventName = req.body.trigger.name
 
-    const response_availableWebhookEvent = await client.request(
-        GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, { "webhookEventLabel": eventName }
+    const response_availableWebhookEventId = await client.request(
+        GET_AVAILABLE_WEBHOOK_EVENT_ID, { "webhookEventLabel": eventName }
      )
-    const availableWebhookEventId = response_availableWebhookEvent.developer_availableWebhookEvent[0].id
+    const availableWebhookEventId = response_availableWebhookEventId.developer_availableWebhookEvent[0].id
 
     const response_insertProcessedEvent = await client.request(
         INSERT_PROCESSED_EVENT, {
@@ -43,12 +44,10 @@ export const processWebhookEvents  = async (req , res) => {
             "payload":payload
         }
     )
-    console.log(response_insertProcessedEvent)
     // var webhookUrlArray =  response_availableWebhookEvent.developer_availableWebhookEvent[0].webhookUrl_events
 
-    var webhookUrlArray =  response_availableWebhookEvent.developer_availableWebhookEvent[0].webhookUrl_events;
+    
 
-    console.log(webhookUrlArray);
 
     // webhookUrlArray.forEach(element=>{
     //     const urlEndpoint = element["webhookUrl"].urlEndpoint;
@@ -111,7 +110,7 @@ export const processWebhookEvents  = async (req , res) => {
 
 
 
-
+    }
 
 /*
 this controller is responsible for handling event trigges state 
@@ -119,9 +118,7 @@ if the is active status of an event turns true then the event will be added in h
 and if the active status of an event turns false then the event will be removed from hasura events
 using handleEvents.create and handleEvents.delete respectively 
 */
-    }
 export const handleIsActiveEventTrigger = async (req , res) => {
-    console.log('handling is active event trigger')
     try{
         if(req.body.event.data.old.isActive === false && req.body.event.data.new.isActive === true) {
             handleEvents.create(req, res)
@@ -159,7 +156,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://2615-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
+                                "webhook": "http://3839-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
@@ -197,7 +194,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://2615-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
+                                "webhook": "http://3839-111-223-3-39.ngrok.io/server/api/developer/webhookEvents/sendWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"

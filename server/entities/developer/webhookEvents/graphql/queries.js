@@ -1,12 +1,16 @@
-export const GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS = `
-query GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS($webhookEventLabel: String!) {
+export const GET_AVAILABLE_WEBHOOK_EVENT_ID = `
+query GET_AVAILABLE_WEBHOOK_EVENT_ID($webhookEventLabel: String!) {
   developer_availableWebhookEvent(where: {label: {_eq: $webhookEventLabel}}) {
     id
-    webhookUrl_events(where: {webhookUrl: {isActive: {_eq: true}}}) {
-      webhookUrl {
-        urlEndpoint
-        id
-      }
+  }
+}
+`
+
+export const GET_URL_ENDPOINT_AND_ADVANCE_CONFIG = `
+query GET_URL_ENDPOINT_AND_ADVANCE_CONFIG($processedWebhookEventsId: String = "") {
+  developer_processedWebhookEventsByUrl(where: {processedWebhookEventsId: {_eq: $processedWebhookEventsId}}) {
+    urlEndPoint
+    webhookUrl_event {
       advanceConfig
     }
   }
