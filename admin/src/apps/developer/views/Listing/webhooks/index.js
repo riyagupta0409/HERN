@@ -1,0 +1,155 @@
+import React, {useRef, useState} from 'react';
+import { useMutation, useSubscription } from '@apollo/react-hooks'
+import {ACTIVE_EVENTS_WEBHOOKS, DELETE_WEBHOOK_EVENT } from '../../../graphql';
+import { Loader } from '@dailykit/ui'
+import {logger}  from '../../../../../shared/utils'
+import {Table, TableHead, TableBody, TableRow, TableCell, Flex, TextButton, Text, Spacer, DropdownButton, ButtonGroup, ComboButton, PlusIcon, useTunnel} from '@dailykit/ui';
+import { toast } from 'react-toastify'
+import AddWebHook from '../../../tunnels/addWebhookTunnel';
+import options from '../../tableOptions'
+import { ReactTabulator } from '@dailykit/react-tabulator'
+import { useLocation } from 'react-router-dom'
+import { useTooltip, useTabs } from '../../../../../shared/providers'
+// third party imports
+import { useTranslation } from 'react-i18next'
+import { StyledWrapper } from './styled'
+
+
+
+
+const WebhookListing = ()=>{
+
+    const { t } = useTranslation()
+
+    // Mutation for deleting webhook
+    const [deleteWebhook, {loading: deletingWebhookLoading}] = useMutation(DELETE_WEBHOOK_EVENT);
+
+    const [tunnels, openTunnel, closeTunnel] = useTunnel(2)
+
+    const tableRef = useRef()
+
+    const [webhookEvents, setWebhookEvents] = useState(undefined)
+
+    const location = useLocation()
+
+    const { addTab, tab } = useTabs()
+
+    // Query to fetch active webhook events
+    const { loading, error, data } = useSubscription(ACTIVE_EVENTS_WEBHOOKS);
+    if(loading || deletingWebhookLoading) return <Loader />
+    if(error) {
+        logger(error)
+        return null
+    }
+
+    const webhookUrl_eventsCount = data.developer_webhookUrl_events.length
+
+
+   const rowClick = (e, cell) => {
+      const {id } = cell._cell.row.data
+      let {label } = cell._cell.row.data.availableWebhookEvent
+      label+=id
+      const param = `${location.pathname}/${id}`
+      const tabTitle = label
+      addTab(tabTitle, param)
+   }
+
+    
+    // To delete Webhook
+    function deleteEvent(eventId){
+        deleteWebhook({
+            variables:{
+                "eventId":eventId
+            },
+            onComplete : (data) => {
+                console.log('request completed')
+                toast.success('webhook successfully deleted')
+                console.log(data)
+            },
+            onError : (error) =>{
+
+                toast.error('Something went wrong')
+                logger(error)
+            }
+        })
+    }
+
+    const columns = [
+      {
+         title: 'Events',
+         field: 'availableWebhookEvent.label',
+         headerFilter: true,
+         hozAlign: 'left',
+         resizable:true,
+         headerSort:true,
+         // frozen: true,
+         cssClass: 'rowClick',
+         width: 300,
+         cellClick: (e, cell) => {
+            rowClick(e, cell)
+         }
+         // headerTooltip: function (column) {
+         //    const identifier = 'webhook_listing_code_column'
+         //    return (
+         //       tooltip(identifier)?.description || column.getDefinition().title
+         //    )
+         // },
+      },
+      {
+         title: 'Url',
+         field: 'webhookUrl.urlEndpoint',
+         headerFilter: true,
+         hozAlign: 'left',
+         resizable:true,
+         headerSort:true,
+         // frozen: true,
+         cssClass: 'rowClick',
+         width: 300
+      }
+   ]
+
+    return (
+        <div className="App" >
+            <AddWebHook tunnels={tunnels} openTunnel={openTunnel} closeTunnel={closeTunnel} />
+            <StyledWrapper>
+            <Flex container alignItems="center" justifyContent="space-between">
+            <Flex container height="80px" alignItems="center">
+               <Text as="h2">
+                  Webhooks
+                  (
+                  {webhookUrl_eventsCount || '...'})
+               </Text>
+               {/* <Tooltip identifier="coupon_list_heading" /> */}
+            </Flex>
+                  
+
+            <ButtonGroup>
+               <ComboButton type="solid" 
+               onClick={()=>openTunnel(1)}
+               >
+                  <PlusIcon />
+                  Add Webhook
+               </ComboButton>
+            </ButtonGroup>
+         </Flex>
+         {Boolean(webhookUrl_eventsCount) && (
+            <ReactTabulator
+               columns={columns}
+               data={data.developer_webhookUrl_events}
+               options={{
+                  ...options,
+                  placeholder: 'No Webhooks Available Yet !',
+                  persistenceID : 'webhooks_table'
+               }}
+               ref={tableRef}
+               className = 'developer-webhooks'
+            />
+         )}
+            </StyledWrapper>
+        </div>
+
+    )
+
+}
+
+export default WebhookListing

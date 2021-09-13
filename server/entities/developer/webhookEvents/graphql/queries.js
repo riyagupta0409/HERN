@@ -16,3 +16,15 @@ query GET_URL_ENDPOINT_AND_ADVANCE_CONFIG($processedWebhookEventsId: String = ""
   }
 }
 `
+
+export const FETCH_PROCESSED_WEBHOOK_BY_URL = `query FETCH_PROCESSED_WEBHOOK_BY_URL($processedWebhookEventId: String = "") {
+  developer_processedWebhookEventsByUrl(where: {processedWebhookEventsId: {_eq: $processedWebhookEventId}}) {
+    webhookUrl_event {
+      advanceConfig
+    }
+    urlEndPoint
+    id
+    webhookUrl_eventsId
+  }
+}
+`

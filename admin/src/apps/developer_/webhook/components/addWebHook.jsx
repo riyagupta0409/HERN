@@ -5,32 +5,15 @@ import { useQuery, useMutation } from '@apollo/react-hooks'
 import {logger}  from '../../../../shared/utils'
 import {TextButton , Form, Spacer, Text, ButtonGroup, Select, Tunnel, useTunnel, TunnelHeader, Tunnels } from '@dailykit/ui'
 import { toast } from 'react-toastify'
-import {
-    ListHeader,
-    ListItem,
-    List,
-    ListOptions,
-    ListSearch,
-    TagGroup,
-    Tag
- } from '@dailykit/ui'
- import { useSingleList, useMultiList } from '@dailykit/ui'
-// import addWebhookTunnels from '../tunnels/addWebhookTunnel'
 
 function AddWebHook(props){
 
     // react states for reference to values of selected event and input url Endpoint
     const [selectedEvent , updateSelectedEvent] = useState(null)
     const [inputWebhookUrl , updatedInputWebhookUrl] = useState(null)
-    const [addOptionState , setAddOptionState] = useState(false)
     const [inputAdvanceConfigs, updatedInputAdvanceCofigs] = useState({"timeOut": 60, "retryInterval": 10, "numberOfRetries": 0 })
 
     const [tunnels, openTunnel, closeTunnel] = useTunnel(2)
-
-    const [search, setSearch] = React.useState('')
-
-    
-    
     
    
 
@@ -104,20 +87,14 @@ function AddWebHook(props){
 
     
     const availableEvents = eventsData.developer_availableWebhookEvent.map(event =>
-        ({id:event.id , description : event.description , title : event.label }))
+        ({id:event.id , value : event.id , title : event.label }))
     var options = [...availableEvents]
     
-    const [list, current, selectOption] = useSingleList([])
+    
     
     
         return (
             <>
-            
-                {/* <addWebhookTunnels tunnels={tunnels} openTunnel={openTunnel} closeTunnel={closeTunnel} setAddOptionState={setAddOptionState} submitForm={submitForm} updatedInputAdvanceCofigs={updatedInputAdvanceCofigs} inputAdvanceConfigs={inputAdvanceConfigs} options={options} updateSelectedEvent={updateSelectedEvent} addOptionState={addOptionState} >
-                </addWebhookTunnels> */}
-                {!addOptionState &&
-                <TextButton type="solid" align="right" onClick={() => {setAddOptionState(true);openTunnel(1)}}>Add WebHook</TextButton>
-                }
                 <Tunnels tunnels={tunnels}>
                     <Tunnel style={{padding:10}} layer={1}>
 
@@ -139,40 +116,7 @@ function AddWebHook(props){
                             <Form.Label htmlFor='webhookEvent' title='webhookEvent'>
                         Select Event
                             </Form.Label>
-                            {/* <Form.Select id='webhookEvent' name='webhookEvent' options={options} onChange={(e) => {updateSelectedEvent(e.target.value)}} placeholder='Select an Event' /> */}
-                            <List>
-                                {Object.keys(current).length > 0 ? (
-                                <ListItem
-                                    type='SSL2'
-                                    content={{
-                                        title: current.title,
-                                        description: current.description
-                                    }}
-                                />
-                                ) : (
-                                <ListSearch
-                                    onChange={value => setSearch(value)}
-                                    placeholder='type what you’re looking for...'
-                                />
-                                )}
-                                <ListHeader type='SSL2' label='Events' />
-                                <ListOptions>
-                                {list
-                                    .filter(option => option.title.toLowerCase().includes(search))
-                                    .map(option => (
-                                        <ListItem
-                                            type='SSL2'
-                                            key={option.id}
-                                            isActive={option.id === current.id}
-                                            onClick={() => selectOption('id', option.id)}
-                                            content={{
-                                            title: option.title,
-                                            description: option.description
-                                            }}
-                                        />
-                                    ))}
-                                </ListOptions>
-                            </List>
+                            <Form.Select id='webhookEvent' name='webhookEvent' options={options} onChange={(e) => {updateSelectedEvent(e.target.value)}} placeholder='Select an Event' />
                         </Form.Group>
                         <Spacer size='16px' />
                         
