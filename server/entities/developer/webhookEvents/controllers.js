@@ -24,7 +24,6 @@ export const sendWebhookEvents = async (req , res) => {
         FETCH_PROCESSED_WEBHOOK_BY_URL , {"processedWebhookEventId" : processedWebhookEventId}
     )
     const webhookUrlArray = response_webhookUrlArray.developer_processedWebhookEventsByUrl
-    console.log(webhookUrlArray)
     var webhookUrlArrayLength = webhookUrlArray.length
     for(var i = 0; i < webhookUrlArrayLength; i++){
         postpayload(i , webhookUrlArray , payload);
@@ -33,8 +32,6 @@ export const sendWebhookEvents = async (req , res) => {
 }
 
 export const processWebhookEvents  = async (req , res) => {
-
-    console.log("inside processWebhookEvents")
     
     const payload = req.body
 
@@ -51,7 +48,6 @@ export const processWebhookEvents  = async (req , res) => {
             "payload":payload
         }
     )
-    console.log(response_insertProcessedEvent)
     res.send('request completed')
 }
 
@@ -81,8 +77,10 @@ export const handleIsActiveEventTrigger = async (req , res) => {
 const retrySendingPayload = async(processedWebhookEventsByUrlId , webhookUrl_eventsId , urlEndPoint , payload , numberOfRetries , retryInterval , leftOutTime) => {
     var startTime = new Date().getTime()
     var res= await sendPayloadToUrlEndpoint(urlEndPoint , payload)
-    // here the response will be added to invocation logs [-- pending]
-    insertInInvocationLogs(payload , {status : res.status, body : res.body , headers : res.headers } , processedWebhookEventsByUrlId , webhookUrl_eventsId )
+    var response = {"status":res.status,"body":res.body,"headers":res.headers,"message":res.message,"data":res.data}
+    console.log(response , "response inserted")
+    // here the response will be added to invocation logs 
+    insertInInvocationLogs(payload , response, processedWebhookEventsByUrlId , webhookUrl_eventsId )
     if(res.status === 200 ||  new Date().getTime() - startTime > leftOutTime || numberOfRetries <= 0 ){
         console.log(urlEndPoint , numberOfRetries ,new Date().getTime() - startTime)
         return res ;
@@ -94,7 +92,7 @@ const retrySendingPayload = async(processedWebhookEventsByUrlId , webhookUrl_eve
 }
 
 const sendPayloadToUrlEndpoint =  async (urlEndPoint , payload ) => {
-        try{
+    try{
        const res = await axios({
             url : urlEndPoint ,
             method : 'POST' , 
@@ -131,7 +129,7 @@ const insertInInvocationLogs = async(payloadSent , response , processedWebhookEv
         console.log('response_insert_invocationLogs' , response_insert_invocationLogs)
     }
     catch(error){
-        console.log(error)
+        console.log("error in inserting log " , error.response.errors[0].extensions.internal)
     }
 }
 
@@ -160,7 +158,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://aea7-122-173-27-84.ngrok.io/server/api/developer/webhookEvents/processWebhookEvents",
+                                "webhook": "http://c76f-122-173-27-84.ngrok.io/server/api/developer/webhookEvents/processWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"
@@ -198,7 +196,7 @@ const handleEvents = {
                                    "name": tableName,
                                    "schema":schemaName
                                 },
-                                "webhook": "http://aea7-122-173-27-84.ngrok.io/server/api/developer/webhookEvents/processWebhookEvents",
+                                "webhook": "http://c76f-122-173-27-84.ngrok.io/server/api/developer/webhookEvents/processWebhookEvents",
                                 "insert": {
                                     "columns": "*",
                                     "payload": "*"

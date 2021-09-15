@@ -14,10 +14,12 @@ mutation UPDATE_PROCESSED_WEBHOOK_EVENT_BY_URL($_eq: String = "", $response: jso
 
 export const INSERT_INVOCATION_LOGS = `
 mutation INSERT_INVOCATION_LOGS($PayloadSent: jsonb = "", $Response: jsonb = "", $processedWebhookEventsByUrlId: String = "", $webhookUrl_EventsId: Int = 0) {
-  insert_developer_webhookUrl_EventsLog_one(object: {PayloadSent: $PayloadSent, Response: $Response, processedWebhookEventsByUrlId: $processedWebhookEventsByUrlId, webhookUrl_EventsId: $webhookUrl_EventsId})
-  {
-    id
+  insert_developer_webhookUrl_EventsLog(objects: {PayloadSent: $PayloadSent, Response: $Response, processedWebhookEventsByUrlId: $processedWebhookEventsByUrlId, webhookUrl_EventsId: $webhookUrl_EventsId}) {
+    returning {
+      id
+    }
   }
 }
+
 
 `
