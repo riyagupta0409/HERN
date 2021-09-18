@@ -10,7 +10,7 @@ const Main = () => {
         
             <Route exact path="/developer" component={ Home } />
             <Route exact path="/developer/webhook" component={ WebhookListing } />
-            <Route exact path="developer/webhook/:id" component={ WebhookEdit } />
+            <Route exact path="/developer/webhook/:id" component={ WebhookEdit } />
 
         </>
     )

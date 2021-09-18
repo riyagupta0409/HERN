@@ -53,3 +53,44 @@ export const  AVAILABLE_EVENTS = gql`
       }
     }
   `
+
+  export const GET_EVENT_URL_ADVANCE_CONFIGS = gql`
+  subscription MySubscription($webhookUrl_EventId: Int) {
+    developer_webhookUrl_events(where: {id: {_eq: $webhookUrl_EventId}}) {
+      advanceConfig
+      webhookUrl {
+        urlEndpoint
+      }
+      availableWebhookEvent {
+        label
+      }
+    }
+  }
+  `
+
+  export const GET_EVENT_LOGS = gql`
+  subscription MySubscription($webhookUrl_EventId: Int) {
+    developer_webhookUrl_events(where: {id: {_eq: $webhookUrl_EventId}}) {
+      webhookUrl_EventsLogs {
+        created_at
+        Response(path: "status")
+      }
+    }
+  }
+  `
+
+  export const GET_PROCESSED_EVENTS = gql`
+  subscription MySubscription($webhookUrl_EventId: Int) {
+    developer_webhookUrl_events(where: {id: {_eq: $webhookUrl_EventId}}) {
+      availableWebhookEvent {
+        processedWebhookEvents {
+          processedWebhookEventsByUrls(where: {webhookUrl_eventsId: {_eq: $webhookUrl_EventId}}) {
+            attemptedTime
+            statusCode
+          }
+          created_at
+        }
+      }
+    }
+  }
+  `
