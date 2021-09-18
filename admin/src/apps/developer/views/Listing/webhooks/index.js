@@ -28,21 +28,25 @@ const WebhookListing = ()=>{
 
     const tableRef = useRef()
 
-    const [webhookEvents, setWebhookEvents] = useState(undefined)
+    const [webhookEvents, setWebhookEvents] = useState([])
 
     const location = useLocation()
 
     const { addTab, tab } = useTabs()
 
     // Query to fetch active webhook events
-    const { loading, error, data } = useSubscription(ACTIVE_EVENTS_WEBHOOKS);
-    if(loading || deletingWebhookLoading) return <Loader />
-    if(error) {
-        logger(error)
-        return null
-    }
+    const { data, loading, error } = useSubscription(ACTIVE_EVENTS_WEBHOOKS, {
+       onSubscriptionData:({ subscriptionData: { data = {} } = {} })=> {
+         setWebhookEvents(data.developer_webhookUrl_events)
+       },
+      })
 
-    const webhookUrl_eventsCount = data.developer_webhookUrl_events.length
+    if (error) {
+      toast.error('Something went wrong')
+      logger(error)
+   }
+
+    const webhookUrl_eventsCount = webhookEvents?.length
 
 
    const rowClick = (e, cell) => {
@@ -132,10 +136,10 @@ const WebhookListing = ()=>{
                </ComboButton>
             </ButtonGroup>
          </Flex>
-         {Boolean(webhookUrl_eventsCount) && (
+         {Boolean(webhookEvents) && (
             <ReactTabulator
                columns={columns}
-               data={data.developer_webhookUrl_events}
+               data={webhookEvents}
                options={{
                   ...options,
                   placeholder: 'No Webhooks Available Yet !',
