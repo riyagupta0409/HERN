@@ -7,19 +7,12 @@ import { Route } from 'react-router-dom';
 
 const Main = () => {
 
-    const [addOptionState , setAddOptionState] = useState(false)
-    const closeForm = () =>{
-        setAddOptionState(false)
-    }
     
     return(
         <>
             <Spacer size='16px' />
-            {!addOptionState &&
-            <TextButton type="solid" align="right" onClick={() => {setAddOptionState(true)}}>Add WebHook</TextButton>
-            }
             
-            {addOptionState && <AddWebHook closeForm = {closeForm}/>}
+            <AddWebHook />
             <DisplayWebHooks />
         </>
     )

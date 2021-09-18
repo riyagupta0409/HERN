@@ -5,10 +5,14 @@ import { Loader } from '@dailykit/ui'
 import {logger}  from '../../../../shared/utils'
 import {Table, TableHead, TableBody, TableRow, TableCell} from '@dailykit/ui';
 import { toast } from 'react-toastify'
+// third party imports
+import { useTranslation } from 'react-i18next'
 
 
 
 function DisplayWebHooks(){
+
+    const { t } = useTranslation()
 
     // Mutation for deleting webhook
     const [deleteWebhook, {loading: deletingWebhookLoading}] = useMutation(DELETE_WEBHOOK_EVENT);
@@ -60,7 +64,6 @@ function DisplayWebHooks(){
                </TableRow>)}
             </TableBody>
             </Table>
-          
         </div>
 
     )

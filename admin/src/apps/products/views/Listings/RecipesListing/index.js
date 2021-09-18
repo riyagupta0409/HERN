@@ -458,7 +458,7 @@ class DataTable extends React.Component {
             />
 
             <Spacer size="40px" />
-
+            {console.log(this.props.data)}
             <ReactTabulator
                ref={this.tableRef}
                dataLoaded={this.selectRows}

@@ -1,6 +1,6 @@
 import axios from 'axios'; 
 import { client } from '../../../lib/graphql';
-import { GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, INSERT_PROCESSED_EVENT,FETCH_PROCESSED_WEBHOOK_BY_URL , INSERT_INVOCATION_LOGS} from './graphql';
+import {  INSERT_PROCESSED_EVENT, INSERT_INVOCATION_LOGS, GET_AVAILABLE_WEBHOOK_EVENT_ID, FETCH_PROCESSED_WEBHOOK_BY_URL } from './graphql';
 
 
 // for hasura admin secret in development mode 
@@ -17,11 +17,10 @@ and post request with the payload will be sent to each webhook url
 along with the retry configuration.
 */
 export const sendWebhookEvents = async (req , res) => {
-    console.log('here')
-    const processedWebhookEventId = req.body.event.data.new.id
+    const processedWebhookEventsId = req.body.event.data.new.id
     const payload = req.body.event.data.new.payload
     const response_webhookUrlArray = await client.request(
-        FETCH_PROCESSED_WEBHOOK_BY_URL , {"processedWebhookEventId" : processedWebhookEventId}
+        FETCH_PROCESSED_WEBHOOK_BY_URL , {"processedWebhookEventId" : processedWebhookEventsId}
     )
     const webhookUrlArray = response_webhookUrlArray.developer_processedWebhookEventsByUrl
     var webhookUrlArrayLength = webhookUrlArray.length
@@ -37,10 +36,10 @@ export const processWebhookEvents  = async (req , res) => {
 
     const eventName = req.body.trigger.name
 
-    const response_availableWebhookEvent = await client.request(
-        GET_AVAILABLE_WEBHOOK_EVENT_ID_AND_EVENT_WEBHOOK_URLS, { "webhookEventLabel": eventName }
+    const response_availableWebhookEventId = await client.request(
+        GET_AVAILABLE_WEBHOOK_EVENT_ID, { "webhookEventLabel": eventName }
      )
-    const availableWebhookEventId = response_availableWebhookEvent.developer_availableWebhookEvent[0].id
+    const availableWebhookEventId = response_availableWebhookEventId.developer_availableWebhookEvent[0].id
 
     const response_insertProcessedEvent = await client.request(
         INSERT_PROCESSED_EVENT, {
@@ -51,8 +50,40 @@ export const processWebhookEvents  = async (req , res) => {
     res.send('request completed')
 }
 
+// const webhookUrlArrayTraversal = async (webhookUrlArray)=>{
+//     webhookUrlArray.forEach(element=>{
+//         const urlEndpoint = element["webhookUrl"].urlEndpoint
+//         const advanceConfig = element["advanceConfig"]
+
+//         function postPayload(urlEndpoint, advanceConfig){
+//             const response_webhook = axios({
+//                 url: urlEndpoint,
+//                 method:"POST",
+//                 data:payload
+//             })
+//             setTimeout(()=>{
+//                 if(response_webhook.status!=200&&advanceConfig.retryInterval){
+//                     advanceConfig.retryInterval-=1;
+//                     postPayload(urlEndpoint, advanceConfig)
+//                 }
+//             }, advanceConfig.retryInterval)
+//         }
+
+//         postPayload(urlEndpoint, advanceConfig)
+
+        
+
+//     })
+// }
+
+    
+
+    
 
 
+
+
+    
 
 /*
 this controller is responsible for handling event trigges state 
@@ -61,7 +92,6 @@ and if the active status of an event turns false then the event will be removed 
 using handleEvents.create and handleEvents.delete respectively 
 */
 export const handleIsActiveEventTrigger = async (req , res) => {
-    console.log('handling is active event trigger')
     try{
         if(req.body.event.data.old.isActive === false && req.body.event.data.new.isActive === true) {
             handleEvents.create(req, res)

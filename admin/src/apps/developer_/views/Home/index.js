@@ -6,7 +6,7 @@ import { StyledHome, StyledCardList } from './styled'
 import { Banner } from '../../../../shared/components'
 import {logger}  from '../../../../shared/utils'
 import { useQuery, useSubscription } from '@apollo/react-hooks';
-import { GET_WEBHOOK_URL_EVENTS_COUNT } from '../../graphql';
+import { GET_WEBHOOK_URL_EVENTS_COUNT } from '../../webhook/graphql/queries';
 
 const address = 'apps.developer.views.home.';
 
