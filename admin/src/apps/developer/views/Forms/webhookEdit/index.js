@@ -5,13 +5,15 @@ import { toast } from 'react-toastify'
 import {logger}  from '../../../../../shared/utils'
 import InvocationLogs from './components/invocationLogs'
 import ProcessedEvents from './components/processedEvents'
+import {Modify} from './components/modify'
 import {
    Flex,
    HorizontalTab,
    HorizontalTabs,
    HorizontalTabList,
    HorizontalTabPanel,
-   HorizontalTabPanels
+   HorizontalTabPanels,
+   Spacer
 } from '@dailykit/ui'
 import {
     StyledWrapper,
@@ -54,9 +56,11 @@ const WebhookEdit = ()=>{
 
     return (<>
 
-               <h3>Event : {webhookEventDetails.eventName || "..."}</h3> 
-               <h3>URL : {webhookEventDetails.url || "..."}</h3> 
+               {/* <h3>Event : {webhookEventDetails.eventName || "..."}</h3> 
+               <h3>URL : {webhookEventDetails.url || "..."}</h3>  */}
                
+               <Spacer size="24px" />
+
                <HorizontalTabs>
                   <div>
                      <HorizontalTabList>
@@ -67,7 +71,7 @@ const WebhookEdit = ()=>{
                   </div>
                   <HorizontalTabPanels>
                      <HorizontalTabPanel>
-                        <h1>1</h1>
+                     <Modify webhookUrl_EventId={webhookUrl_EventId} />
                      </HorizontalTabPanel>
                      <HorizontalTabPanel>
                      <ProcessedEvents webhookUrl_EventId={webhookUrl_EventId} />
