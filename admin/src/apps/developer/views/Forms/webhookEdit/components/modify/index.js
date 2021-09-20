@@ -13,32 +13,27 @@ export const Modify = (props) => {
     const [webhookInfo , updateWebhookInfo] = useState(null)
     const [retryConfiguration , updateRetryConfiguration] = useState({})
     const webhookUrl_EventId = props.webhookUrl_EventId
-    useQuery(GET_EVENT_WEBHOOK_INFO ,
-        {variables : {"webhookUrl_EventId" : webhookUrl_EventId},
-        onCompleted: async (data = {}) => {
-            try{
-                console.log(data.developer_webhookUrl_events[0]);
-                const webhookUrl = data.developer_webhookUrl_events[0].webhookUrl.urlEndpoint
-                const availableWebhookEvent = data.developer_webhookUrl_events[0].availableWebhookEvent.label 
-                const advanceConfiguration = data.developer_webhookUrl_events[0].advanceConfig
-                const Event_Webhook = {"webhookUrl" : webhookUrl, "availableWebhookEvent" : availableWebhookEvent}
-                updateWebhookInfo(Event_Webhook)
-                updateRetryConfiguration(advanceConfiguration)
-            }
-            catch(error){
-                logger(error)
-                toast.error('Something went wrong , Please refresh the page')
-            }
-        },
-        onError: error => {
-            logger(error)
-            toast.error('Failed to load webhook Information.')
+    const { data, loading, error } = useSubscription(GET_EVENT_WEBHOOK_INFO, {
+        variables:{
+            webhookUrl_EventId: webhookUrl_EventId
          },
-
-    
-    })
-
-
+         onSubscriptionData:({ subscriptionData: { data = {} } = {} })=> {
+            const webhookUrl = data.developer_webhookUrl_events[0].webhookUrl.urlEndpoint
+            const availableWebhookEvent = data.developer_webhookUrl_events[0].availableWebhookEvent.label 
+            const advanceConfiguration = data.developer_webhookUrl_events[0].advanceConfig
+            const Event_Webhook = {"webhookUrl" : webhookUrl, "availableWebhookEvent" : availableWebhookEvent}
+            updateWebhookInfo(Event_Webhook)
+            // console.log(advanceConfiguration)
+            updateRetryConfiguration(advanceConfiguration)
+              }
+              
+              
+          })
+  
+      if (error) {
+        toast.error('Something went wrong')
+        logger(error)
+     }
 
 
     return (<> 
