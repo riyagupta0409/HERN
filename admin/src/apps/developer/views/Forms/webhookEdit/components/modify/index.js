@@ -69,8 +69,12 @@ export const Modify = (props) => {
                <TextButton type="solid" 
                onClick={()=>openTunnel(1)}
                >Edit</TextButton>
+
         </div>
 
         </StyledWrapper>
+
+        <TextButton size="sm" type="solid">Delete</TextButton>
+
     </>)
 }
