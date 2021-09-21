@@ -105,28 +105,26 @@ export const handleIsActiveEventTrigger = async (req , res) => {
 }
 
 const retrySendingPayload = async(processedWebhookEventsByUrlId , webhookUrl_eventsId , urlEndPoint , payload , numberOfRetries , retryInterval , leftOutTime) => {
-    var startTime = new Date().getTime()
-    var res= await sendPayloadToUrlEndpoint(urlEndPoint , payload)
+    var res= await sendPayloadToUrlEndpoint(urlEndPoint , payload , leftOutTime)
     var response = {"status":res.status,"body":res.body,"headers":res.headers,"message":res.message,"data":res.data}
     console.log(response , "response inserted")
     // here the response will be added to invocation logs 
     insertInInvocationLogs(payload , response, processedWebhookEventsByUrlId , webhookUrl_eventsId )
-    if(res.status === 200 ||  new Date().getTime() - startTime > leftOutTime || numberOfRetries <= 0 ){
-        console.log(urlEndPoint , numberOfRetries ,new Date().getTime() - startTime)
+    if(res.status === 200 ||  numberOfRetries <= 0 ){
         return res ;
     }
-    var leftOutTime = leftOutTime - (new Date().getTime() - startTime)
     var numberOfRetries = numberOfRetries - 1
     setTimeout(()=> { retrySendingPayload(urlEndPoint , payload , numberOfRetries , retryInterval  , leftOutTime) }, retryInterval*1000) 
     
 }
 
-const sendPayloadToUrlEndpoint =  async (urlEndPoint , payload ) => {
+const sendPayloadToUrlEndpoint =  async (urlEndPoint , payload  , timeout) => {
     try{
        const res = await axios({
             url : urlEndPoint ,
             method : 'POST' , 
-            data : payload
+            data : payload , 
+            timeout : timeout*1000
         })
         return res
     }
