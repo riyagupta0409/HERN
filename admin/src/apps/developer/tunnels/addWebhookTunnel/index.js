@@ -1,18 +1,26 @@
 import React , {useState} from 'react';
 import {AVAILABLE_EVENTS, INSERT_WEBHOOK_EVENTS } from '../../graphql';
 import { Loader } from '@dailykit/ui'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+import { useQuery, useMutation, useSubscription } from '@apollo/react-hooks'
 import {logger}  from '../../../../shared/utils'
-import {Form, Spacer, Text, Tunnel, TunnelHeader, Tunnels } from '@dailykit/ui'
+import {Form, Spacer, Text, Tunnel, TunnelHeader, Tunnels, useSingleList } from '@dailykit/ui'
 import { toast } from 'react-toastify'
+import {
+    ListHeader,
+    ListItem,
+    List,
+    ListOptions,
+    ListSearch
+ } from '@dailykit/ui'
 
 const AddWebHook = (props)=>{
 
     // react states for reference to values of selected event and input url Endpoint
+    const [options, updateOptions] = useState([])
     const [selectedEvent , updateSelectedEvent] = useState(null)
     const [inputWebhookUrl , updatedInputWebhookUrl] = useState(null)
     const [inputAdvanceConfigs, updatedInputAdvanceCofigs] = useState({"timeOut": 60, "retryInterval": 10, "numberOfRetries": 0 })
-
+    const [search, setSearch] = useState('')
     
     
    
@@ -72,22 +80,24 @@ const AddWebHook = (props)=>{
         
         
     }
+
+    const { data, loading, error } = useSubscription(AVAILABLE_EVENTS, {
+         onSubscriptionData:({ subscriptionData: { data = {} } = {} })=> {
+            const availableEvents = data.developer_availableWebhookEvent.map(event =>
+                ({id:event.id , description : event.description , title : event.label }))
+            updateOptions([...availableEvents])
+         },
+        })
+  
+      if (error) {
+        toast.error('Something went wrong')
+        logger(error)
+     }
+    
+
+    const [list, current, selectOption] = useSingleList(options)
     
     
-    // query to fetch the available events to show in the form 
-    const {loading:eventsLoading, error:eventsError, data:eventsData} = useQuery(AVAILABLE_EVENTS);
-    if (eventsLoading) return <Loader />;
-
-    if (eventsError) {
-        logger(eventsError)
-        return null
-    }
-
-
-    
-    const availableEvents = eventsData.developer_availableWebhookEvent.map(event =>
-        ({id:event.id , value : event.id , title : event.label }))
-    var options = [...availableEvents]
     
     
     
@@ -111,12 +121,39 @@ const AddWebHook = (props)=>{
                     />
                         
                         <Spacer size='16px' />
-                        <Form.Group>
-                            <Form.Label htmlFor='webhookEvent' title='webhookEvent'>
-                        Select Event
-                            </Form.Label>
-                            <Form.Select id='webhookEvent' name='webhookEvent' options={options} onChange={(e) => {updateSelectedEvent(e.target.value)}} placeholder='Select an Event' />
-                        </Form.Group>
+                        <List>
+                            {Object.keys(current).length > 0 ? (
+                            <ListItem
+                                type='SSL2'
+                                content={{
+                                    title: current.title,
+                                    description: current.description
+                                }}
+                            />
+                            ) : (
+                            <ListSearch
+                                onChange={value => setSearch(value)}
+                                placeholder='type what you’re looking for...'
+                            />
+                            )}
+                            <ListHeader type='SSL2' label='Events' />
+                            <ListOptions>
+                            {list
+                                .filter(option => option.title.toLowerCase().includes(search))
+                                .map(option => (
+                                    <ListItem
+                                        type='SSL2'
+                                        key={option.id}
+                                        isActive={option.id === current.id}
+                                        onClick={() => {selectOption('id', option.id);updateSelectedEvent(option.id)}}
+                                        content={{
+                                        title: option.title,
+                                        description: option.description
+                                        }}
+                                    />
+                                ))}
+                            </ListOptions>
+                        </List>
                         <Spacer size='16px' />
                         
                         
@@ -155,7 +192,7 @@ const AddWebHook = (props)=>{
                             id='numberOfRetries'
                             name='numberOfRetries'
                             onChange={(e) => {updatedInputAdvanceCofigs({"timeOut":inputAdvanceConfigs.timeOut, "retryInterval":inputAdvanceConfigs.retryInterval, "numberOfRetries":parseInt(e.target.value)})}}
-                            placeholder='Enter number of retries'
+                            placeholder={inputAdvanceConfigs.numberOfRetries}
                         />
                         <Spacer size='16px' />
                         <Form.Label htmlFor='retryInterval' title='retryInterval'>
@@ -165,7 +202,7 @@ const AddWebHook = (props)=>{
                             id='retryInterval'
                             name='retryInterval'
                             onChange={(e) => {updatedInputAdvanceCofigs({"timeOut":inputAdvanceConfigs.timeOut, "retryInterval":parseInt(e.target.value), "numberOfRetries":inputAdvanceConfigs.numberOfRetries})}}
-                            placeholder='Enter retry interval'
+                            placeholder={inputAdvanceConfigs.retryInterval}
                         />
                         <Spacer size='16px' />
                         <Form.Label htmlFor='timeOut' title='timeOut'>
@@ -175,7 +212,7 @@ const AddWebHook = (props)=>{
                             id='timeOut'
                             name='timeOut'
                             onChange={(e) => {updatedInputAdvanceCofigs({"timeOut":parseInt(e.target.value), "retryInterval":inputAdvanceConfigs.retryInterval, "numberOfRetries":inputAdvanceConfigs.numberOfRetries})}}
-                            placeholder='Enter timeout'
+                            placeholder={inputAdvanceConfigs.timeOut}
                         />
                         </Form.Group>
                         <Spacer size='25px' />

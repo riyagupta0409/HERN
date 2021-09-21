@@ -19,7 +19,7 @@ mutation DELETE_WEBHOOK_EVENT($eventId: Int) {
 `
 
 export const UPDATE_RETRY_CONFIGURATION = gql`
-  mutation UPDATE_RETRY_CONFIGURATION($id: Int = 10, $advanceConfig: jsonb = "") {
+  mutation UPDATE_RETRY_CONFIGURATION($id: Int, $advanceConfig: jsonb = "") {
     update_developer_webhookUrl_events(where: {id: {_eq: $id}}, _set: {advanceConfig: $advanceConfig}) {
       affected_rows
     }

@@ -29,7 +29,7 @@ export const ACTIVE_EVENTS_WEBHOOKS = gql`
   
 
 export const  AVAILABLE_EVENTS = gql`
-    query AVAILABLE_EVENTS {
+    subscription AVAILABLE_EVENTS {
       developer_availableWebhookEvent {
         id
         description
@@ -96,7 +96,7 @@ export const  AVAILABLE_EVENTS = gql`
   `
 
   export const GET_EVENT_WEBHOOK_INFO  = gql`
-  query GET_EVENT_WEBHOOK_INFO($webhookUrl_EventId: Int) {
+  subscription GET_EVENT_WEBHOOK_INFO($webhookUrl_EventId: Int) {
     developer_webhookUrl_events(where: {id: {_eq: $webhookUrl_EventId}}) {
       advanceConfig
       webhookUrl {
